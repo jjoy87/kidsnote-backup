@@ -1,37 +1,39 @@
 const NOTION_VERSION = "2025-09-03";
+
 const PAGE_SIZE = 15;
 const CACHE_TTL = 60 * 1000;
+const REQUEST_INTERVAL = 400;
 
-// 요청 간격 제어
-let nextRequestAt = 0;
-
-// 데이터 캐시
+// 캐시
 let cachedPayload = null;
 let cachedAt = 0;
 let inFlight = null;
 
-// 데이터 소스 ID 캐시
 let cachedDataSourceId = null;
 let cachedRootId = null;
+
+// 요청 간격 제어
+let nextRequestAt = 0;
 
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-async function paceNotionRequest() {
+async function paceRequest() {
   const now = Date.now();
   const wait = Math.max(0, nextRequestAt - now);
 
-  nextRequestAt = Math.max(now, nextRequestAt) + 400;
+  nextRequestAt = Math.max(now, nextRequestAt) + REQUEST_INTERVAL;
 
   if (wait > 0) {
     await sleep(wait);
   }
 }
 
+// Notion API 요청
 async function notion(path, token, options = {}) {
   for (let attempt = 0; attempt < 2; attempt++) {
-    await paceNotionRequest();
+    await paceRequest();
 
     const response = await fetch(
       `https://api.notion.com/v1${path}`,
@@ -79,12 +81,14 @@ async function notion(path, token, options = {}) {
   }
 }
 
+// 텍스트 추출
 function richText(value) {
   return (value || [])
     .map(item => item.plain_text || "")
     .join("");
 }
 
+// 제목 추출
 function getTitle(page) {
   const props = page.properties || {};
 
@@ -97,6 +101,7 @@ function getTitle(page) {
   return "제목 없음";
 }
 
+// 날짜 추출
 function getDate(page) {
   const props = page.properties || {};
 
@@ -109,6 +114,7 @@ function getDate(page) {
   return page.created_time || "";
 }
 
+// 카테고리 구분
 function getCategory(title) {
   if (title.includes("앨범")) return "앨범";
   if (title.includes("공지")) return "공지";
@@ -117,8 +123,56 @@ function getCategory(title) {
   return "전체";
 }
 
-// 페이지 블록을 한 번만 요청
+// 상위 페이지에서 데이터베이스 찾기
+async function findDataSource(rootId, token) {
+
+  if (
+    cachedDataSourceId &&
+    cachedRootId === rootId
+  ) {
+    return cachedDataSourceId;
+  }
+
+  // 상위 페이지의 하위 블록 조회
+  const blocks = await notion(
+    `/blocks/${rootId}/children?page_size=100`,
+    token
+  );
+
+  // 데이터베이스 블록 찾기
+  const childDatabase = (blocks.results || []).find(
+    block => block.type === "child_database"
+  );
+
+  if (!childDatabase) {
+    throw new Error(
+      "상위 페이지에서 데이터베이스를 찾지 못했습니다. Notion 연결 권한을 확인해주세요."
+    );
+  }
+
+  // 실제 데이터베이스 정보 조회
+  const database = await notion(
+    `/databases/${childDatabase.id}`,
+    token
+  );
+
+  const dataSourceId = database.data_sources?.[0]?.id;
+
+  if (!dataSourceId) {
+    throw new Error(
+      "Notion 데이터 소스를 찾지 못했습니다."
+    );
+  }
+
+  cachedDataSourceId = dataSourceId;
+  cachedRootId = rootId;
+
+  return dataSourceId;
+}
+
+// 페이지 본문 및 사진 가져오기
 async function getPageContent(pageId, token) {
+
   const data = await notion(
     `/blocks/${pageId}/children?page_size=100`,
     token
@@ -128,11 +182,13 @@ async function getPageContent(pageId, token) {
   const images = [];
 
   for (const block of data.results || []) {
+
     const type = block.type;
     const content = block[type];
 
     if (!content) continue;
 
+    // 텍스트
     if (content.rich_text) {
       const text = richText(content.rich_text);
 
@@ -141,6 +197,7 @@ async function getPageContent(pageId, token) {
       }
     }
 
+    // 사진
     if (type === "image") {
       const url =
         content.file?.url ||
@@ -151,6 +208,7 @@ async function getPageContent(pageId, token) {
       }
     }
 
+    // 하위 페이지 제목
     if (type === "child_page") {
       texts.push(content.title || "");
     }
@@ -162,73 +220,16 @@ async function getPageContent(pageId, token) {
   };
 }
 
-// 데이터 소스 찾기
-async function findDataSource(rootId, token) {
-  if (
-    cachedDataSourceId &&
-    cachedRootId === rootId
-  ) {
-    return cachedDataSourceId;
-  }
-
-  let dataSourceId;
-
-  try {
-    const database = await notion(
-      `/databases/${rootId}`,
-      token
-    );
-
-    dataSourceId = database.data_sources?.[0]?.id;
-
-  } catch (error) {
-    if (error.status !== 404) {
-      throw error;
-    }
-  }
-
-  // 입력 ID가 상위 페이지인 경우
-  if (!dataSourceId) {
-    const blocks = await notion(
-      `/blocks/${rootId}/children?page_size=100`,
-      token
-    );
-
-    const childDatabase = (blocks.results || []).find(
-      block => block.type === "child_database"
-    );
-
-    if (!childDatabase) {
-      throw new Error(
-        "데이터베이스를 찾지 못했습니다. 페이지 ID와 Notion 연결 권한을 확인해주세요."
-      );
-    }
-
-    const database = await notion(
-      `/databases/${childDatabase.id}`,
-      token
-    );
-
-    dataSourceId = database.data_sources?.[0]?.id;
-  }
-
-  if (!dataSourceId) {
-    throw new Error("Notion 데이터 소스를 찾지 못했습니다.");
-  }
-
-  cachedDataSourceId = dataSourceId;
-  cachedRootId = rootId;
-
-  return dataSourceId;
-}
-
-// 실제 데이터 가져오기
+// 대시보드 데이터 가져오기
 async function fetchDashboardData(token, rootId) {
+
+  // 데이터베이스 찾기
   const dataSourceId = await findDataSource(
     rootId,
     token
   );
 
+  // 최신 기록 조회
   const result = await notion(
     `/data_sources/${dataSourceId}/query`,
     token,
@@ -248,7 +249,9 @@ async function fetchDashboardData(token, rootId) {
 
   const items = [];
 
+  // 기록별 본문 가져오기
   for (const page of result.results || []) {
+
     const title = getTitle(page);
 
     const content = await getPageContent(
@@ -272,8 +275,11 @@ async function fetchDashboardData(token, rootId) {
   };
 }
 
+// API 실행
 export async function onRequestGet({ env }) {
+
   try {
+
     const token = env.NOTION_TOKEN;
     const rootId = env.NOTION_ROOT_PAGE_ID;
 
@@ -286,7 +292,7 @@ export async function onRequestGet({ env }) {
       );
     }
 
-    // 60초 이내 캐시 사용
+    // 60초 캐시 확인
     if (
       cachedPayload &&
       Date.now() - cachedAt < CACHE_TTL
@@ -300,12 +306,18 @@ export async function onRequestGet({ env }) {
 
     // 중복 실행 방지
     if (!inFlight) {
-      inFlight = fetchDashboardData(token, rootId)
+
+      inFlight = fetchDashboardData(
+        token,
+        rootId
+      )
         .then(data => {
+
           cachedPayload = data;
           cachedAt = Date.now();
 
           return data;
+
         })
         .finally(() => {
           inFlight = null;
@@ -321,11 +333,15 @@ export async function onRequestGet({ env }) {
     });
 
   } catch (error) {
+
     return Response.json(
       {
-        error: error.message || "데이터를 불러오지 못했습니다."
+        error:
+          error.message ||
+          "데이터를 불러오지 못했습니다."
       },
       { status: 500 }
     );
+
   }
 }

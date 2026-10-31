@@ -1,325 +1,6 @@
-```html
-<!doctype html>
-<html lang="ko">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>사랑하는 수하의 성장기록</title>
-
-<style>
-*{box-sizing:border-box}
-
-body{
-  margin:0;
-  background:#10151d;
-  color:#fff;
-  font-family:sans-serif;
-}
-
-.app{
-  padding:24px;
-  max-width:1400px;
-  margin:auto;
-}
-
-header{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-}
-
-h1{font-size:32px}
-
-nav{
-  display:flex;
-  gap:8px;
-  margin:20px 0;
-  flex-wrap:wrap;
-}
-
-button{
-  padding:12px 20px;
-  border:0;
-  border-radius:20px;
-  cursor:pointer;
-}
-
-.active{background:#dce8f5}
-
-main{
-  display:grid;
-  grid-template-columns:1.5fr 1fr;
-  gap:16px;
-}
-
-section,aside{
-  background:#1a2330;
-  border-radius:18px;
-  padding:20px;
-}
-
-#media{
-  height:55vh;
-  min-height:300px;
-  display:grid;
-  place-items:center;
-  background:#0b1017;
-  overflow:hidden;
-  border-radius:5px;
-}
-
-#media img{
-  width:100%;
-  height:100%;
-  object-fit:contain;
-}
-
-#body{
-  white-space:pre-wrap;
-  line-height:1.7;
-  overflow-wrap:anywhere;
-}
-
-.item{
-  display:block;
-  width:100%;
-  margin:6px 0;
-  text-align:left;
-  white-space:normal;
-  overflow-wrap:anywhere;
-}
-
-.controls{
-  display:flex;
-  gap:8px;
-  margin-top:16px;
-}
-
-#status{
-  margin-top:18px;
-  color:#c5d7ed;
-}
-
-@media(max-width:700px){
-  main{grid-template-columns:1fr}
-  header{align-items:flex-start}
-  h1{font-size:24px}
-  #media{height:40vh}
-}
-</style>
-</head>
-
-<body>
-
-<div class="app">
-
-<header>
-  <h1>사랑하는 수하의 성장기록</h1>
-  <div id="clock"></div>
-</header>
-
-<nav id="tabs">
-  <button data-cat="전체">전체</button>
-  <button data-cat="알림장">알림장</button>
-  <button class="active" data-cat="앨범">앨범</button>
-  <button data-cat="공지">공지</button>
-</nav>
-
-<main>
-
-<section>
-  <div id="media">앨범 불러오는 중...</div>
-  <p id="meta"></p>
-  <h2 id="title">사랑하는 수하의 소중한 순간</h2>
-  <div id="body"></div>
-</section>
-
-<aside>
-  <h3 id="listTitle">앨범 기록</h3>
-  <div id="list">불러오는 중...</div>
-</aside>
-
-</main>
-
-<p id="status">노션 연결 대기 중</p>
-
-<div class="controls">
-  <button id="prev">이전</button>
-  <button id="next">다음</button>
-  <button id="pause">일시정지</button>
-</div>
-
-</div>
-
-<script>
-
-let all = [];
-let items = [];
-
-let idx = 0;
-let cat = "앨범";
-
-let paused = false;
-
-const $ = id => document.getElementById(id);
-
-function randomIndex(length){
-  if(length <= 1) return 0;
-
-  let next;
-
-  do{
-    next = Math.floor(Math.random() * length);
-  }while(next === idx);
-
-  return next;
-}
-
-function render(){
-
-  if(!items.length){
-    $("media").textContent = "표시할 기록이 없습니다";
-    $("title").textContent = "기록 없음";
-    $("meta").textContent = "";
-    $("body").textContent = "";
-    return;
-  }
-
-  const p = items[idx];
-
-  $("title").textContent = p.title || "제목 없음";
-
-  $("meta").textContent =
-    [p.date,p.category].filter(Boolean).join(" · ");
-
-  $("body").textContent = p.text || "";
-
-  const media = $("media");
-  media.replaceChildren();
-
-  if(p.images && p.images.length){
-
-    const img = document.createElement("img");
-
-    img.src = p.images[0];
-    img.alt = p.title || "수하의 앨범 사진";
-
-    media.appendChild(img);
-
-  }else{
-    media.textContent = "사진 없음";
-  }
-
-  const list = $("list");
-  list.replaceChildren();
-
-  items.slice(0,50).forEach((x,i)=>{
-
-    const button = document.createElement("button");
-
-    button.className = "item";
-    button.textContent = x.title || "제목 없음";
-
-    button.onclick = ()=>{
-
-      idx = i;
-      paused = true;
-
-      $("pause").textContent = "재생";
-
-      render();
-    };
-
-    list.appendChild(button);
-  });
-
-  $("listTitle").textContent =
-    cat === "전체" ? "전체 기록" : cat + " 기록";
-}
-
-function select(c){
-
-  cat = c;
-
-  if(c === "전체"){
-    items = all;
-  }else{
-    items = all.filter(x=>x.category === c);
-  }
-
-  if(c === "앨범" && items.length){
-
-    idx = Math.floor(Math.random() * items.length);
-
-    paused = false;
-
-    $("pause").textContent = "일시정지";
-
-  }else{
-
-    idx = 0;
-
-    paused = true;
-
-    $("pause").textContent = "재생";
-  }
-
-  document.querySelectorAll("nav button").forEach(button=>{
-
-    button.classList.toggle(
-      "active",
-      button.dataset.cat === c
-    );
-  });
-
-  render();
-
-  $("status").textContent =
-    c === "앨범"
-      ? "앨범 랜덤 재생 중 · " + items.length + "개"
-      : c + " 카테고리 · " + items.length + "개";
-}
-
-async function load(){
-
-  try{
-
-    $("status").textContent = "노션 데이터 불러오는 중...";
-
-    const response = await fetch("/api/data");
-
-    const data = await response.json();
-
-    if(!response.ok){
-      throw new Error(data.error || "API 오류");
-    }
-
-    all = data.items || [];
-
-    select(cat);
-
-    $("status").textContent =
-      "노션 연결 완료 · 전체 " + all.length + "개 기록";
-
-  }catch(error){
-
-    $("status").textContent =
-      "연결 오류: " + error.message;
-  }
-}
-
-document.querySelectorAll("nav button").forEach(button=>{
-
-  button.onclick = ()=>{
-    select(button.dataset.cat);
-  };
-});
-
-$("prev").onclick = ()=>{
-
   if(!items.length) return;
 
-  idx = (idx - 1 + items.length) % items.length;
+  idx = (idx + 1) % items.length;
 
   paused = true;
   $("pause").textContent = "재생";
@@ -327,5 +8,47 @@ $("prev").onclick = ()=>{
   render();
 };
 
-$("next").onclick = ()=>{
-```
+$("pause").onclick = ()=>{
+
+  paused = !paused;
+
+  $("pause").textContent =
+    paused ? "재생" : "일시정지";
+};
+
+// 45초마다 앨범 랜덤 전환
+setInterval(()=>{
+
+  if(
+    !paused &&
+    cat === "앨범" &&
+    items.length > 1
+  ){
+
+    idx = randomIndex(items.length);
+
+    render();
+  }
+
+},45000);
+
+// 시계
+function updateClock(){
+
+  $("clock").textContent =
+    new Date().toLocaleString("ko-KR");
+}
+
+updateClock();
+
+setInterval(updateClock,1000);
+
+// 최초 데이터 로딩
+load();
+
+// 10분마다 데이터 갱신
+setInterval(load,600000);
+
+</script>
+</body>
+</html>

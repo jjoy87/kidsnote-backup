@@ -427,29 +427,55 @@ function select(c) {
 
     items = all;
 
+  } else if (c === "알림장") {
+
+    items = all.filter(x =>
+      x.category === "알림장" &&
+      ["2022", "2023", "2024"].includes(
+        String(x.date || "").substring(0, 4)
+      )
+    );
+
   } else {
 
     items = all.filter(x => x.category === c);
 
   }
 
-  if (c === "앨범" && items.length) {
+  if (
+    (c === "앨범" || c === "알림장") &&
+    items.length
+  ) {
 
     idx = Math.floor(Math.random() * items.length);
-
     paused = false;
-
     $("pause").textContent = "일시정지";
 
   } else {
 
     idx = 0;
-
     paused = true;
-
     $("pause").textContent = "재생";
 
   }
+
+  document.querySelectorAll("#tabs button").forEach(button => {
+
+    button.classList.toggle(
+      "active",
+      button.dataset.cat === c
+    );
+
+  });
+
+  render();
+
+  $("status").textContent =
+    (c === "앨범" || c === "알림장")
+      ? c + " 랜덤 재생 중 · " + items.length + "개"
+      : c + " 카테고리 · " + items.length + "개";
+
+}
 
   document.querySelectorAll("#tabs button").forEach(button => {
 
@@ -501,15 +527,15 @@ function togglePause() {
 
 }
 
-// 앨범 자동 전환
+// 앨범 및 알림장 자동 전환
 function startTimer() {
 
-  if (timer) clearInterval(timer);
+ if (timer) clearInterval(timer);
 
   timer = setInterval(() => {
 
     if (
-      cat === "앨범" &&
+      (cat === "앨범" || cat === "알림장") &&
       !paused &&
       items.length > 1
     ) {

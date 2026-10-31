@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="ko">
 <head>
@@ -265,7 +266,6 @@ async function loadAllPages() {
     }
 
     const response = await fetch(url);
-
     const data = await response.json();
 
     if (!response.ok) {
@@ -306,7 +306,6 @@ async function loadDetail(pageId) {
 function renderList() {
 
   const list = $("list");
-
   list.replaceChildren();
 
   items.forEach((x, i) => {
@@ -352,6 +351,8 @@ async function render() {
 
   if (!items.length) {
 
+    detailRequest++;
+
     $("media").textContent = "표시할 기록이 없습니다";
     $("title").textContent = "기록 없음";
     $("meta").textContent = "";
@@ -362,7 +363,6 @@ async function render() {
   }
 
   const p = items[idx];
-
   const requestId = ++detailRequest;
 
   $("title").textContent = p.title || "제목 없음";
@@ -379,13 +379,11 @@ async function render() {
 
     const detail = await loadDetail(p.id);
 
-    // 이전 요청이 늦게 도착한 경우 무시
     if (requestId !== detailRequest) return;
 
     $("body").textContent = detail.text || "";
 
     const media = $("media");
-
     media.replaceChildren();
 
     if (detail.images && detail.images.length) {
@@ -449,12 +447,14 @@ function select(c) {
 
     idx = Math.floor(Math.random() * items.length);
     paused = false;
+
     $("pause").textContent = "일시정지";
 
   } else {
 
     idx = 0;
     paused = true;
+
     $("pause").textContent = "재생";
 
   }
@@ -473,24 +473,6 @@ function select(c) {
   $("status").textContent =
     (c === "앨범" || c === "알림장")
       ? c + " 랜덤 재생 중 · " + items.length + "개"
-      : c + " 카테고리 · " + items.length + "개";
-
-}
-
-  document.querySelectorAll("#tabs button").forEach(button => {
-
-    button.classList.toggle(
-      "active",
-      button.dataset.cat === c
-    );
-
-  });
-
-  render();
-
-  $("status").textContent =
-    c === "앨범"
-      ? "앨범 랜덤 재생 중 · " + items.length + "개"
       : c + " 카테고리 · " + items.length + "개";
 
 }
@@ -520,6 +502,8 @@ function next() {
 // 재생 / 일시정지
 function togglePause() {
 
+  if (!items.length) return;
+
   paused = !paused;
 
   $("pause").textContent =
@@ -530,7 +514,7 @@ function togglePause() {
 // 앨범 및 알림장 자동 전환
 function startTimer() {
 
- if (timer) clearInterval(timer);
+  if (timer) clearInterval(timer);
 
   timer = setInterval(() => {
 
@@ -575,7 +559,8 @@ async function load() {
     $("status").textContent =
       "오류: " + error.message;
 
-    $("media").textContent = "데이터를 불러오지 못했습니다";
+    $("media").textContent =
+      "데이터를 불러오지 못했습니다";
 
   }
 
@@ -601,11 +586,9 @@ function updateClock() {
 }
 
 updateClock();
-
 setInterval(updateClock, 1000);
 
 startTimer();
-
 load();
 
 </script>

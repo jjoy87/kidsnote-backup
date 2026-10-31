@@ -62,9 +62,9 @@ function getDate(page) {
 function getCategory(title) {
   const value = (title || "").trim();
 
-  if (value.startsWith("앨범")) return "앨범";
-  if (value.startsWith("공지")) return "공지";
-  if (value.startsWith("알림장")) return "알림장";
+ if (value.includes("앨범")) return "앨범";
+  if (value.includes("공지")) return "공지";
+  if (value.includes("알림장")) return "알림장";
 
   return "전체";
 }

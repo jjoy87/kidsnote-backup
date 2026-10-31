@@ -39,6 +39,7 @@ h1 {
   display: flex;
   gap: 10px;
   padding: 12px 30px 20px;
+  flex-wrap: wrap;
 }
 
 #tabs button,
@@ -54,6 +55,15 @@ h1 {
 
 #tabs button.active {
   background: #2563eb;
+}
+
+#tabs button[data-cat="추억 랜덤"] {
+  background: #66521c;
+}
+
+#tabs button[data-cat="추억 랜덤"].active {
+  background: #d69e22;
+  color: #111827;
 }
 
 .layout {
@@ -202,8 +212,9 @@ h1 {
 
 <nav id="tabs">
   <button data-cat="전체">전체</button>
+  <button data-cat="추억 랜덤" class="active">⭐ 추억 랜덤</button>
   <button data-cat="알림장">알림장</button>
-  <button data-cat="앨범" class="active">앨범</button>
+  <button data-cat="앨범">앨범</button>
   <button data-cat="공지">공지</button>
 </nav>
 
@@ -231,7 +242,7 @@ h1 {
 
   <aside class="sidebar">
 
-    <h2 id="listTitle">최근 기록</h2>
+    <h2 id="listTitle">추억 랜덤</h2>
 
     <div id="list"></div>
 
@@ -245,7 +256,8 @@ const $ = id => document.getElementById(id);
 let all = [];
 let items = [];
 let idx = 0;
-let cat = "앨범";
+
+let cat = "추억 랜덤";
 let paused = false;
 
 let detailRequest = 0;
@@ -302,10 +314,28 @@ async function loadDetail(pageId) {
   return data;
 }
 
+// 추억 랜덤 대상 만들기
+function getMemoryItems() {
+
+  const albums = all.filter(x =>
+    x.category === "앨범"
+  );
+
+  const oldNotices = all.filter(x =>
+    x.category === "알림장" &&
+    ["2022", "2023", "2024"].includes(
+      String(x.date || "").substring(0, 4)
+    )
+  );
+
+  return [...albums, ...oldNotices];
+}
+
 // 목록 그리기
 function renderList() {
 
   const list = $("list");
+
   list.replaceChildren();
 
   items.forEach((x, i) => {
@@ -342,7 +372,11 @@ function renderList() {
   });
 
   $("listTitle").textContent =
-    cat === "전체" ? "전체 기록" : cat + " 기록";
+    cat === "추억 랜덤"
+      ? "⭐ 추억 랜덤 기록"
+      : cat === "전체"
+        ? "전체 기록"
+        : cat + " 기록";
 
 }
 
@@ -363,6 +397,7 @@ async function render() {
   }
 
   const p = items[idx];
+
   const requestId = ++detailRequest;
 
   $("title").textContent = p.title || "제목 없음";
@@ -384,6 +419,7 @@ async function render() {
     $("body").textContent = detail.text || "";
 
     const media = $("media");
+
     media.replaceChildren();
 
     if (detail.images && detail.images.length) {
@@ -425,6 +461,10 @@ function select(c) {
 
     items = all;
 
+  } else if (c === "추억 랜덤") {
+
+    items = getMemoryItems();
+
   } else if (c === "알림장") {
 
     items = all.filter(x =>
@@ -436,16 +476,21 @@ function select(c) {
 
   } else {
 
-    items = all.filter(x => x.category === c);
+    items = all.filter(x =>
+      x.category === c
+    );
 
   }
 
   if (
-    (c === "앨범" || c === "알림장") &&
+    (c === "앨범" ||
+     c === "알림장" ||
+     c === "추억 랜덤") &&
     items.length
   ) {
 
     idx = Math.floor(Math.random() * items.length);
+
     paused = false;
 
     $("pause").textContent = "일시정지";
@@ -453,6 +498,7 @@ function select(c) {
   } else {
 
     idx = 0;
+
     paused = true;
 
     $("pause").textContent = "재생";
@@ -470,10 +516,38 @@ function select(c) {
 
   render();
 
-  $("status").textContent =
-    (c === "앨범" || c === "알림장")
-      ? c + " 랜덤 재생 중 · " + items.length + "개"
-      : c + " 카테고리 · " + items.length + "개";
+  if (c === "추억 랜덤") {
+
+    const albumCount = all.filter(
+      x => x.category === "앨범"
+    ).length;
+
+    const noticeCount = all.filter(x =>
+      x.category === "알림장" &&
+      ["2022", "2023", "2024"].includes(
+        String(x.date || "").substring(0, 4)
+      )
+    ).length;
+
+    $("status").textContent =
+      "추억 랜덤 재생 중 · 앨범 " +
+      albumCount + "개 + 알림장 " +
+      noticeCount + "개";
+
+  } else if (
+    c === "앨범" ||
+    c === "알림장"
+  ) {
+
+    $("status").textContent =
+      c + " 랜덤 재생 중 · " + items.length + "개";
+
+  } else {
+
+    $("status").textContent =
+      c + " 카테고리 · " + items.length + "개";
+
+  }
 
 }
 
@@ -511,7 +585,7 @@ function togglePause() {
 
 }
 
-// 앨범 및 알림장 자동 전환
+// 앨범 / 알림장 / 추억 자동 전환
 function startTimer() {
 
   if (timer) clearInterval(timer);
@@ -519,7 +593,9 @@ function startTimer() {
   timer = setInterval(() => {
 
     if (
-      (cat === "앨범" || cat === "알림장") &&
+      (cat === "앨범" ||
+       cat === "알림장" ||
+       cat === "추억 랜덤") &&
       !paused &&
       items.length > 1
     ) {
@@ -527,7 +603,10 @@ function startTimer() {
       let nextIndex;
 
       do {
-        nextIndex = Math.floor(Math.random() * items.length);
+
+        nextIndex =
+          Math.floor(Math.random() * items.length);
+
       } while (nextIndex === idx);
 
       idx = nextIndex;
@@ -552,7 +631,8 @@ async function load() {
     $("status").textContent =
       "전체 " + all.length + "개 기록 조회 완료";
 
-    select("앨범");
+    // 최초 접속 시 추억 랜덤 시작
+    select("추억 랜덤");
 
   } catch (error) {
 
@@ -586,9 +666,11 @@ function updateClock() {
 }
 
 updateClock();
+
 setInterval(updateClock, 1000);
 
 startTimer();
+
 load();
 
 </script>

@@ -65,6 +65,15 @@ h1 {
   color: #111827;
 }
 
+#tabs button[data-cat="오늘의 추억"] {
+  background: #7c3aed;
+}
+
+#tabs button[data-cat="오늘의 추억"].active {
+  background: #a78bfa;
+  color: #111827;
+}
+
 .layout {
   display: grid;
   grid-template-columns: 1.5fr 1fr;
@@ -92,12 +101,24 @@ h1 {
   justify-content: center;
   overflow: hidden;
   color: #94a3b8;
+  position: relative;
 }
 
 #media img {
   width: 100%;
   height: 100%;
   object-fit: contain;
+}
+
+#photoCount {
+  position: absolute;
+  bottom: 10px;
+  right: 12px;
+  background: rgba(0,0,0,.65);
+  color: white;
+  padding: 5px 10px;
+  border-radius: 20px;
+  font-size: 12px;
 }
 
 #title {
@@ -211,7 +232,8 @@ h1 {
 
 <nav id="tabs">
   <button data-cat="전체">전체</button>
-  <button data-cat="추억 랜덤" class="active">⭐ 추억 랜덤</button>
+  <button data-cat="추억 랜덤">⭐ 추억 랜덤</button>
+  <button data-cat="오늘의 추억">📅 오늘의 추억</button>
   <button data-cat="알림장">알림장</button>
   <button data-cat="앨범">앨범</button>
   <button data-cat="공지">공지</button>
@@ -261,6 +283,10 @@ let paused = false;
 
 let detailRequest = 0;
 let timer = null;
+let photoTimer = null;
+
+let currentImages = [];
+let currentImageIndex = 0;
 
 // 전체 기록 페이지 단위 조회
 async function loadAllPages() {
@@ -313,7 +339,21 @@ async function loadDetail(pageId) {
   return data;
 }
 
-// 추억 랜덤 대상 만들기
+// 날짜 월일 추출
+function getMonthDay(dateValue) {
+
+  if (!dateValue) return "";
+
+  const value = String(dateValue);
+
+  const match = value.match(/^\d{4}-(\d{2})-(\d{2})/);
+
+  if (!match) return "";
+
+  return match[1] + "-" + match[2];
+}
+
+// 추억 랜덤 대상
 function getMemoryItems() {
 
   const albums = all.filter(x =>
@@ -328,6 +368,22 @@ function getMemoryItems() {
   );
 
   return [...albums, ...oldNotices];
+}
+
+// 오늘의 추억 대상
+function getTodayItems() {
+
+  const today = new Date();
+
+  const monthDay =
+    String(today.getMonth() + 1).padStart(2, "0") +
+    "-" +
+    String(today.getDate()).padStart(2, "0");
+
+  return all.filter(x =>
+    getMonthDay(x.date) === monthDay
+  );
+
 }
 
 // 목록 그리기
@@ -373,20 +429,75 @@ function renderList() {
   $("listTitle").textContent =
     cat === "추억 랜덤"
       ? "⭐ 추억 랜덤 기록"
-      : cat === "전체"
-        ? "전체 기록"
-        : cat + " 기록";
+      : cat === "오늘의 추억"
+        ? "📅 오늘의 추억"
+        : cat === "전체"
+          ? "전체 기록"
+          : cat + " 기록";
+
+}
+
+// 사진 표시
+function showPhoto(index) {
+
+  if (!currentImages.length) return;
+
+  currentImageIndex = index;
+
+  const media = $("media");
+
+  media.replaceChildren();
+
+  const img = document.createElement("img");
+
+  img.src = currentImages[index];
+  img.alt = "수하의 성장기록 사진";
+
+  img.onerror = () => {
+    media.textContent = "사진을 불러올 수 없습니다";
+  };
+
+  media.appendChild(img);
+
+  if (currentImages.length > 1) {
+
+    const count = document.createElement("div");
+
+    count.id = "photoCount";
+
+    count.textContent =
+      (index + 1) + " / " + currentImages.length;
+
+    media.appendChild(count);
+
+  }
+
+}
+
+// 사진 타이머 정리
+function clearPhotoTimer() {
+
+  if (photoTimer) {
+    clearInterval(photoTimer);
+    photoTimer = null;
+  }
 
 }
 
 // 현재 기록 표시
 async function render() {
 
+  clearPhotoTimer();
+
   if (!items.length) {
 
     detailRequest++;
 
-    $("media").textContent = "표시할 기록이 없습니다";
+    $("media").textContent =
+      cat === "오늘의 추억"
+        ? "오늘은 과거의 추억이 없어요 ❤️"
+        : "표시할 기록이 없습니다";
+
     $("title").textContent = "기록 없음";
     $("meta").textContent = "";
     $("body").textContent = "";
@@ -398,6 +509,9 @@ async function render() {
   const p = items[idx];
 
   const requestId = ++detailRequest;
+
+  currentImages = [];
+  currentImageIndex = 0;
 
   $("title").textContent = p.title || "제목 없음";
 
@@ -417,26 +531,48 @@ async function render() {
 
     $("body").textContent = detail.text || "";
 
-    const media = $("media");
+    currentImages = detail.images || [];
 
-    media.replaceChildren();
+    if (currentImages.length) {
 
-    if (detail.images && detail.images.length) {
+      showPhoto(0);
 
-      const img = document.createElement("img");
+      if (
+        currentImages.length > 1 &&
+        !paused &&
+        (
+          cat === "앨범" ||
+          cat === "알림장" ||
+          cat === "추억 랜덤" ||
+          cat === "오늘의 추억"
+        )
+      ) {
 
-      img.src = detail.images[0];
-      img.alt = p.title || "수하의 앨범 사진";
+        photoTimer = setInterval(() => {
 
-      img.onerror = () => {
-        media.textContent = "사진을 불러올 수 없습니다";
-      };
+          if (requestId !== detailRequest) {
+            clearPhotoTimer();
+            return;
+          }
 
-      media.appendChild(img);
+          if (currentImageIndex < currentImages.length - 1) {
+
+            showPhoto(currentImageIndex + 1);
+
+          } else {
+
+            clearPhotoTimer();
+            next();
+
+          }
+
+        }, 7000);
+
+      }
 
     } else {
 
-      media.textContent = "사진 없음";
+      $("media").textContent = "사진 없음";
 
     }
 
@@ -454,6 +590,8 @@ async function render() {
 // 카테고리 선택
 function select(c) {
 
+  clearPhotoTimer();
+
   cat = c;
 
   if (c === "전체") {
@@ -463,6 +601,10 @@ function select(c) {
   } else if (c === "추억 랜덤") {
 
     items = getMemoryItems();
+
+  } else if (c === "오늘의 추억") {
+
+    items = getTodayItems();
 
   } else if (c === "알림장") {
 
@@ -482,9 +624,12 @@ function select(c) {
   }
 
   if (
-    (c === "앨범" ||
-     c === "알림장" ||
-     c === "추억 랜덤") &&
+    (
+      c === "앨범" ||
+      c === "알림장" ||
+      c === "추억 랜덤" ||
+      c === "오늘의 추억"
+    ) &&
     items.length
   ) {
 
@@ -517,21 +662,15 @@ function select(c) {
 
   if (c === "추억 랜덤") {
 
-    const albumCount = all.filter(
-      x => x.category === "앨범"
-    ).length;
+    $("status").textContent =
+      "추억 랜덤 재생 중 · " + items.length + "개";
 
-    const noticeCount = all.filter(x =>
-      x.category === "알림장" &&
-      ["2022", "2023", "2024"].includes(
-        String(x.date || "").substring(0, 4)
-      )
-    ).length;
+  } else if (c === "오늘의 추억") {
 
     $("status").textContent =
-      "추억 랜덤 재생 중 · 앨범 " +
-      albumCount + "개 + 알림장 " +
-      noticeCount + "개";
+      items.length
+        ? "오늘의 추억 · " + items.length + "개"
+        : "오늘은 과거의 추억이 없어요 ❤️";
 
   } else if (
     c === "앨범" ||
@@ -550,23 +689,39 @@ function select(c) {
 
 }
 
-// 이전 기록
-function previous() {
-
-  if (!items.length) return;
-
-  idx = (idx - 1 + items.length) % items.length;
-
-  render();
-
-}
-
 // 다음 기록
 function next() {
 
   if (!items.length) return;
 
-  idx = (idx + 1) % items.length;
+  clearPhotoTimer();
+
+  if (items.length === 1) {
+    idx = 0;
+  } else {
+
+    let nextIndex;
+
+    do {
+      nextIndex = Math.floor(Math.random() * items.length);
+    } while (nextIndex === idx);
+
+    idx = nextIndex;
+
+  }
+
+  render();
+
+}
+
+// 이전 기록
+function previous() {
+
+  if (!items.length) return;
+
+  clearPhotoTimer();
+
+  idx = (idx - 1 + items.length) % items.length;
 
   render();
 
@@ -582,9 +737,19 @@ function togglePause() {
   $("pause").textContent =
     paused ? "재생" : "일시정지";
 
+  if (paused) {
+
+    clearPhotoTimer();
+
+  } else {
+
+    render();
+
+  }
+
 }
 
-// 앨범 / 알림장 / 추억 자동 전환
+// 자동 재생
 function startTimer() {
 
   if (timer) clearInterval(timer);
@@ -592,25 +757,22 @@ function startTimer() {
   timer = setInterval(() => {
 
     if (
-      (cat === "앨범" ||
-       cat === "알림장" ||
-       cat === "추억 랜덤") &&
+      (
+        cat === "앨범" ||
+        cat === "알림장" ||
+        cat === "추억 랜덤" ||
+        cat === "오늘의 추억"
+      ) &&
       !paused &&
-      items.length > 1
+      items.length > 0
     ) {
 
-      let nextIndex;
-
-      do {
-
-        nextIndex =
-          Math.floor(Math.random() * items.length);
-
-      } while (nextIndex === idx);
-
-      idx = nextIndex;
-
-      render();
+      // 사진 여러 장은 7초 간격으로 넘기므로
+      // 마지막 사진 이후 next()가 다음 기록으로 이동한다.
+      // 사진이 없거나 한 장뿐인 기록은 45초 후 이동한다.
+      if (currentImages.length <= 1) {
+        next();
+      }
 
     }
 
@@ -630,7 +792,6 @@ async function load() {
     $("status").textContent =
       "전체 " + all.length + "개 기록 조회 완료";
 
-    // 최초 접속 시 추억 랜덤 시작
     select("추억 랜덤");
 
   } catch (error) {

@@ -327,9 +327,18 @@ def _list_notices(
 def _list_albums(
     sess: requests.Session, child_id: int
 ) -> list[dict[str, Any]]:
-    """Photo albums for one child (`/api/v1/children/<id>/albums/`)."""
+    """Photo albums for one child (`/api/v1/children/<id>/albums/`).
+
+    Request a large page first: the normal 100-item cursor response has
+    been observed to repeat its cursor on this endpoint, truncating history.
+    The shared paginator still guards against repeated cursors and caps
+    pathological pagination.
+    """
     return _list_paginated(
-        sess, f"{KIDSNOTE_BASE}/api/v1/children/{child_id}/albums/"
+        sess,
+        f"{KIDSNOTE_BASE}/api/v1/children/{child_id}/albums/",
+        page_size=9999,
+        max_pages=100,
     )
 
 

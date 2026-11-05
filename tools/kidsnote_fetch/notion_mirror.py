@@ -2820,10 +2820,16 @@ class NotionMirror:
                 properties[self._prop_date] = {"date": {"start": d}}
             except (ValueError, TypeError):
                 pass
+        # Notion page creation accepts at most 100 child blocks.
+        # Create the page with the first batch, then append the rest using
+        # the same blocks-children PATCH pattern used by _replace_singleton.
+        notion_children_cap = 100
+        initial_blocks = blocks[:notion_children_cap]
+        overflow_blocks = blocks[notion_children_cap:]
         payload = {
             "parent": {"database_id": self.database_id},
             "properties": properties,
-            "children": blocks,
+            "children": initial_blocks,
         }
         r = self.session.post(
             f"{NOTION_API}/pages",
@@ -2831,8 +2837,37 @@ class NotionMirror:
             json=payload,
             timeout=self.timeout,
         )
-        r.raise_for_status()
+        try:
+            r.raise_for_status()
+        except requests.HTTPError as exc:
+            # Include Notion's validation response in the Actions log so
+            # future failures can be diagnosed without guessing.
+            detail = (getattr(r, "text", "") or "")[:2000]
+            raise RuntimeError(
+                f"Notion page create failed for item_id={item_id}: "
+                f"HTTP {r.status_code}; response={detail}"
+            ) from exc
         page = r.json()
+
+        page_id = page.get("id")
+        if overflow_blocks and page_id:
+            for offset in range(0, len(overflow_blocks), notion_children_cap):
+                chunk = overflow_blocks[offset:offset + notion_children_cap]
+                append_response = self.session.patch(
+                    f"{NOTION_API}/blocks/{page_id}/children",
+                    headers=self._headers(),
+                    json={"children": chunk},
+                    timeout=self.timeout,
+                )
+                try:
+                    append_response.raise_for_status()
+                except requests.HTTPError as exc:
+                    detail = (getattr(append_response, "text", "") or "")[:2000]
+                    raise RuntimeError(
+                        f"Notion child append failed for item_id={item_id}, "
+                        f"blocks={offset}-{offset + len(chunk) - 1}: "
+                        f"HTTP {append_response.status_code}; response={detail}"
+                    ) from exc
         return {
             "page_id": page.get("id", ""),
             "title": title,

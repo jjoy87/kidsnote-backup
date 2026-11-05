@@ -814,10 +814,10 @@ function getTodayItems() {
 
 }
 
-// 알림장 시기별 분류
-function getNoticeItems(group) {
+// 카테고리별 어린이집 / 유치원 시기 분류
+function getPeriodItems(category, group) {
   return all.filter(x => {
-    if (x.category !== "알림장") return false;
+    if (x.category !== category) return false;
     const date = String(x.date || "").substring(0, 10);
     if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return false;
 
@@ -825,6 +825,10 @@ function getNoticeItems(group) {
       ? date <= "2024-02-29"
       : date >= "2024-03-01";
   });
+}
+
+function getNoticeItems(group) {
+  return getPeriodItems("알림장", group);
 }
 
 // 목록 표시
@@ -835,22 +839,23 @@ function renderList() {
   list.replaceChildren();
 
   const noticeGroups = $("noticeGroups");
-  noticeGroups.classList.toggle("visible", cat === "알림장");
+  const periodCategories = ["알림장", "앨범", "공지"];
+  noticeGroups.classList.toggle("visible", periodCategories.includes(cat));
 
-  if (cat === "알림장") {
+  if (periodCategories.includes(cat)) {
     noticeGroups.querySelectorAll("button").forEach(button => {
       const group = button.dataset.noticeGroup;
       button.classList.toggle("active", group === noticeGroup);
       button.onclick = () => {
         if (group === noticeGroup) return;
         noticeGroup = group;
-        items = getNoticeItems(noticeGroup);
+        items = getPeriodItems(cat, noticeGroup);
         idx = items.length ? Math.floor(Math.random() * items.length) : 0;
         paused = false;
         $("pause").textContent = "일시정지";
         render();
         $("status").textContent =
-          noticeGroup + " 알림장 · " + items.length + "개";
+          noticeGroup + " " + cat + " · " + items.length + "개";
       };
     });
   }
@@ -1517,11 +1522,11 @@ function select(c) {
 
     items = getTodayItems();
 
-  } else if (c === "알림장") {
+  } else if (["알림장", "앨범", "공지"].includes(c)) {
 
-    // 알림장 탭은 어린이집 / 유치원 시기로 나눠 표시
+    // 알림장 / 앨범 / 공지 모두 어린이집·유치원 시기로 분리
     noticeGroup = "어린이집";
-    items = getNoticeItems(noticeGroup);
+    items = getPeriodItems(c, noticeGroup);
 
   } else {
 
@@ -1575,15 +1580,10 @@ function select(c) {
         ? "오늘의 추억 · " + items.length + "개"
         : "오늘은 과거의 추억이 없어요 ❤️";
 
-  } else if (c === "알림장") {
+  } else if (["알림장", "앨범", "공지"].includes(c)) {
 
     $("status").textContent =
-      noticeGroup + " 알림장 · " + items.length + "개";
-
-  } else if (c === "앨범") {
-
-    $("status").textContent =
-      c + " 랜덤 재생 중 · " + items.length + "개";
+      noticeGroup + " " + c + " · " + items.length + "개";
 
   } else {
 

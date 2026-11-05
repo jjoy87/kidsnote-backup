@@ -1099,16 +1099,14 @@ function getJourneyRecords(phase) {
 }
 
 async function loadJourneyPhotos(phase, token) {
+  // 해당 시기의 모든 기록을 조회한다. 일부 표본만 뽑거나 사진 수를 제한하지 않는다.
   const records = getJourneyRecords(phase);
-  const shuffled = [...records].sort(() => Math.random() - 0.5);
-  // Notion API 호출량을 제한하기 위해 각 시기에서 최대 50개 기록을 표본 조회
-  const sample = shuffled.slice(0, 50);
   const found = [];
   let cursor = 0;
 
   async function worker() {
-    while (cursor < sample.length) {
-      const record = sample[cursor++];
+    while (cursor < records.length) {
+      const record = records[cursor++];
       try {
         const detail = await loadDetail(record.id);
         if (token !== journeyLoadToken) return;
@@ -1128,13 +1126,17 @@ async function loadJourneyPhotos(phase, token) {
     }
   }
 
+  // 동시에 4건씩 조회해 Notion 요청을 과도하게 몰지 않는다.
   await Promise.all(Array.from({ length: 4 }, () => worker()));
   if (token !== journeyLoadToken) return [];
 
-  return found
-    .sort(() => Math.random() - 0.5)
-    .slice(0, 30)
-    .sort((a, b) => String(a.date).localeCompare(String(b.date)));
+  // Fisher-Yates 방식으로 사진 전체를 중복 없이 무작위 순서로 섞는다.
+  for (let i = found.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [found[i], found[j]] = [found[j], found[i]];
+  }
+
+  return found;
 }
 
 async function startJourney() {
@@ -1274,7 +1276,7 @@ function renderJourneyCurrent() {
   renderList();
   $("status").textContent =
     photo.phase + " 추억 · " + (start + 1) + " ~ " + end +
-    " / " + journeyPhotos.length + "장 · 6초마다 전환";
+    " / " + journeyPhotos.length + "장";
 }
 
 // 성장 추억 다음 사진 묶음

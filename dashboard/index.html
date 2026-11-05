@@ -103,8 +103,8 @@ h1 {
 /* 메인 레이아웃 */
 .layout {
   display: grid;
-  grid-template-columns: 1.55fr 1fr;
-  gap: 18px;
+  grid-template-columns: minmax(0, 3.5fr) minmax(220px, 1fr);
+  gap: 16px;
   padding: 0 25px 18px;
   height: calc(100% - 125px);
   min-height: 0;
@@ -116,7 +116,7 @@ h1 {
   background: #fffdf8;
   border: 1px solid #e9e1d4;
   border-radius: 17px;
-  padding: 18px;
+  padding: 16px;
   min-height: 0;
   overflow: hidden;
   box-shadow: 0 4px 15px rgba(100, 83, 55, .06);
@@ -125,70 +125,156 @@ h1 {
 .viewer {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 9px;
 }
 
-/* 사진 영역 */
+/* 사진 갤러리 */
 #media {
   position: relative;
-  flex: 0 0 43%;
-  min-height: 180px;
-  max-height: 430px;
+  flex: 0 0 58%;
+  min-height: 220px;
+  max-height: 560px;
   background: #eee8dc;
   border: 1px solid #e7dfd1;
   border-radius: 13px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   overflow: hidden;
   color: #998d7b;
 }
 
-#media img {
+/* 갤러리 그리드 */
+#gallery {
+  width: 100%;
+  height: 100%;
+  display: grid;
+  gap: 9px;
+  padding: 10px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-rows: repeat(2, minmax(0, 1fr));
+}
+
+/* 사진 개수별 레이아웃 */
+#gallery.count-1 {
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr;
+}
+
+#gallery.count-2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-rows: 1fr;
+}
+
+#gallery.count-3 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-rows: 1fr;
+}
+
+#gallery.count-4 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-rows: repeat(2, minmax(0, 1fr));
+}
+
+#gallery.count-5,
+#gallery.count-6 {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-rows: repeat(2, minmax(0, 1fr));
+}
+
+/* 사진 카드 */
+.photo-card {
+  position: relative;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  border: 1px solid #e5ddcf;
+  border-radius: 10px;
+  background: #faf8f2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: zoom-in;
+  transition: transform .2s, box-shadow .2s;
+}
+
+.photo-card:hover {
+  transform: scale(1.012);
+  box-shadow: 0 3px 12px rgba(70, 60, 40, .12);
+}
+
+.photo-card img {
   width: 100%;
   height: 100%;
   object-fit: contain;
   display: block;
 }
 
-/* 사진 넘기기 */
-.photo-nav {
+.photo-card::after {
+  content: "확대";
+  position: absolute;
+  right: 8px;
+  bottom: 8px;
+  padding: 4px 8px;
+  border-radius: 7px;
+  background: rgba(65, 60, 48, .65);
+  color: white;
+  font-size: 11px;
+  opacity: 0;
+  transition: opacity .2s;
+}
+
+.photo-card:hover::after {
+  opacity: 1;
+}
+
+/* 페이지 이동 버튼 */
+.gallery-nav {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
-  width: 45px;
-  height: 65px;
+  width: 42px;
+  height: 58px;
   border: 1px solid rgba(255,255,255,.4);
   border-radius: 10px;
-  background: rgba(70, 75, 60, .58);
+  background: rgba(70, 75, 60, .65);
   color: white;
-  font-size: 30px;
+  font-size: 29px;
   cursor: pointer;
   z-index: 5;
 }
 
-.photo-prev {
+.gallery-prev {
   left: 10px;
 }
 
-.photo-next {
+.gallery-next {
   right: 10px;
 }
 
-.photo-nav:active {
+.gallery-nav:hover {
   background: rgba(93, 119, 83, .9);
 }
 
+/* 사진 페이지 표시 */
 #photoCount {
   position: absolute;
-  bottom: 10px;
-  right: 12px;
-  background: rgba(65, 60, 48, .75);
+  bottom: 12px;
+  right: 13px;
+  background: rgba(65, 60, 48, .78);
   color: white;
-  padding: 6px 11px;
+  padding: 7px 12px;
   border-radius: 20px;
   font-size: 12px;
   z-index: 6;
+  pointer-events: none;
+}
+
+/* 사진 없음 */
+.no-photo {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  color: #998d7b;
 }
 
 /* 제목과 날짜 */
@@ -209,7 +295,7 @@ h1 {
 /* 본문 */
 #body {
   flex: 1;
-  min-height: 100px;
+  min-height: 60px;
   margin: 0;
   padding: 7px 5px 7px 0;
   white-space: pre-wrap;
@@ -272,7 +358,7 @@ h1 {
   display: block;
   width: 100%;
   text-align: left;
-  padding: 12px;
+  padding: 11px;
   margin-bottom: 8px;
   border: 1px solid #e8e1d5;
   border-radius: 10px;
@@ -282,6 +368,7 @@ h1 {
   font-size: 13px;
   line-height: 1.5;
   transition: background .2s;
+  overflow-wrap: anywhere;
 }
 
 .item:hover {
@@ -298,6 +385,89 @@ h1 {
   display: block;
   margin-top: 5px;
   color: #9b8f7e;
+}
+
+/* 확대 모달 */
+#lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: rgba(25, 25, 22, .94);
+  padding: 55px 70px;
+}
+
+#lightbox.open {
+  display: flex;
+}
+
+#lightboxImage {
+  max-width: 94%;
+  max-height: 88%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  border-radius: 5px;
+  user-select: none;
+  -webkit-user-drag: none;
+  touch-action: pinch-zoom;
+}
+
+.lightbox-close {
+  position: absolute;
+  top: 18px;
+  right: 24px;
+  width: 45px;
+  height: 45px;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255,255,255,.15);
+  color: white;
+  font-size: 30px;
+  cursor: pointer;
+  z-index: 3;
+}
+
+.lightbox-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 48px;
+  height: 68px;
+  border: 0;
+  border-radius: 10px;
+  background: rgba(255,255,255,.15);
+  color: white;
+  font-size: 36px;
+  cursor: pointer;
+  z-index: 3;
+}
+
+.lightbox-prev {
+  left: 18px;
+}
+
+.lightbox-next {
+  right: 18px;
+}
+
+.lightbox-close:hover,
+.lightbox-nav:hover {
+  background: rgba(255,255,255,.3);
+}
+
+#lightboxCount {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 8px 15px;
+  border-radius: 20px;
+  background: rgba(255,255,255,.16);
+  color: white;
+  font-size: 14px;
 }
 
 /* 태블릿 세로 화면 */
@@ -333,12 +503,12 @@ h1 {
   }
 
   .viewer {
-    min-height: 700px;
+    min-height: 850px;
   }
 
   #media {
     flex-basis: auto;
-    height: 360px;
+    height: 480px;
     flex-shrink: 0;
   }
 
@@ -348,6 +518,23 @@ h1 {
 
   .sidebar {
     height: 450px;
+  }
+
+  #lightbox {
+    padding: 55px 45px;
+  }
+
+  #lightboxImage {
+    max-width: 100%;
+    max-height: 85%;
+  }
+
+  .lightbox-prev {
+    left: 5px;
+  }
+
+  .lightbox-next {
+    right: 5px;
   }
 }
 </style>
@@ -373,7 +560,9 @@ h1 {
 
   <section class="viewer">
 
-    <div id="media">기록을 불러오는 중...</div>
+    <div id="media">
+      <div class="no-photo">기록을 불러오는 중...</div>
+    </div>
 
     <h2 id="title">불러오는 중</h2>
 
@@ -401,6 +590,21 @@ h1 {
 
 </div>
 
+<!-- 사진 확대 모달 -->
+<div id="lightbox">
+
+  <button class="lightbox-close" id="lightboxClose">×</button>
+
+  <button class="lightbox-nav lightbox-prev" id="lightboxPrev">‹</button>
+
+  <img id="lightboxImage" alt="수하의 성장기록 사진">
+
+  <button class="lightbox-nav lightbox-next" id="lightboxNext">›</button>
+
+  <div id="lightboxCount"></div>
+
+</div>
+
 <script>
 const $ = id => document.getElementById(id);
 
@@ -412,11 +616,42 @@ let cat = "추억 랜덤";
 let paused = false;
 
 let detailRequest = 0;
-let timer = null;
-let photoTimer = null;
+
+let recordTimer = null;
+let pageTimer = null;
 
 let currentImages = [];
-let currentImageIndex = 0;
+
+let photoPageIndex = 0;
+let totalPhotoPages = 0;
+
+let lightboxOpen = false;
+let lightboxIndex = 0;
+
+// 자동 재생 대상 카테고리
+function isAutoCategory() {
+  return [
+    "앨범",
+    "알림장",
+    "추억 랜덤",
+    "오늘의 추억"
+  ].includes(cat);
+}
+
+// 타이머 정리
+function clearTimers() {
+
+  if (recordTimer) {
+    clearTimeout(recordTimer);
+    recordTimer = null;
+  }
+
+  if (pageTimer) {
+    clearTimeout(pageTimer);
+    pageTimer = null;
+  }
+
+}
 
 // 전체 기록 조회
 async function loadAllPages() {
@@ -546,7 +781,11 @@ function renderList() {
       idx = i;
       paused = true;
 
+      clearTimers();
+
       $("pause").textContent = "재생";
+
+      closeLightbox(false);
 
       render();
 
@@ -567,73 +806,257 @@ function renderList() {
 
 }
 
-// 사진 표시
-function showPhoto(index) {
-
-  if (!currentImages.length) return;
-
-  currentImageIndex =
-    (index + currentImages.length) % currentImages.length;
+// 현재 사진 페이지 표시
+function renderGalleryPage() {
 
   const media = $("media");
 
   media.replaceChildren();
 
-  const img = document.createElement("img");
+  if (!currentImages.length) {
 
-  img.src = currentImages[currentImageIndex];
-  img.alt = "수하의 성장기록 사진";
+    const empty = document.createElement("div");
 
-  img.onerror = () => {
-    media.textContent = "사진을 불러올 수 없습니다";
-  };
+    empty.className = "no-photo";
+    empty.textContent = "사진 없음";
 
-  media.appendChild(img);
+    media.appendChild(empty);
 
-  if (currentImages.length > 1) {
+    return;
+  }
+
+  totalPhotoPages = Math.ceil(currentImages.length / 6);
+
+  const start = photoPageIndex * 6;
+
+  const end = Math.min(start + 6, currentImages.length);
+
+  const pageImages = currentImages.slice(start, end);
+
+  const gallery = document.createElement("div");
+
+  gallery.id = "gallery";
+  gallery.className = "count-" + pageImages.length;
+
+  pageImages.forEach((src, i) => {
+
+    const imageIndex = start + i;
+
+    const card = document.createElement("div");
+
+    card.className = "photo-card";
+
+    const img = document.createElement("img");
+
+    img.src = src;
+    img.alt = "수하의 성장기록 사진 " + (imageIndex + 1);
+    img.loading = "eager";
+
+    img.onerror = () => {
+      img.style.display = "none";
+
+      const errorText = document.createElement("span");
+
+      errorText.textContent = "사진을 불러올 수 없습니다";
+      errorText.style.fontSize = "12px";
+
+      card.appendChild(errorText);
+    };
+
+    card.appendChild(img);
+
+    card.onclick = () => {
+      openLightbox(imageIndex);
+    };
+
+    gallery.appendChild(card);
+
+  });
+
+  media.appendChild(gallery);
+
+  // 여러 페이지일 때 좌우 페이지 이동 버튼
+  if (totalPhotoPages > 1) {
 
     const prevBtn = document.createElement("button");
 
-    prevBtn.className = "photo-nav photo-prev";
+    prevBtn.className = "gallery-nav gallery-prev";
     prevBtn.textContent = "‹";
 
     prevBtn.onclick = event => {
       event.stopPropagation();
-      showPhoto(currentImageIndex - 1);
+      changePhotoPage(-1);
     };
 
     const nextBtn = document.createElement("button");
 
-    nextBtn.className = "photo-nav photo-next";
+    nextBtn.className = "gallery-nav gallery-next";
     nextBtn.textContent = "›";
 
     nextBtn.onclick = event => {
       event.stopPropagation();
-      showPhoto(currentImageIndex + 1);
+      changePhotoPage(1);
     };
 
     media.appendChild(prevBtn);
     media.appendChild(nextBtn);
 
-    const count = document.createElement("div");
+  }
 
-    count.id = "photoCount";
+  const count = document.createElement("div");
 
-    count.textContent =
-      (currentImageIndex + 1) + " / " + currentImages.length;
+  count.id = "photoCount";
 
-    media.appendChild(count);
+  count.textContent =
+    "페이지 " +
+    (photoPageIndex + 1) +
+    " / " +
+    totalPhotoPages +
+    " · 사진 " +
+    (start + 1) +
+    "–" +
+    end +
+    " / " +
+    currentImages.length;
 
+  media.appendChild(count);
+
+}
+
+// 사진 페이지 변경
+function changePhotoPage(direction) {
+
+  if (totalPhotoPages <= 1) return;
+
+  photoPageIndex += direction;
+
+  if (photoPageIndex < 0) {
+    photoPageIndex = totalPhotoPages - 1;
+  }
+
+  if (photoPageIndex >= totalPhotoPages) {
+    photoPageIndex = 0;
+  }
+
+  renderGalleryPage();
+
+  schedulePlayback();
+
+}
+
+// 확대 모달 열기
+function openLightbox(imageIndex) {
+
+  if (!currentImages.length) return;
+
+  clearTimers();
+
+  lightboxOpen = true;
+
+  lightboxIndex = imageIndex;
+
+  updateLightbox();
+
+  $("lightbox").classList.add("open");
+
+}
+
+// 확대 사진 표시
+function updateLightbox() {
+
+  if (!currentImages.length) return;
+
+  const image = $("lightboxImage");
+
+  image.src = currentImages[lightboxIndex];
+
+  $("lightboxCount").textContent =
+    (lightboxIndex + 1) + " / " + currentImages.length;
+
+  const showNavigation = currentImages.length > 1;
+
+  $("lightboxPrev").style.display =
+    showNavigation ? "block" : "none";
+
+  $("lightboxNext").style.display =
+    showNavigation ? "block" : "none";
+
+}
+
+// 확대 모달 사진 이동
+function moveLightbox(direction) {
+
+  if (!currentImages.length) return;
+
+  lightboxIndex =
+    (lightboxIndex + direction + currentImages.length) %
+    currentImages.length;
+
+  updateLightbox();
+
+}
+
+// 확대 모달 닫기
+function closeLightbox(resume = true) {
+
+  if (!lightboxOpen) return;
+
+  lightboxOpen = false;
+
+  $("lightbox").classList.remove("open");
+
+  $("lightboxImage").src = "";
+
+  if (resume) {
+    schedulePlayback();
   }
 
 }
 
-// 사진 타이머 정리
-function clearPhotoTimer() {
+// 자동 재생 예약
+function schedulePlayback() {
 
-  if (photoTimer) {
-    clearInterval(photoTimer);
-    photoTimer = null;
+  clearTimers();
+
+  if (
+    paused ||
+    lightboxOpen ||
+    !isAutoCategory() ||
+    !items.length
+  ) {
+    return;
+  }
+
+  // 사진이 7장 이상이면 페이지 단위로 7초마다 이동
+  if (currentImages.length > 6) {
+
+    pageTimer = setTimeout(() => {
+
+      if (photoPageIndex < totalPhotoPages - 1) {
+
+        photoPageIndex++;
+
+        renderGalleryPage();
+
+        schedulePlayback();
+
+      } else {
+
+        next();
+
+      }
+
+    }, 7000);
+
+  } else {
+
+    // 사진이 6장 이하이거나 사진이 없으면 45초 표시
+    recordTimer = setTimeout(() => {
+
+      next();
+
+    }, 45000);
+
   }
 
 }
@@ -641,16 +1064,28 @@ function clearPhotoTimer() {
 // 현재 기록 표시
 async function render() {
 
-  clearPhotoTimer();
+  clearTimers();
 
   if (!items.length) {
 
     detailRequest++;
 
-    $("media").textContent =
+    currentImages = [];
+    photoPageIndex = 0;
+    totalPhotoPages = 0;
+
+    $("media").replaceChildren();
+
+    const empty = document.createElement("div");
+
+    empty.className = "no-photo";
+
+    empty.textContent =
       cat === "오늘의 추억"
         ? "오늘은 과거의 추억이 없어요 ❤️"
         : "표시할 기록이 없습니다";
+
+    $("media").appendChild(empty);
 
     $("title").textContent = "기록 없음";
     $("meta").textContent = "";
@@ -665,14 +1100,23 @@ async function render() {
   const requestId = ++detailRequest;
 
   currentImages = [];
-  currentImageIndex = 0;
+  photoPageIndex = 0;
+  totalPhotoPages = 0;
 
   $("title").textContent = p.title || "제목 없음";
 
   $("meta").textContent =
     [p.date, p.category].filter(Boolean).join(" · ");
 
-  $("media").textContent = "사진 불러오는 중...";
+  $("media").replaceChildren();
+
+  const loading = document.createElement("div");
+
+  loading.className = "no-photo";
+  loading.textContent = "사진 불러오는 중...";
+
+  $("media").appendChild(loading);
+
   $("body").textContent = "내용 불러오는 중...";
 
   renderList();
@@ -687,55 +1131,30 @@ async function render() {
 
     currentImages = detail.images || [];
 
-    if (currentImages.length) {
+    photoPageIndex = 0;
 
-      showPhoto(0);
+    totalPhotoPages = Math.ceil(currentImages.length / 6);
 
-      if (
-        currentImages.length > 1 &&
-        !paused &&
-        (
-          cat === "앨범" ||
-          cat === "알림장" ||
-          cat === "추억 랜덤" ||
-          cat === "오늘의 추억"
-        )
-      ) {
+    renderGalleryPage();
 
-        photoTimer = setInterval(() => {
-
-          if (requestId !== detailRequest) {
-            clearPhotoTimer();
-            return;
-          }
-
-          if (currentImageIndex < currentImages.length - 1) {
-
-            showPhoto(currentImageIndex + 1);
-
-          } else {
-
-            clearPhotoTimer();
-            next();
-
-          }
-
-        }, 7000);
-
-      }
-
-    } else {
-
-      $("media").textContent = "사진 없음";
-
-    }
+    schedulePlayback();
 
   } catch (error) {
 
     if (requestId !== detailRequest) return;
 
-    $("media").textContent = "내용을 불러오지 못했습니다";
+    $("media").replaceChildren();
+
+    const errorBox = document.createElement("div");
+
+    errorBox.className = "no-photo";
+    errorBox.textContent = "내용을 불러오지 못했습니다";
+
+    $("media").appendChild(errorBox);
+
     $("body").textContent = error.message;
+
+    schedulePlayback();
 
   }
 
@@ -744,7 +1163,9 @@ async function render() {
 // 카테고리 선택
 function select(c) {
 
-  clearPhotoTimer();
+  clearTimers();
+
+  closeLightbox(false);
 
   cat = c;
 
@@ -778,12 +1199,7 @@ function select(c) {
   }
 
   if (
-    (
-      c === "앨범" ||
-      c === "알림장" ||
-      c === "추억 랜덤" ||
-      c === "오늘의 추억"
-    ) &&
+    isAutoCategory() &&
     items.length
   ) {
 
@@ -848,7 +1264,7 @@ function next() {
 
   if (!items.length) return;
 
-  clearPhotoTimer();
+  clearTimers();
 
   if (items.length === 1) {
 
@@ -877,7 +1293,7 @@ function previous() {
 
   if (!items.length) return;
 
-  clearPhotoTimer();
+  clearTimers();
 
   idx = (idx - 1 + items.length) % items.length;
 
@@ -895,34 +1311,15 @@ function togglePause() {
   $("pause").textContent =
     paused ? "재생" : "일시정지";
 
-  render();
+  if (paused) {
 
-}
+    clearTimers();
 
-// 자동 재생
-function startTimer() {
+  } else {
 
-  if (timer) clearInterval(timer);
+    schedulePlayback();
 
-  timer = setInterval(() => {
-
-    if (
-      (
-        cat === "앨범" ||
-        cat === "알림장" ||
-        cat === "추억 랜덤" ||
-        cat === "오늘의 추억"
-      ) &&
-      !paused &&
-      currentImages.length <= 1 &&
-      items.length > 0
-    ) {
-
-      next();
-
-    }
-
-  }, 45000);
+  }
 
 }
 
@@ -937,22 +1334,47 @@ $("media").addEventListener("touchstart", event => {
 
 $("media").addEventListener("touchend", event => {
 
-  if (currentImages.length < 2) return;
+  if (currentImages.length <= 6) return;
 
   const touchEndX = event.changedTouches[0].screenX;
+
   const diff = touchEndX - touchStartX;
 
-  if (Math.abs(diff) < 50) return;
+  if (Math.abs(diff) < 60) return;
 
   if (diff < 0) {
 
-    showPhoto(currentImageIndex + 1);
+    changePhotoPage(1);
 
   } else {
 
-    showPhoto(currentImageIndex - 1);
+    changePhotoPage(-1);
 
   }
+
+}, { passive: true });
+
+// 확대 모달 터치 스와이프
+let lightboxTouchStartX = 0;
+
+$("lightbox").addEventListener("touchstart", event => {
+
+  if (!lightboxOpen) return;
+
+  lightboxTouchStartX = event.changedTouches[0].screenX;
+
+}, { passive: true });
+
+$("lightbox").addEventListener("touchend", event => {
+
+  if (!lightboxOpen || currentImages.length <= 1) return;
+
+  const diff =
+    event.changedTouches[0].screenX - lightboxTouchStartX;
+
+  if (Math.abs(diff) < 60) return;
+
+  moveLightbox(diff < 0 ? 1 : -1);
 
 }, { passive: true });
 
@@ -993,6 +1415,48 @@ $("prev").onclick = previous;
 $("next").onclick = next;
 $("pause").onclick = togglePause;
 
+$("lightboxClose").onclick = () => closeLightbox();
+
+$("lightboxPrev").onclick = event => {
+  event.stopPropagation();
+  moveLightbox(-1);
+};
+
+$("lightboxNext").onclick = event => {
+  event.stopPropagation();
+  moveLightbox(1);
+};
+
+// 확대 영역 바깥 클릭 시 닫기
+$("lightbox").addEventListener("click", event => {
+
+  if (event.target === $("lightbox")) {
+    closeLightbox();
+  }
+
+});
+
+// 키보드 조작
+document.addEventListener("keydown", event => {
+
+  if (!lightboxOpen) return;
+
+  if (event.key === "Escape") {
+
+    closeLightbox();
+
+  } else if (event.key === "ArrowLeft") {
+
+    moveLightbox(-1);
+
+  } else if (event.key === "ArrowRight") {
+
+    moveLightbox(1);
+
+  }
+
+});
+
 // 시계
 function updateClock() {
 
@@ -1004,8 +1468,6 @@ function updateClock() {
 updateClock();
 
 setInterval(updateClock, 1000);
-
-startTimer();
 
 load();
 

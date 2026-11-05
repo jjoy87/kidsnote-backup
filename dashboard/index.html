@@ -137,20 +137,42 @@ h1 {
 .viewer {
   display: flex;
   flex-direction: column;
-  gap: 9px;
+  gap: 0;
+  overflow: hidden;
+  min-height: 0;
 }
 
-/* 사진이 없는 기록은 본문을 넓게 표시 */
+/* 제목·날짜·조작 버튼은 상단에 고정 */
+.viewer-top {
+  flex: 0 0 auto;
+  position: relative;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  padding-bottom: 10px;
+  background: #fffdf8;
+}
+
+/* 사진과 본문만 하나의 스크롤 영역으로 묶음 */
+.record-scroll {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: #b8c5ae transparent;
+}
+
 .viewer.text-only #media {
   display: none;
 }
 
 .viewer.text-only #body {
-  flex: 1;
-  min-height: 0;
+  min-height: 120px;
   margin-top: 8px;
   padding: 22px 24px;
-  overflow-y: auto;
   background: #faf8f2;
   border: 1px solid #e9e1d4;
   border-radius: 13px;
@@ -158,10 +180,12 @@ h1 {
   line-height: 1.9;
 }
 
-/* 사진 갤러리 */
+/* 사진 갤러리: 본문과 함께 왼쪽 패널에서 스크롤 */
 #media {
   position: relative;
-  flex: 0 0 58%;
+  flex: 0 0 auto;
+  width: 100%;
+  aspect-ratio: 16 / 10;
   min-height: 220px;
   max-height: 560px;
   background: #eee8dc;
@@ -324,28 +348,26 @@ h1 {
 
 /* 본문 */
 #body {
-  flex: 1;
+  display: block;
   min-height: 60px;
   margin: 0;
-  padding: 7px 5px 7px 0;
+  padding: 14px 5px 22px 0;
   white-space: pre-wrap;
   line-height: 1.75;
   font-size: 15px;
-  overflow-y: auto;
+  overflow: visible;
   overflow-wrap: anywhere;
   color: #51483e;
   scrollbar-width: thin;
   scrollbar-color: #b8c5ae transparent;
 }
 
-/* 상단 고정 조작 버튼: 본문을 읽는 중에도 항상 보이도록 */
+/* 조작 버튼은 제목·날짜와 함께 상단에 유지 */
 .controls {
   display: flex;
   gap: 9px;
   flex-shrink: 0;
-  position: relative;
-  z-index: 2;
-  padding: 2px 0 5px;
+  padding: 2px 0 3px;
 }
 
 .controls button {
@@ -370,6 +392,11 @@ h1 {
   display: flex;
   flex-direction: column;
   background: #faf8f1;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: #b8c5ae transparent;
 }
 
 .sidebar h2 {
@@ -533,54 +560,117 @@ h1 {
   font-size: 14px;
 }
 
-/* 태블릿 세로 화면 */
+/* 작은 화면에서도 좌측 기록과 우측 목록을 독립 스크롤 */
 @media (max-width: 800px) {
 
+  html, body {
+    height: 100%;
+    min-height: 0;
+  }
+
   body {
-    overflow: auto;
+    overflow: hidden;
   }
 
   header {
     height: auto;
-    padding: 15px;
+    min-height: 52px;
+    padding: 10px 14px;
   }
 
   h1 {
-    font-size: 20px;
+    font-size: 19px;
+  }
+
+  #clock {
+    font-size: 11px;
   }
 
   #tabs {
-    padding: 10px 15px;
-    gap: 6px;
+    padding: 7px 12px 10px;
+    gap: 5px;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    overflow-y: hidden;
+    white-space: nowrap;
   }
 
   #tabs button {
-    padding: 9px 11px;
+    flex: 0 0 auto;
+    padding: 8px 10px;
+    font-size: 12px;
   }
 
   .layout {
-    display: flex;
-    flex-direction: column;
-    height: auto;
-    padding: 0 15px 15px;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(112px, 0.42fr);
+    gap: 8px;
+    height: calc(100dvh - 112px);
+    min-height: 0;
+    padding: 0 8px 8px;
   }
 
-  .viewer {
-    min-height: 850px;
+  .viewer,
+  .sidebar {
+    min-width: 0;
+    min-height: 0;
+    height: 100%;
+    padding: 10px;
+  }
+
+  .viewer-top {
+    padding-bottom: 8px;
+  }
+
+  .record-scroll {
+    min-height: 0;
   }
 
   #media {
-    flex-basis: auto;
-    height: 480px;
-    flex-shrink: 0;
+    flex: 0 0 auto;
+    width: 100%;
+    height: auto;
+    min-height: 0;
+    max-height: none;
+    aspect-ratio: 4 / 3;
   }
 
   #body {
-    min-height: 180px;
+    min-height: 0;
+    padding: 10px 2px 18px;
+    font-size: 14px;
   }
 
-  .sidebar {
-    height: 450px;
+  .controls button {
+    min-width: 0;
+    padding: 8px 10px;
+    font-size: 12px;
+  }
+
+  .sidebar h2 {
+    font-size: 15px;
+    margin-bottom: 8px;
+  }
+
+  #noticeGroups {
+    flex-direction: column;
+    gap: 5px;
+    margin-bottom: 8px;
+  }
+
+  #noticeGroups button {
+    font-size: 11px;
+    padding: 7px 3px;
+  }
+
+  .item {
+    padding: 7px;
+    font-size: 11px;
+    line-height: 1.4;
+  }
+
+  .item small {
+    font-size: 10px;
   }
 
   #lightbox {
@@ -624,23 +714,23 @@ h1 {
 
   <section class="viewer">
 
-    <h2 id="title">불러오는 중</h2>
-
-    <div id="meta"></div>
-
-    <div class="controls">
-      <button id="prev">이전</button>
-      <button id="pause">일시정지</button>
-      <button id="next">다음</button>
+    <div class="viewer-top">
+      <h2 id="title">불러오는 중</h2>
+      <div id="meta"></div>
+      <div class="controls">
+        <button id="prev">이전</button>
+        <button id="pause">일시정지</button>
+        <button id="next">다음</button>
+      </div>
+      <div id="status">데이터 불러오는 중...</div>
     </div>
 
-    <div id="media">
-      <div class="no-photo">기록을 불러오는 중...</div>
+    <div class="record-scroll">
+      <div id="media">
+        <div class="no-photo">기록을 불러오는 중...</div>
+      </div>
+      <div id="body"></div>
     </div>
-
-    <div id="body"></div>
-
-    <div id="status">데이터 불러오는 중...</div>
 
   </section>
 

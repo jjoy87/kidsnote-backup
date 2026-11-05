@@ -919,20 +919,9 @@ function getTodayItems() {
     "-" +
     String(today.getDate()).padStart(2, "0");
 
-  return all.filter(x => {
-    const date = String(x.date || "").substring(0, 10);
-
-    // 오늘의 추억에는 어린이집 알림장과 어린이집·유치원 앨범만 포함
-    const isChildcareNotice =
-      x.category === "알림장" &&
-      /^\\d{4}-\\d{2}-\\d{2}$/.test(date) &&
-      date <= "2024-02-29";
-
-    const isAlbum = x.category === "앨범";
-
-    return getMonthDay(x.date) === monthDay &&
-      (isChildcareNotice || isAlbum);
-  });
+  return all.filter(x =>
+    getMonthDay(x.date) === monthDay
+  );
 
 }
 
@@ -1196,6 +1185,10 @@ function getJourneyPageBounds() {
 
 function renderJourneyCurrent() {
   if (!journeyMode || !journeyPhotos.length) return;
+
+  // 성장 추억 여행에서 자동/수동으로 사진 묶음이 바뀔 때도 맨 위로
+  const recordScroll = document.querySelector(".record-scroll");
+  if (recordScroll) recordScroll.scrollTop = 0;
 
   const { start, end } = getJourneyPageBounds();
   const photo = journeyPhotos[start];
@@ -1505,6 +1498,10 @@ async function render() {
 
   clearTimers();
 
+  // 자동/수동으로 일반 기록이 바뀔 때마다 본문 스크롤을 맨 위로 초기화
+  const recordScroll = document.querySelector(".record-scroll");
+  if (recordScroll) recordScroll.scrollTop = 0;
+
   if (journeyMode) {
     renderJourneyCurrent();
     schedulePlayback();
@@ -1803,6 +1800,10 @@ function manualMove(direction) {
   const target = chronological[nextPosition];
   idx = items.findIndex(item => item.id === target.id);
   if (idx < 0) idx = 0;
+
+  // 수동 이전/다음으로 기록을 바꿀 때 본문 스크롤을 항상 맨 위로 초기화
+  const recordScroll = document.querySelector(".record-scroll");
+  if (recordScroll) recordScroll.scrollTop = 0;
 
   render();
 }

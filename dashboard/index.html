@@ -338,11 +338,14 @@ h1 {
   scrollbar-color: #b8c5ae transparent;
 }
 
-/* 하단 버튼 */
+/* 상단 고정 조작 버튼: 본문을 읽는 중에도 항상 보이도록 */
 .controls {
   display: flex;
   gap: 9px;
   flex-shrink: 0;
+  position: relative;
+  z-index: 2;
+  padding: 2px 0 5px;
 }
 
 .controls button {
@@ -621,21 +624,21 @@ h1 {
 
   <section class="viewer">
 
-    <div id="media">
-      <div class="no-photo">기록을 불러오는 중...</div>
-    </div>
-
     <h2 id="title">불러오는 중</h2>
 
     <div id="meta"></div>
-
-    <div id="body"></div>
 
     <div class="controls">
       <button id="prev">이전</button>
       <button id="pause">일시정지</button>
       <button id="next">다음</button>
     </div>
+
+    <div id="media">
+      <div class="no-photo">기록을 불러오는 중...</div>
+    </div>
+
+    <div id="body"></div>
 
     <div id="status">데이터 불러오는 중...</div>
 
@@ -1672,6 +1675,37 @@ function previous() {
 
 }
 
+// 수동 이전/다음은 날짜순(오래된 기록 → 최신 기록)으로 이동
+// 자동 재생용 next()/previous()의 랜덤 동작은 그대로 유지
+function manualMove(direction) {
+  if (journeyMode) {
+    if (direction > 0) nextJourneyPhoto();
+    else previous();
+    return;
+  }
+
+  if (!items.length) return;
+  clearTimers();
+
+  const chronological = [...items].sort((a, b) => {
+    const da = String(a.date || '');
+    const db = String(b.date || '');
+    return da.localeCompare(db);
+  });
+
+  const currentId = items[idx]?.id;
+  let currentPosition = chronological.findIndex(item => item.id === currentId);
+  if (currentPosition < 0) currentPosition = 0;
+
+  const nextPosition =
+    (currentPosition + direction + chronological.length) % chronological.length;
+  const target = chronological[nextPosition];
+  idx = items.findIndex(item => item.id === target.id);
+  if (idx < 0) idx = 0;
+
+  render();
+}
+
 // 재생 / 일시정지
 function togglePause() {
 
@@ -1782,8 +1816,8 @@ document.querySelectorAll("#tabs button").forEach(button => {
 
 });
 
-$("prev").onclick = previous;
-$("next").onclick = next;
+$("prev").onclick = () => manualMove(-1);
+$("next").onclick = () => manualMove(1);
 $("pause").onclick = togglePause;
 
 $("lightboxClose").onclick = () => closeLightbox();

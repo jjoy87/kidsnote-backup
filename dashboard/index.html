@@ -776,20 +776,17 @@ function renderList() {
 
     button.appendChild(small);
 
-    button.onclick = () => {
+   button.onclick = () => {
 
-      idx = i;
-      paused = true;
+  idx = i;
 
-      clearTimers();
+  clearTimers();
 
-      $("pause").textContent = "재생";
+  closeLightbox(false);
 
-      closeLightbox(false);
+  render();
 
-      render();
-
-    };
+};
 
     list.appendChild(button);
 

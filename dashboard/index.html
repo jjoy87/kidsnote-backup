@@ -937,93 +937,179 @@ async function startJourney() {
 }
   // 성장 추억 현재 사진 표시
 function renderJourneyCurrent() {
-
   if (!journeyMode || !journeyPhotos.length) return;
 
   const photo = journeyPhotos[journeyIndex];
-
   journeyPhase = photo.phase;
 
-  currentImages = [photo.src];
+  // 현재 사진과 같은 시절의 시작·끝 위치 확인
+  let phaseStart = journeyIndex;
+  while (
+    phaseStart > 0 &&
+    journeyPhotos[phaseStart - 1].phase === photo.phase
+  ) {
+    phaseStart--;
+  }
+
+  let phaseEnd = journeyIndex + 1;
+  while (
+    phaseEnd < journeyPhotos.length &&
+    journeyPhotos[phaseEnd].phase === photo.phase
+  ) {
+    phaseEnd++;
+  }
+
+  // 같은 시절 안에서 6장씩 페이지 구성
+  const pageStart =
+    phaseStart +
+    Math.floor((journeyIndex - phaseStart) / 6) * 6;
+
+  const pageEnd = Math.min(pageStart + 6, phaseEnd);
+
+  currentImages = journeyPhotos
+    .slice(pageStart, pageEnd)
+    .map(p => p.src);
+
   photoPageIndex = 0;
   totalPhotoPages = 1;
 
   const media = $("media");
-
   media.replaceChildren();
 
   const gallery = document.createElement("div");
-
   gallery.id = "gallery";
-  gallery.className = "count-1";
+  gallery.className = "count-" + currentImages.length;
 
-  const card = document.createElement("div");
+  currentImages.forEach((src, i) => {
+    const card = document.createElement("div");
+    card.className = "photo-card";
 
-  card.className = "photo-card";
+    const img = document.createElement("img");
+    img.src = src;
+    img.alt = "수하의 " + photo.phase + " 시절 추억";
+    img.loading = "eager";
 
-  const img = document.createElement("img");
+    card.appendChild(img);
+    card.onclick = () => openLightbox(i);
 
-  img.src = photo.src;
-  img.alt = "수하의 " + photo.phase + " 시절 추억";
-  img.loading = "eager";
-
-  card.appendChild(img);
-
-  card.onclick = () => openLightbox(0);
-
-  gallery.appendChild(card);
+    gallery.appendChild(card);
+  });
 
   media.appendChild(gallery);
-
 
   $("title").textContent =
     photo.title || "수하의 추억";
 
   $("meta").textContent =
-    [
-      photo.date,
-      photo.phase === "어린이집"
-        ? "어린이집 시절"
-        : "유치원 시절"
-    ].filter(Boolean).join(" · ");
+    [photo.date, photo.phase === "어린이집"
+      ? "어린이집 시절"
+      : "유치원 시절"]
+      .filter(Boolean).join(" · ");
 
   $("body").textContent =
     photo.phase === "어린이집"
       ? "🧸 어린이집 시절의 소중한 순간"
       : "🎒 유치원 시절의 소중한 순간";
 
+  $("listTitle").textContent =
+    photo.phase === "어린이집"
+      ? "🧸 어린이집 시절"
+      : "🎒 유치원 시절";
+
+  renderList();
+
+  $("status").textContent =
+    (photo.phase === "어린이집" ? "어린이집" : "유치원") +
+    " 추억 · " + (pageStart + 1) +
+    " ~ " + pageEnd + " / " + journeyPhotos.length;
+}
+function renderJourneyCurrent() {
+  if (!journeyMode || !journeyPhotos.length) return;
+
+  const photo = journeyPhotos[journeyIndex];
+  journeyPhase = photo.phase;
+
+  // 현재 사진과 같은 시절의 시작·끝 위치 확인
+  let phaseStart = journeyIndex;
+  while (
+    phaseStart > 0 &&
+    journeyPhotos[phaseStart - 1].phase === photo.phase
+  ) {
+    phaseStart--;
+  }
+
+  let phaseEnd = journeyIndex + 1;
+  while (
+    phaseEnd < journeyPhotos.length &&
+    journeyPhotos[phaseEnd].phase === photo.phase
+  ) {
+    phaseEnd++;
+  }
+
+  // 같은 시절 안에서 6장씩 페이지 구성
+  const pageStart =
+    phaseStart +
+    Math.floor((journeyIndex - phaseStart) / 6) * 6;
+
+  const pageEnd = Math.min(pageStart + 6, phaseEnd);
+
+  currentImages = journeyPhotos
+    .slice(pageStart, pageEnd)
+    .map(p => p.src);
+
+  photoPageIndex = 0;
+  totalPhotoPages = 1;
+
+  const media = $("media");
+  media.replaceChildren();
+
+  const gallery = document.createElement("div");
+  gallery.id = "gallery";
+  gallery.className = "count-" + currentImages.length;
+
+  currentImages.forEach((src, i) => {
+    const card = document.createElement("div");
+    card.className = "photo-card";
+
+    const img = document.createElement("img");
+    img.src = src;
+    img.alt = "수하의 " + photo.phase + " 시절 추억";
+    img.loading = "eager";
+
+    card.appendChild(img);
+    card.onclick = () => openLightbox(i);
+
+    gallery.appendChild(card);
+  });
+
+  media.appendChild(gallery);
+
+  $("title").textContent =
+    photo.title || "수하의 추억";
+
+  $("meta").textContent =
+    [photo.date, photo.phase === "어린이집"
+      ? "어린이집 시절"
+      : "유치원 시절"]
+      .filter(Boolean).join(" · ");
+
+  $("body").textContent =
+    photo.phase === "어린이집"
+      ? "🧸 어린이집 시절의 소중한 순간"
+      : "🎒 유치원 시절의 소중한 순간";
 
   $("listTitle").textContent =
     photo.phase === "어린이집"
       ? "🧸 어린이집 시절"
       : "🎒 유치원 시절";
 
-
   renderList();
 
   $("status").textContent =
-    (photo.phase === "어린이집"
-      ? "어린이집"
-      : "유치원") +
-    " 추억 · " +
-    (journeyIndex + 1) +
-    " / " +
-    journeyPhotos.length;
-
+    (photo.phase === "어린이집" ? "어린이집" : "유치원") +
+    " 추억 · " + (pageStart + 1) +
+    " ~ " + pageEnd + " / " + journeyPhotos.length;
 }
-
-
-// 성장 추억 다음 사진
-function nextJourneyPhoto() {
-
-  if (!journeyMode || !journeyPhotos.length) return;
-
-  journeyIndex++;
-
-  if (journeyIndex >= journeyPhotos.length) {
-    journeyIndex = 0;
-  }
-
   renderJourneyCurrent();
 
   schedulePlayback();

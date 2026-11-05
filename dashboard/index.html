@@ -1882,6 +1882,13 @@ async function load() {
 
     all = await loadAllPages();
 
+    // Notion에 새로 등록된 순서가 아니라 Kidsnote 원본 날짜 기준으로 최신순 정렬
+    all.sort((a, b) => {
+      const dateA = String(a.date || "").substring(0, 10);
+      const dateB = String(b.date || "").substring(0, 10);
+      return dateB.localeCompare(dateA);
+    });
+
     $("status").textContent =
       "전체 " + all.length + "개 기록 조회 완료";
 

@@ -1494,6 +1494,11 @@ async function render() {
 
   clearTimers();
 
+  // 새 기록으로 이동할 때 사진과 본문 스크롤을 항상 맨 위로 초기화
+  // 제목/날짜/조작 버튼이 있는 상단 고정 영역은 그대로 유지
+  const recordScroll = document.querySelector(".record-scroll");
+  if (recordScroll) recordScroll.scrollTop = 0;
+
   if (journeyMode) {
     renderJourneyCurrent();
     schedulePlayback();

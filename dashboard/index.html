@@ -919,9 +919,20 @@ function getTodayItems() {
     "-" +
     String(today.getDate()).padStart(2, "0");
 
-  return all.filter(x =>
-    getMonthDay(x.date) === monthDay
-  );
+  return all.filter(x => {
+    const date = String(x.date || "").substring(0, 10);
+
+    // 오늘의 추억에는 어린이집 알림장과 어린이집·유치원 앨범만 포함
+    const isChildcareNotice =
+      x.category === "알림장" &&
+      /^\\d{4}-\\d{2}-\\d{2}$/.test(date) &&
+      date <= "2024-02-29";
+
+    const isAlbum = x.category === "앨범";
+
+    return getMonthDay(x.date) === monthDay &&
+      (isChildcareNotice || isAlbum);
+  });
 
 }
 

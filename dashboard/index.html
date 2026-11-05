@@ -358,6 +358,36 @@ h1 {
   flex-shrink: 0;
 }
 
+#noticeGroups {
+  display: none;
+  gap: 8px;
+  margin: -3px 0 12px;
+  flex-shrink: 0;
+}
+
+#noticeGroups.visible {
+  display: flex;
+}
+
+#noticeGroups button {
+  flex: 1;
+  min-width: 0;
+  padding: 9px 6px;
+  border: 1px solid #e1d9ca;
+  border-radius: 9px;
+  background: #eee8dc;
+  color: #665b4b;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+#noticeGroups button.active {
+  background: #82977a;
+  border-color: #82977a;
+  color: white;
+}
+
 #list {
   overflow-y: auto;
   flex: 1;
@@ -597,6 +627,11 @@ h1 {
 
     <h2 id="listTitle">추억 랜덤</h2>
 
+    <div id="noticeGroups">
+      <button type="button" data-notice-group="어린이집">🧸 어린이집</button>
+      <button type="button" data-notice-group="유치원">🎒 유치원</button>
+    </div>
+
     <div id="list"></div>
 
   </aside>
@@ -627,6 +662,7 @@ let idx = 0;
 
 let cat = "추억 랜덤";
 let paused = false;
+let noticeGroup = "어린이집";
 
 let detailRequest = 0;
 
@@ -778,12 +814,46 @@ function getTodayItems() {
 
 }
 
+// 알림장 시기별 분류
+function getNoticeItems(group) {
+  return all.filter(x => {
+    if (x.category !== "알림장") return false;
+    const date = String(x.date || "").substring(0, 10);
+    if (!/^\\d{4}-\\d{2}-\\d{2}$/.test(date)) return false;
+
+    return group === "어린이집"
+      ? date <= "2024-02-29"
+      : date >= "2024-03-01";
+  });
+}
+
 // 목록 표시
 function renderList() {
 
   const list = $("list");
 
   list.replaceChildren();
+
+  const noticeGroups = $("noticeGroups");
+  noticeGroups.classList.toggle("visible", cat === "알림장");
+
+  if (cat === "알림장") {
+    noticeGroups.querySelectorAll("button").forEach(button => {
+      const group = button.dataset.noticeGroup;
+      button.classList.toggle("active", group === noticeGroup);
+      button.onclick = () => {
+        if (group === noticeGroup) return;
+        noticeGroup = group;
+        items = getNoticeItems(noticeGroup);
+        idx = items.length ? Math.floor(Math.random() * items.length) : 0;
+        paused = false;
+        $("pause").textContent = "일시정지";
+        render();
+        $("status").textContent =
+          noticeGroup + " 알림장 · " + items.length + "개";
+      };
+    });
+  }
 
   if (journeyMode) {
     $("listTitle").textContent = "🌱 성장 추억 여행 · " + journeyPhase;
@@ -1449,12 +1519,9 @@ function select(c) {
 
   } else if (c === "알림장") {
 
-    items = all.filter(x =>
-      x.category === "알림장" &&
-      ["2022", "2023", "2024"].includes(
-        String(x.date || "").substring(0, 4)
-      )
-    );
+    // 알림장 탭은 어린이집 / 유치원 시기로 나눠 표시
+    noticeGroup = "어린이집";
+    items = getNoticeItems(noticeGroup);
 
   } else {
 
@@ -1508,10 +1575,12 @@ function select(c) {
         ? "오늘의 추억 · " + items.length + "개"
         : "오늘은 과거의 추억이 없어요 ❤️";
 
-  } else if (
-    c === "앨범" ||
-    c === "알림장"
-  ) {
+  } else if (c === "알림장") {
+
+    $("status").textContent =
+      noticeGroup + " 알림장 · " + items.length + "개";
+
+  } else if (c === "앨범") {
 
     $("status").textContent =
       c + " 랜덤 재생 중 · " + items.length + "개";

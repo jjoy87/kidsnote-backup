@@ -6,9 +6,7 @@
 <title>사랑하는 수하의 성장기록</title>
 
 <style>
-* {
-  box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
 html, body {
   margin: 0;
@@ -23,7 +21,6 @@ body {
   overflow: hidden;
 }
 
-/* 상단 */
 header {
   height: 65px;
   padding: 12px 25px;
@@ -44,7 +41,6 @@ h1 {
   font-size: 14px;
 }
 
-/* 탭 */
 #tabs {
   display: flex;
   gap: 9px;
@@ -88,6 +84,18 @@ h1 {
   color: white;
 }
 
+#tabs button[data-cat="성장 추억 여행"] {
+  background: #dce6d8;
+  border-color: #dce6d8;
+  color: #52664c;
+}
+
+#tabs button[data-cat="성장 추억 여행"].active {
+  background: #82977a;
+  border-color: #82977a;
+  color: white;
+}
+
 #tabs button[data-cat="오늘의 추억"] {
   background: #e8d8d9;
   border-color: #e8d8d9;
@@ -100,7 +108,6 @@ h1 {
   color: white;
 }
 
-/* 메인 레이아웃 */
 .layout {
   display: grid;
   grid-template-columns: minmax(0, 3.5fr) minmax(220px, 1fr);
@@ -110,7 +117,6 @@ h1 {
   min-height: 0;
 }
 
-/* 좌우 패널 */
 .viewer,
 .sidebar {
   background: #fffdf8;
@@ -128,7 +134,6 @@ h1 {
   gap: 9px;
 }
 
-/* 사진 갤러리 */
 #media {
   position: relative;
   flex: 0 0 58%;
@@ -141,7 +146,6 @@ h1 {
   color: #998d7b;
 }
 
-/* 갤러리 그리드 */
 #gallery {
   width: 100%;
   height: 100%;
@@ -152,7 +156,6 @@ h1 {
   grid-template-rows: repeat(2, minmax(0, 1fr));
 }
 
-/* 사진 개수별 레이아웃 */
 #gallery.count-1 {
   grid-template-columns: 1fr;
   grid-template-rows: 1fr;
@@ -179,7 +182,6 @@ h1 {
   grid-template-rows: repeat(2, minmax(0, 1fr));
 }
 
-/* 사진 카드 */
 .photo-card {
   position: relative;
   min-width: 0;
@@ -225,7 +227,6 @@ h1 {
   opacity: 1;
 }
 
-/* 페이지 이동 버튼 */
 .gallery-nav {
   position: absolute;
   top: 50%;
@@ -241,19 +242,13 @@ h1 {
   z-index: 5;
 }
 
-.gallery-prev {
-  left: 10px;
-}
-
-.gallery-next {
-  right: 10px;
-}
+.gallery-prev { left: 10px; }
+.gallery-next { right: 10px; }
 
 .gallery-nav:hover {
   background: rgba(93, 119, 83, .9);
 }
 
-/* 사진 페이지 표시 */
 #photoCount {
   position: absolute;
   bottom: 12px;
@@ -267,7 +262,6 @@ h1 {
   pointer-events: none;
 }
 
-/* 사진 없음 */
 .no-photo {
   height: 100%;
   display: flex;
@@ -277,7 +271,6 @@ h1 {
   color: #998d7b;
 }
 
-/* 제목과 날짜 */
 #title {
   font-size: 21px;
   line-height: 1.4;
@@ -292,7 +285,6 @@ h1 {
   flex-shrink: 0;
 }
 
-/* 본문 */
 #body {
   flex: 1;
   min-height: 60px;
@@ -308,7 +300,6 @@ h1 {
   scrollbar-color: #b8c5ae transparent;
 }
 
-/* 하단 버튼 */
 .controls {
   display: flex;
   gap: 9px;
@@ -332,7 +323,6 @@ h1 {
   flex-shrink: 0;
 }
 
-/* 오른쪽 목록 */
 .sidebar {
   display: flex;
   flex-direction: column;
@@ -387,7 +377,6 @@ h1 {
   color: #9b8f7e;
 }
 
-/* 확대 모달 */
 #lightbox {
   position: fixed;
   inset: 0;
@@ -445,13 +434,8 @@ h1 {
   z-index: 3;
 }
 
-.lightbox-prev {
-  left: 18px;
-}
-
-.lightbox-next {
-  right: 18px;
-}
+.lightbox-prev { left: 18px; }
+.lightbox-next { right: 18px; }
 
 .lightbox-close:hover,
 .lightbox-nav:hover {
@@ -470,21 +454,15 @@ h1 {
   font-size: 14px;
 }
 
-/* 태블릿 세로 화면 */
 @media (max-width: 800px) {
-
-  body {
-    overflow: auto;
-  }
+  body { overflow: auto; }
 
   header {
     height: auto;
     padding: 15px;
   }
 
-  h1 {
-    font-size: 20px;
-  }
+  h1 { font-size: 20px; }
 
   #tabs {
     padding: 10px 15px;
@@ -502,9 +480,7 @@ h1 {
     padding: 0 15px 15px;
   }
 
-  .viewer {
-    min-height: 850px;
-  }
+  .viewer { min-height: 850px; }
 
   #media {
     flex-basis: auto;
@@ -512,34 +488,21 @@ h1 {
     flex-shrink: 0;
   }
 
-  #body {
-    min-height: 180px;
-  }
+  #body { min-height: 180px; }
+  .sidebar { height: 450px; }
 
-  .sidebar {
-    height: 450px;
-  }
-
-  #lightbox {
-    padding: 55px 45px;
-  }
+  #lightbox { padding: 55px 45px; }
 
   #lightboxImage {
     max-width: 100%;
     max-height: 85%;
   }
 
-  .lightbox-prev {
-    left: 5px;
-  }
-
-  .lightbox-next {
-    right: 5px;
-  }
+  .lightbox-prev { left: 5px; }
+  .lightbox-next { right: 5px; }
 }
 </style>
 </head>
-
 <body>
 
 <header>
@@ -550,6 +513,7 @@ h1 {
 <nav id="tabs">
   <button data-cat="전체">전체</button>
   <button data-cat="추억 랜덤">⭐ 추억 랜덤</button>
+  <button data-cat="성장 추억 여행">🌱 성장 추억 여행</button>
   <button data-cat="오늘의 추억">📅 오늘의 추억</button>
   <button data-cat="알림장">알림장</button>
   <button data-cat="앨범">앨범</button>
@@ -628,15 +592,26 @@ let totalPhotoPages = 0;
 let lightboxOpen = false;
 let lightboxIndex = 0;
 
+// 성장 추억 여행 상태
+let journeyMode = false;
+let journeyPhotos = [];
+let journeyIndex = 0;
+let journeyTimer = null;
+let journeyLoadToken = 0;
+let journeyPhase = "어린이집";
+
+
 // 자동 재생 대상 카테고리
 function isAutoCategory() {
   return [
     "앨범",
     "알림장",
     "추억 랜덤",
+    "성장 추억 여행",
     "오늘의 추억"
   ].includes(cat);
 }
+
 
 // 타이머 정리
 function clearTimers() {
@@ -651,7 +626,13 @@ function clearTimers() {
     pageTimer = null;
   }
 
+  if (journeyTimer) {
+    clearTimeout(journeyTimer);
+    journeyTimer = null;
+  }
+
 }
+
 
 // 전체 기록 조회
 async function loadAllPages() {
@@ -688,6 +669,7 @@ async function loadAllPages() {
   return records;
 }
 
+
 // 상세 기록 조회
 async function loadDetail(pageId) {
 
@@ -704,6 +686,7 @@ async function loadDetail(pageId) {
   return data;
 }
 
+
 // 날짜 월일 추출
 function getMonthDay(dateValue) {
 
@@ -716,6 +699,7 @@ function getMonthDay(dateValue) {
   return match ? match[1] + "-" + match[2] : "";
 
 }
+
 
 // 추억 랜덤 대상
 function getMemoryItems() {
@@ -735,6 +719,7 @@ function getMemoryItems() {
 
 }
 
+
 // 오늘의 추억
 function getTodayItems() {
 
@@ -751,6 +736,301 @@ function getTodayItems() {
 
 }
 
+
+// 성장 추억 여행: 어린이집 / 유치원 기록 구분
+function getJourneyRecords(phase) {
+
+  return all.filter(x => {
+
+    const date = String(x.date || "").substring(0, 10);
+
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
+      return false;
+    }
+
+    if (phase === "어린이집") {
+
+      return x.category === "알림장" &&
+        date >= "2022-01-01" &&
+        date <= "2024-02-29";
+
+    }
+
+    return x.category === "앨범" &&
+      date >= "2024-03-01" &&
+      date <= new Date().toISOString().substring(0, 10);
+
+  });
+
+}
+
+
+// 성장 추억 사진 수집
+async function loadJourneyPhotos(phase, token) {
+
+  const records = getJourneyRecords(phase);
+
+  const shuffled = [...records].sort(
+    () => Math.random() - 0.5
+  );
+
+  // 각 시기에서 최대 50개 기록을 무작위 표본 조회
+  const sample = shuffled.slice(0, 50);
+
+  const found = [];
+
+  let cursor = 0;
+
+
+  async function worker() {
+
+    while (cursor < sample.length) {
+
+      const record = sample[cursor++];
+
+      try {
+
+        const detail = await loadDetail(record.id);
+
+        if (token !== journeyLoadToken) return;
+
+        (detail.images || []).forEach((src, imageIndex) => {
+
+          found.push({
+            src,
+            date: record.date || "",
+            title: record.title || "수하의 추억",
+            phase,
+            imageIndex
+          });
+
+        });
+
+      } catch (error) {
+
+        console.warn(
+          "성장 추억 사진 조회 실패:",
+          record.title,
+          error
+        );
+
+      }
+
+    }
+
+  }
+
+
+  await Promise.all(
+    Array.from({ length: 4 }, () => worker())
+  );
+
+  if (token !== journeyLoadToken) return [];
+
+  return found
+    .sort(() => Math.random() - 0.5)
+    .slice(0, 30)
+    .sort((a, b) =>
+      String(a.date).localeCompare(String(b.date))
+    );
+
+}
+
+
+// 성장 추억 여행 시작
+async function startJourney() {
+
+  const token = ++journeyLoadToken;
+
+  journeyMode = true;
+  paused = false;
+
+  journeyPhotos = [];
+  journeyIndex = 0;
+  journeyPhase = "어린이집";
+
+  items = [];
+  idx = 0;
+
+  clearTimers();
+
+  $("pause").textContent = "일시정지";
+
+  $("title").textContent =
+    "수하의 성장 추억을 준비하고 있어요";
+
+  $("meta").textContent =
+    "어린이집 시절 → 유치원 시절";
+
+  $("body").textContent =
+    "사진을 모으는 중입니다. 사진 수에 따라 잠시 걸릴 수 있어요.";
+
+  $("media").innerHTML =
+    '<div class="no-photo">추억 사진을 모으는 중...</div>';
+
+  $("listTitle").textContent =
+    "🌱 성장 추억 여행";
+
+  $("list").textContent =
+    "사진을 준비하고 있습니다...";
+
+  $("status").textContent =
+    "어린이집 시절 사진 조회 중...";
+
+
+  // 어린이집 사진 조회
+  const childcare =
+    await loadJourneyPhotos("어린이집", token);
+
+  if (token !== journeyLoadToken) return;
+
+
+  // 유치원 사진 조회
+  const kindergarten =
+    await loadJourneyPhotos("유치원", token);
+
+  if (token !== journeyLoadToken) return;
+
+
+  journeyPhotos = [
+    ...childcare,
+    ...kindergarten
+  ];
+
+  journeyIndex = 0;
+
+
+  if (!journeyPhotos.length) {
+
+    $("title").textContent =
+      "추억 사진이 없습니다";
+
+    $("meta").textContent = "";
+
+    $("body").textContent =
+      "해당 기간의 알림장·앨범 사진을 찾지 못했습니다.";
+
+    $("media").innerHTML =
+      '<div class="no-photo">표시할 사진이 없습니다</div>';
+
+    $("list").textContent =
+      "사진이 없습니다";
+
+    $("status").textContent =
+      "성장 추억 여행 사진 없음";
+
+    return;
+  }
+
+
+  journeyPhase = journeyPhotos[0].phase;
+
+  $("status").textContent =
+    "어린이집 " + childcare.length +
+    "장 · 유치원 " + kindergarten.length +
+    "장 · 총 " + journeyPhotos.length + "장";
+
+  renderJourneyCurrent();
+
+  schedulePlayback();
+
+}
+  // 성장 추억 현재 사진 표시
+function renderJourneyCurrent() {
+
+  if (!journeyMode || !journeyPhotos.length) return;
+
+  const photo = journeyPhotos[journeyIndex];
+
+  journeyPhase = photo.phase;
+
+  currentImages = [photo.src];
+  photoPageIndex = 0;
+  totalPhotoPages = 1;
+
+  const media = $("media");
+
+  media.replaceChildren();
+
+  const gallery = document.createElement("div");
+
+  gallery.id = "gallery";
+  gallery.className = "count-1";
+
+  const card = document.createElement("div");
+
+  card.className = "photo-card";
+
+  const img = document.createElement("img");
+
+  img.src = photo.src;
+  img.alt = "수하의 " + photo.phase + " 시절 추억";
+  img.loading = "eager";
+
+  card.appendChild(img);
+
+  card.onclick = () => openLightbox(0);
+
+  gallery.appendChild(card);
+
+  media.appendChild(gallery);
+
+
+  $("title").textContent =
+    photo.title || "수하의 추억";
+
+  $("meta").textContent =
+    [
+      photo.date,
+      photo.phase === "어린이집"
+        ? "어린이집 시절"
+        : "유치원 시절"
+    ].filter(Boolean).join(" · ");
+
+  $("body").textContent =
+    photo.phase === "어린이집"
+      ? "🧸 어린이집 시절의 소중한 순간"
+      : "🎒 유치원 시절의 소중한 순간";
+
+
+  $("listTitle").textContent =
+    photo.phase === "어린이집"
+      ? "🧸 어린이집 시절"
+      : "🎒 유치원 시절";
+
+
+  renderList();
+
+  $("status").textContent =
+    (photo.phase === "어린이집"
+      ? "어린이집"
+      : "유치원") +
+    " 추억 · " +
+    (journeyIndex + 1) +
+    " / " +
+    journeyPhotos.length;
+
+}
+
+
+// 성장 추억 다음 사진
+function nextJourneyPhoto() {
+
+  if (!journeyMode || !journeyPhotos.length) return;
+
+  journeyIndex++;
+
+  if (journeyIndex >= journeyPhotos.length) {
+    journeyIndex = 0;
+  }
+
+  renderJourneyCurrent();
+
+  schedulePlayback();
+
+}
+
+
 // 목록 표시
 function renderList() {
 
@@ -758,6 +1038,59 @@ function renderList() {
 
   list.replaceChildren();
 
+
+  // 성장 추억 여행 목록
+  if (journeyMode) {
+
+    $("listTitle").textContent =
+      "🌱 성장 추억 여행 · " + journeyPhase;
+
+    journeyPhotos.forEach((photo, i) => {
+
+      const button = document.createElement("button");
+
+      button.className =
+        "item" +
+        (i === journeyIndex ? " selected" : "");
+
+      button.appendChild(
+        document.createTextNode(
+          photo.title || "수하의 추억"
+        )
+      );
+
+      const small = document.createElement("small");
+
+      small.textContent =
+        [photo.date, photo.phase].filter(Boolean).join(" · ");
+
+      button.appendChild(small);
+
+
+      button.onclick = () => {
+
+        journeyIndex = i;
+
+        clearTimers();
+
+        closeLightbox(false);
+
+        renderJourneyCurrent();
+
+        schedulePlayback();
+
+      };
+
+
+      list.appendChild(button);
+
+    });
+
+    return;
+  }
+
+
+  // 일반 카테고리 목록
   items.forEach((x, i) => {
 
     const button = document.createElement("button");
@@ -776,21 +1109,24 @@ function renderList() {
 
     button.appendChild(small);
 
-   button.onclick = () => {
 
-  idx = i;
+    button.onclick = () => {
 
-  clearTimers();
+      idx = i;
 
-  closeLightbox(false);
+      clearTimers();
 
-  render();
+      closeLightbox(false);
 
-};
+      render();
+
+    };
+
 
     list.appendChild(button);
 
   });
+
 
   $("listTitle").textContent =
     cat === "추억 랜덤"
@@ -803,12 +1139,14 @@ function renderList() {
 
 }
 
+
 // 현재 사진 페이지 표시
 function renderGalleryPage() {
 
   const media = $("media");
 
   media.replaceChildren();
+
 
   if (!currentImages.length) {
 
@@ -822,18 +1160,27 @@ function renderGalleryPage() {
     return;
   }
 
+
   totalPhotoPages = Math.ceil(currentImages.length / 6);
 
   const start = photoPageIndex * 6;
 
-  const end = Math.min(start + 6, currentImages.length);
+  const end = Math.min(
+    start + 6,
+    currentImages.length
+  );
 
-  const pageImages = currentImages.slice(start, end);
+  const pageImages =
+    currentImages.slice(start, end);
+
 
   const gallery = document.createElement("div");
 
   gallery.id = "gallery";
-  gallery.className = "count-" + pageImages.length;
+
+  gallery.className =
+    "count-" + pageImages.length;
+
 
   pageImages.forEach((src, i) => {
 
@@ -846,19 +1193,28 @@ function renderGalleryPage() {
     const img = document.createElement("img");
 
     img.src = src;
-    img.alt = "수하의 성장기록 사진 " + (imageIndex + 1);
+
+    img.alt =
+      "수하의 성장기록 사진 " + (imageIndex + 1);
+
     img.loading = "eager";
 
+
     img.onerror = () => {
+
       img.style.display = "none";
 
       const errorText = document.createElement("span");
 
-      errorText.textContent = "사진을 불러올 수 없습니다";
+      errorText.textContent =
+        "사진을 불러올 수 없습니다";
+
       errorText.style.fontSize = "12px";
 
       card.appendChild(errorText);
+
     };
+
 
     card.appendChild(img);
 
@@ -870,7 +1226,9 @@ function renderGalleryPage() {
 
   });
 
+
   media.appendChild(gallery);
+
 
   // 여러 페이지일 때 좌우 페이지 이동 버튼
   if (totalPhotoPages > 1) {
@@ -878,27 +1236,39 @@ function renderGalleryPage() {
     const prevBtn = document.createElement("button");
 
     prevBtn.className = "gallery-nav gallery-prev";
+
     prevBtn.textContent = "‹";
 
     prevBtn.onclick = event => {
+
       event.stopPropagation();
+
       changePhotoPage(-1);
+
     };
+
 
     const nextBtn = document.createElement("button");
 
     nextBtn.className = "gallery-nav gallery-next";
+
     nextBtn.textContent = "›";
 
     nextBtn.onclick = event => {
+
       event.stopPropagation();
+
       changePhotoPage(1);
+
     };
 
+
     media.appendChild(prevBtn);
+
     media.appendChild(nextBtn);
 
   }
+
 
   const count = document.createElement("div");
 
@@ -920,12 +1290,14 @@ function renderGalleryPage() {
 
 }
 
+
 // 사진 페이지 변경
 function changePhotoPage(direction) {
 
   if (totalPhotoPages <= 1) return;
 
   photoPageIndex += direction;
+
 
   if (photoPageIndex < 0) {
     photoPageIndex = totalPhotoPages - 1;
@@ -935,11 +1307,13 @@ function changePhotoPage(direction) {
     photoPageIndex = 0;
   }
 
+
   renderGalleryPage();
 
   schedulePlayback();
 
 }
+
 
 // 확대 모달 열기
 function openLightbox(imageIndex) {
@@ -958,6 +1332,7 @@ function openLightbox(imageIndex) {
 
 }
 
+
 // 확대 사진 표시
 function updateLightbox() {
 
@@ -968,9 +1343,12 @@ function updateLightbox() {
   image.src = currentImages[lightboxIndex];
 
   $("lightboxCount").textContent =
-    (lightboxIndex + 1) + " / " + currentImages.length;
+    (lightboxIndex + 1) +
+    " / " +
+    currentImages.length;
 
-  const showNavigation = currentImages.length > 1;
+  const showNavigation =
+    currentImages.length > 1;
 
   $("lightboxPrev").style.display =
     showNavigation ? "block" : "none";
@@ -979,6 +1357,7 @@ function updateLightbox() {
     showNavigation ? "block" : "none";
 
 }
+
 
 // 확대 모달 사진 이동
 function moveLightbox(direction) {
@@ -992,6 +1371,7 @@ function moveLightbox(direction) {
   updateLightbox();
 
 }
+
 
 // 확대 모달 닫기
 function closeLightbox(resume = true) {
@@ -1010,19 +1390,33 @@ function closeLightbox(resume = true) {
 
 }
 
+
 // 자동 재생 예약
 function schedulePlayback() {
 
   clearTimers();
 
-  if (
-    paused ||
-    lightboxOpen ||
-    !isAutoCategory() ||
-    !items.length
-  ) {
+  if (paused || lightboxOpen) return;
+
+
+  // 성장 추억 여행은 사진당 6초
+  if (journeyMode) {
+
+    if (!journeyPhotos.length) return;
+
+    journeyTimer = setTimeout(
+      nextJourneyPhoto,
+      6000
+    );
+
     return;
   }
+
+
+  if (!isAutoCategory() || !items.length) {
+    return;
+  }
+
 
   // 사진이 7장 이상이면 페이지 단위로 7초마다 이동
   if (currentImages.length > 6) {
@@ -1057,11 +1451,16 @@ function schedulePlayback() {
   }
 
 }
-
-// 현재 기록 표시
+  // 현재 기록 표시
 async function render() {
 
   clearTimers();
+
+  if (journeyMode) {
+    renderJourneyCurrent();
+    schedulePlayback();
+    return;
+  }
 
   if (!items.length) {
 
@@ -1157,6 +1556,7 @@ async function render() {
 
 }
 
+
 // 카테고리 선택
 function select(c) {
 
@@ -1165,6 +1565,26 @@ function select(c) {
   closeLightbox(false);
 
   cat = c;
+
+  journeyMode = false;
+  journeyLoadToken++;
+
+  if (c === "성장 추억 여행") {
+
+    startJourney();
+
+    document.querySelectorAll("#tabs button").forEach(button => {
+
+      button.classList.toggle(
+        "active",
+        button.dataset.cat === c
+      );
+
+    });
+
+    return;
+  }
+
 
   if (c === "전체") {
 
@@ -1195,6 +1615,7 @@ function select(c) {
 
   }
 
+
   if (
     isAutoCategory() &&
     items.length
@@ -1216,6 +1637,7 @@ function select(c) {
 
   }
 
+
   document.querySelectorAll("#tabs button").forEach(button => {
 
     button.classList.toggle(
@@ -1225,7 +1647,9 @@ function select(c) {
 
   });
 
+
   render();
+
 
   if (c === "추억 랜덤") {
 
@@ -1256,8 +1680,18 @@ function select(c) {
 
 }
 
+
 // 다음 기록
 function next() {
+
+  if (journeyMode) {
+
+    clearTimers();
+
+    nextJourneyPhoto();
+
+    return;
+  }
 
   if (!items.length) return;
 
@@ -1285,8 +1719,26 @@ function next() {
 
 }
 
+
 // 이전 기록
 function previous() {
+
+  if (journeyMode) {
+
+    if (!journeyPhotos.length) return;
+
+    clearTimers();
+
+    journeyIndex =
+      (journeyIndex - 1 + journeyPhotos.length) %
+      journeyPhotos.length;
+
+    renderJourneyCurrent();
+
+    schedulePlayback();
+
+    return;
+  }
 
   if (!items.length) return;
 
@@ -1298,10 +1750,13 @@ function previous() {
 
 }
 
+
 // 재생 / 일시정지
 function togglePause() {
 
-  if (!items.length) return;
+  if (journeyMode ? !journeyPhotos.length : !items.length) {
+    return;
+  }
 
   paused = !paused;
 
@@ -1320,6 +1775,7 @@ function togglePause() {
 
 }
 
+
 // 사진 스와이프
 let touchStartX = 0;
 
@@ -1328,6 +1784,7 @@ $("media").addEventListener("touchstart", event => {
   touchStartX = event.changedTouches[0].screenX;
 
 }, { passive: true });
+
 
 $("media").addEventListener("touchend", event => {
 
@@ -1351,6 +1808,7 @@ $("media").addEventListener("touchend", event => {
 
 }, { passive: true });
 
+
 // 확대 모달 터치 스와이프
 let lightboxTouchStartX = 0;
 
@@ -1361,6 +1819,7 @@ $("lightbox").addEventListener("touchstart", event => {
   lightboxTouchStartX = event.changedTouches[0].screenX;
 
 }, { passive: true });
+
 
 $("lightbox").addEventListener("touchend", event => {
 
@@ -1374,6 +1833,7 @@ $("lightbox").addEventListener("touchend", event => {
   moveLightbox(diff < 0 ? 1 : -1);
 
 }, { passive: true });
+
 
 // 데이터 불러오기
 async function load() {
@@ -1401,6 +1861,7 @@ async function load() {
 
 }
 
+
 // 이벤트
 document.querySelectorAll("#tabs button").forEach(button => {
 
@@ -1408,30 +1869,45 @@ document.querySelectorAll("#tabs button").forEach(button => {
 
 });
 
+
 $("prev").onclick = previous;
+
 $("next").onclick = next;
+
 $("pause").onclick = togglePause;
 
 $("lightboxClose").onclick = () => closeLightbox();
 
+
 $("lightboxPrev").onclick = event => {
+
   event.stopPropagation();
+
   moveLightbox(-1);
+
 };
 
+
 $("lightboxNext").onclick = event => {
+
   event.stopPropagation();
+
   moveLightbox(1);
+
 };
+
 
 // 확대 영역 바깥 클릭 시 닫기
 $("lightbox").addEventListener("click", event => {
 
   if (event.target === $("lightbox")) {
+
     closeLightbox();
+
   }
 
 });
+
 
 // 키보드 조작
 document.addEventListener("keydown", event => {
@@ -1453,6 +1929,7 @@ document.addEventListener("keydown", event => {
   }
 
 });
+
 
 // 시계
 function updateClock() {

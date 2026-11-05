@@ -425,6 +425,21 @@ h1 {
   color: white;
 }
 
+#favoriteToggle {
+  color: #a88c4c;
+}
+#favoriteToggle.is-favorite {
+  color: #d6a928;
+  background: #f5edcf;
+}
+body.dark-mode #favoriteToggle {
+  color: #e4c66d;
+}
+body.dark-mode #favoriteToggle.is-favorite {
+  color: #ffe08a;
+  background: #5a5036;
+}
+
 #status {
   display: inline-flex; /* 재생 장수 표시는 카운트다운 옆에 유지 */
   align-items: center;
@@ -881,6 +896,7 @@ body.dark-mode .no-photo {
   <button data-cat="추억 랜덤">⭐ 추억 랜덤</button>
   <button data-cat="성장 추억 여행">🌱 성장 추억 여행</button>
   <button data-cat="오늘의 추억">📅 오늘의 추억</button>
+  <button data-cat="즐겨찾기">⭐ 즐겨찾기</button>
   <button data-cat="알림장">알림장</button>
   <button data-cat="앨범">앨범</button>
   <button data-cat="공지">공지</button>
@@ -897,6 +913,7 @@ body.dark-mode .no-photo {
         <button id="prev" type="button" aria-label="이전" title="이전">⏮</button>
         <button id="pause" type="button" aria-label="일시정지" title="일시정지">⏸</button>
         <button id="next" type="button" aria-label="다음" title="다음">⏭</button>
+        <button id="favoriteToggle" type="button" aria-label="즐겨찾기 추가" title="즐겨찾기 추가">☆</button>
         <span id="countdown" aria-live="off">자동 넘김 대기</span>
         <span id="status">데이터 불러오는 중...</span>
       </div>
@@ -948,6 +965,62 @@ let all = [];
 let items = [];
 let idx = 0;
 
+// 즐겨찾기는 브라우저별 localStorage에 기록 ID 단위로 저장한다.
+const FAVORITES_STORAGE_KEY = "kidsnoteDashboardFavorites";
+let favoriteIds = new Set();
+try {
+  const savedFavorites = JSON.parse(localStorage.getItem(FAVORITES_STORAGE_KEY) || "[]");
+  if (Array.isArray(savedFavorites)) favoriteIds = new Set(savedFavorites.map(String));
+} catch (e) {}
+
+function isFavorite(recordId) {
+  return !!recordId && favoriteIds.has(String(recordId));
+}
+
+function saveFavorites() {
+  try {
+    localStorage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify([...favoriteIds]));
+  } catch (e) {}
+}
+
+function getCurrentRecordId() {
+  if (journeyMode && journeyPhotos.length) {
+    const start = Math.floor(journeyIndex / 6) * 6;
+    return journeyPhotos[start]?.recordId || "";
+  }
+  return items[idx]?.id || "";
+}
+
+function updateFavoriteButton() {
+  const button = $("favoriteToggle");
+  if (!button) return;
+  const recordId = getCurrentRecordId();
+  const active = isFavorite(recordId);
+  button.textContent = active ? "★" : "☆";
+  button.classList.toggle("is-favorite", active);
+  button.disabled = !recordId;
+  button.setAttribute("aria-label", active ? "즐겨찾기 해제" : "즐겨찾기 추가");
+  button.title = active ? "즐겨찾기 해제" : "즐겨찾기 추가";
+}
+
+function toggleFavorite() {
+  const recordId = getCurrentRecordId();
+  if (!recordId) return;
+  const key = String(recordId);
+  if (favoriteIds.has(key)) favoriteIds.delete(key);
+  else favoriteIds.add(key);
+  saveFavorites();
+  updateFavoriteButton();
+  if (cat === "즐겨찾기") {
+    items = all.filter(record => favoriteIds.has(String(record.id)));
+    if (!items.length) idx = 0;
+    else idx = Math.min(idx, items.length - 1);
+    renderList();
+    render();
+  }
+}
+
+
 let cat = "추억 랜덤";
 let paused = false;
 let noticeGroup = "어린이집";
@@ -986,7 +1059,8 @@ function isAutoCategory() {
     "공지",
     "추억 랜덤",
     "성장 추억 여행",
-    "오늘의 추억"
+    "오늘의 추억",
+    "즐겨찾기"
   ].includes(cat);
 }
 
@@ -1268,9 +1342,11 @@ function renderList() {
       ? "⭐ 추억 랜덤 기록"
       : cat === "오늘의 추억"
         ? "📅 오늘의 추억"
-        : cat === "전체"
-          ? "전체 기록"
-          : cat + " 기록";
+        : cat === "즐겨찾기"
+          ? "⭐ 즐겨찾기 기록"
+          : cat === "전체"
+            ? "전체 기록"
+            : cat + " 기록";
 
 }
 
@@ -1479,6 +1555,7 @@ function renderJourneyCurrent() {
   $("listTitle").textContent = photo.phase === "어린이집"
     ? "🧸 어린이집 시절" : "🎒 유치원 시절";
   renderList();
+  updateFavoriteButton();
   $("status").textContent =
     photo.phase + " 랜덤 " + (start + 1) + " ~ " + end +
     " / 이번 회차 " + journeyPhotos.length + "장";
@@ -1787,7 +1864,9 @@ async function render() {
     empty.textContent =
       cat === "오늘의 추억"
         ? "오늘은 과거의 추억이 없어요 ❤️"
-        : "표시할 기록이 없습니다";
+        : cat === "즐겨찾기"
+          ? "즐겨찾기에 등록한 기록이 없습니다 ⭐"
+          : "표시할 기록이 없습니다";
 
     $("media").appendChild(empty);
 
@@ -1795,11 +1874,13 @@ async function render() {
     $("meta").textContent = "";
     $("body").textContent = "";
     $("list").textContent = "기록이 없습니다";
+    updateFavoriteButton();
 
     return;
   }
 
   const p = items[idx];
+  updateFavoriteButton();
 
   const requestId = ++detailRequest;
 
@@ -1900,6 +1981,10 @@ function select(c) {
 
     items = getTodayItems();
 
+  } else if (c === "즐겨찾기") {
+
+    items = all.filter(x => favoriteIds.has(String(x.id)));
+
   } else if (["알림장", "앨범", "공지"].includes(c)) {
 
     // 알림장 / 앨범 / 공지 모두 어린이집·유치원 시기로 분리
@@ -1961,6 +2046,10 @@ function select(c) {
       items.length
         ? "오늘의 추억 · " + items.length + "개"
         : "오늘은 과거의 추억이 없어요 ❤️";
+
+  } else if (c === "즐겨찾기") {
+
+    $("status").textContent = "즐겨찾기 · " + items.length + "개";
 
   } else if (["알림장", "앨범", "공지"].includes(c)) {
 
@@ -2199,6 +2288,7 @@ document.querySelectorAll("#tabs button").forEach(button => {
 $("prev").onclick = () => manualMove(-1);
 $("next").onclick = () => manualMove(1);
 $("pause").onclick = togglePause;
+$("favoriteToggle").onclick = toggleFavorite;
 
 $("lightboxClose").onclick = () => closeLightbox();
 

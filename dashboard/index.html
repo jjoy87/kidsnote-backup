@@ -384,8 +384,11 @@ h1 {
 }
 
 .controls button {
-  min-width: 58px;
-  padding: 7px 13px;
+  min-width: 36px;
+  width: 38px;
+  padding: 6px 4px;
+  font-size: 18px;
+  line-height: 1;
   background: #e8e4d9;
 }
 
@@ -665,9 +668,12 @@ h1 {
   }
 
   .controls button {
-    min-width: 0;
-    padding: 6px 8px;
-    font-size: 12px;
+    min-width: 34px;
+    width: 36px;
+    padding: 6px 3px;
+    font-size: 17px;
+    line-height: 1;
+    flex: 0 0 36px;
   }
 
   .sidebar h2 {
@@ -741,9 +747,9 @@ h1 {
       <h2 id="title">불러오는 중</h2>
       <div id="meta"></div>
       <div class="controls">
-        <button id="prev">이전</button>
-        <button id="pause">일시정지</button>
-        <button id="next">다음</button>
+        <button id="prev" type="button" aria-label="이전" title="이전">⏮</button>
+        <button id="pause" type="button" aria-label="일시정지" title="일시정지">⏸</button>
+        <button id="next" type="button" aria-label="다음" title="다음">⏭</button>
         <span id="countdown" aria-live="off">자동 넘김 대기</span>
         <span id="status">데이터 불러오는 중...</span>
       </div>
@@ -1030,7 +1036,9 @@ function renderList() {
         items = getPeriodItems(cat, noticeGroup);
         idx = items.length ? Math.floor(Math.random() * items.length) : 0;
         paused = false;
-        $("pause").textContent = "일시정지";
+        $("pause").textContent = "⏸";
+        $("pause").setAttribute("aria-label", "일시정지");
+        $("pause").title = "일시정지";
         render();
         $("status").textContent =
           noticeGroup + " " + cat + " · " + items.length + "개";
@@ -1213,7 +1221,9 @@ async function startJourney() {
   idx = 0;
   clearTimers();
 
-  $("pause").textContent = "일시정지";
+  $("pause").textContent = "⏸";
+        $("pause").setAttribute("aria-label", "일시정지");
+        $("pause").title = "일시정지";
   $("title").textContent = "수하의 성장 추억을 준비하고 있어요";
   $("meta").textContent = "어린이집 30장 → 유치원 30장 반복";
   $("body").textContent = "어린이집과 유치원의 사진을 모으는 중입니다. 사진 수에 따라 시간이 걸릴 수 있어요.";
@@ -1756,7 +1766,9 @@ function select(c) {
 
     paused = false;
 
-    $("pause").textContent = "일시정지";
+    $("pause").textContent = "⏸";
+        $("pause").setAttribute("aria-label", "일시정지");
+        $("pause").title = "일시정지";
 
   } else {
 
@@ -1764,7 +1776,9 @@ function select(c) {
 
     paused = true;
 
-    $("pause").textContent = "재생";
+    $("pause").textContent = "▶";
+    $("pause").setAttribute("aria-label", "재생");
+    $("pause").title = "재생";
 
   }
 
@@ -1914,8 +1928,9 @@ function togglePause() {
 
   paused = !paused;
 
-  $("pause").textContent =
-    paused ? "재생" : "일시정지";
+  $("pause").textContent = paused ? "▶" : "⏸";
+  $("pause").setAttribute("aria-label", paused ? "재생" : "일시정지");
+  $("pause").title = paused ? "재생" : "일시정지";
 
   if (paused) {
 

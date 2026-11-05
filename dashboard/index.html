@@ -395,10 +395,12 @@ h1 {
 }
 
 #status {
-  display: none; /* 상태 문구는 공간 확보를 위해 숨김 */
+  display: inline-flex; /* 재생 장수 표시는 카운트다운 옆에 유지 */
+  align-items: center;
   color: #9a8d7b;
   font-size: 12px;
   flex-shrink: 0;
+  margin-left: 2px;
 }
 
 /* 오른쪽 목록 */
@@ -743,8 +745,8 @@ h1 {
         <button id="pause">일시정지</button>
         <button id="next">다음</button>
         <span id="countdown" aria-live="off">자동 넘김 대기</span>
+        <span id="status">데이터 불러오는 중...</span>
       </div>
-      <div id="status">데이터 불러오는 중...</div>
     </div>
 
     <div class="record-scroll">
@@ -972,9 +974,21 @@ function getTodayItems() {
     "-" +
     String(today.getDate()).padStart(2, "0");
 
-  return all.filter(x =>
-    getMonthDay(x.date) === monthDay
-  );
+  // 오늘의 추억에는 Kidsnote의 실제 생활 기록만 포함한다.
+  // 어린이집(2024-02-29까지): 알림장 + 앨범
+  // 유치원(2024-03-01부터): 앨범만
+  // 공지, 영양분석, 통계 대시보드 등은 제외한다.
+  return all.filter(x => {
+    const date = String(x.date || "").substring(0, 10);
+    if (getMonthDay(date) !== monthDay) return false;
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return false;
+
+    if (date <= "2024-02-29") {
+      return ["알림장", "앨범"].includes(x.category);
+    }
+
+    return date >= "2024-03-01" && x.category === "앨범";
+  });
 
 }
 

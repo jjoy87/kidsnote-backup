@@ -1042,14 +1042,14 @@ function renderList() {
 }
 
 
-// 성장 추억 여행: 어린이집(알림장) → 유치원(앨범)
+// 성장 추억 여행: 어린이집(알림장 + 앨범) → 유치원(앨범)
 function getJourneyRecords(phase) {
   return all.filter(x => {
     const date = String(x.date || "").substring(0, 10);
     if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return false;
 
     if (phase === "어린이집") {
-      return x.category === "알림장" &&
+      return ["알림장", "앨범"].includes(x.category) &&
         date >= "2022-01-01" && date <= "2024-02-29";
     }
 
@@ -1493,11 +1493,6 @@ function schedulePlayback() {
 async function render() {
 
   clearTimers();
-
-  // 새 기록으로 이동할 때 사진과 본문 스크롤을 항상 맨 위로 초기화
-  // 제목/날짜/조작 버튼이 있는 상단 고정 영역은 그대로 유지
-  const recordScroll = document.querySelector(".record-scroll");
-  if (recordScroll) recordScroll.scrollTop = 0;
 
   if (journeyMode) {
     renderJourneyCurrent();

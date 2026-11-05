@@ -59,12 +59,15 @@ function getDate(page) {
   return page.created_time || "";
 }
 
+// 카테고리 분류
 function getCategory(title) {
   const value = (title || "").trim();
 
- if (value.includes("앨범")) return "앨범";
-  if (value.includes("공지")) return "공지";
+  // 알림장 제목에 '공지'라는 단어가 포함될 수 있으므로
+  // 알림장을 공지보다 먼저 판별
+  if (value.includes("앨범")) return "앨범";
   if (value.includes("알림장")) return "알림장";
+  if (value.includes("공지")) return "공지";
 
   return "전체";
 }

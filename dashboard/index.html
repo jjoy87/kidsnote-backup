@@ -65,6 +65,16 @@ h1 {
   transition: background .2s, transform .2s;
 }
 
+#countdown {
+  display: inline-flex;
+  align-items: center;
+  margin-left: 4px;
+  color: #78866f;
+  font-size: 13px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
 #tabs button:hover,
 .controls button:hover {
   background: #dce5d7;
@@ -721,6 +731,7 @@ h1 {
         <button id="prev">이전</button>
         <button id="pause">일시정지</button>
         <button id="next">다음</button>
+        <span id="countdown" aria-live="off">자동 넘김 대기</span>
       </div>
       <div id="status">데이터 불러오는 중...</div>
     </div>
@@ -779,6 +790,8 @@ let detailRequest = 0;
 
 let recordTimer = null;
 let pageTimer = null;
+let countdownInterval = null;
+let countdownRemaining = 0;
 
 let currentImages = [];
 
@@ -807,8 +820,35 @@ function isAutoCategory() {
   ].includes(cat);
 }
 
+// 자동 넘김 카운트다운 표시
+function startCountdown(seconds) {
+  if (countdownInterval) clearInterval(countdownInterval);
+  countdownRemaining = seconds;
+  const label = $("countdown");
+  const update = () => {
+    if (label) label.textContent = countdownRemaining + "초 뒤 자동 넘김";
+  };
+  update();
+  countdownInterval = setInterval(() => {
+    countdownRemaining = Math.max(0, countdownRemaining - 1);
+    update();
+    if (countdownRemaining === 0) {
+      clearInterval(countdownInterval);
+      countdownInterval = null;
+    }
+  }, 1000);
+}
+
 // 타이머 정리
 function clearTimers() {
+
+  if (countdownInterval) {
+    clearInterval(countdownInterval);
+    countdownInterval = null;
+  }
+  countdownRemaining = 0;
+  const countdownLabel = $("countdown");
+  if (countdownLabel) countdownLabel.textContent = paused ? "일시정지" : "자동 넘김 대기";
 
   if (recordTimer) {
     clearTimeout(recordTimer);
@@ -1453,6 +1493,7 @@ function schedulePlayback() {
 
   if (journeyMode) {
     if (!journeyPhotos.length) return;
+    startCountdown(6);
     journeyTimer = setTimeout(nextJourneyPhoto, 6000);
     return;
   }
@@ -1462,6 +1503,7 @@ function schedulePlayback() {
   // 사진이 7장 이상이면 페이지 단위로 7초마다 이동
   if (currentImages.length > 6) {
 
+    startCountdown(7);
     pageTimer = setTimeout(() => {
 
       if (photoPageIndex < totalPhotoPages - 1) {
@@ -1484,6 +1526,7 @@ function schedulePlayback() {
 
     // 사진이 없는 기록은 본문을 읽을 수 있도록 15초 표시
     const displayTime = currentImages.length === 0 ? 15000 : 45000;
+    startCountdown(displayTime / 1000);
 
     recordTimer = setTimeout(() => {
       next();

@@ -42,6 +42,34 @@ h1 {
 #clock {
   color: #8c806e;
   font-size: 14px;
+  white-space: nowrap;
+}
+
+.header-tools {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 10px;
+  min-width: 0;
+}
+
+.auto-interval-control {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  color: #8c806e;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+#autoInterval {
+  border: 1px solid #ded5c5;
+  border-radius: 8px;
+  background: #fffdf8;
+  color: #665b4b;
+  padding: 5px 7px;
+  font-size: 12px;
+  min-height: 30px;
 }
 
 /* 탭 */
@@ -602,7 +630,23 @@ h1 {
   }
 
   #clock {
+    font-size: 10px;
+  }
+
+  .header-tools {
+    gap: 5px;
+  }
+
+  .auto-interval-control {
+    gap: 3px;
+    font-size: 10px;
+  }
+
+  #autoInterval {
+    padding: 4px 3px;
     font-size: 11px;
+    min-height: 28px;
+    max-width: 68px;
   }
 
   #tabs {
@@ -726,7 +770,22 @@ h1 {
 
 <header>
   <h1>사랑하는 수하의 성장기록</h1>
-  <div id="clock"></div>
+  <div class="header-tools">
+    <div id="clock"></div>
+    <label class="auto-interval-control" for="autoInterval">
+      자동 넘김
+      <select id="autoInterval" aria-label="자동 넘김 시간">
+        <option value="10">10초</option>
+        <option value="15">15초</option>
+        <option value="20">20초</option>
+        <option value="30">30초</option>
+        <option value="45" selected>45초</option>
+        <option value="60">60초</option>
+        <option value="90">90초</option>
+        <option value="120">120초</option>
+      </select>
+    </label>
+  </div>
 </header>
 
 <nav id="tabs">
@@ -833,13 +892,24 @@ let journeyPhase = "어린이집";
 // 자동 재생 대상 카테고리
 function isAutoCategory() {
   return [
+    "전체",
     "앨범",
     "알림장",
+    "공지",
     "추억 랜덤",
     "성장 추억 여행",
     "오늘의 추억"
   ].includes(cat);
 }
+
+// 모든 카테고리와 사진 페이지에 공통 적용하는 자동 넘김 시간(초)
+let autoAdvanceSeconds = 45;
+try {
+  const savedInterval = Number(localStorage.getItem("kidsnoteAutoAdvanceSeconds"));
+  if ([10, 15, 20, 30, 45, 60, 90, 120].includes(savedInterval)) {
+    autoAdvanceSeconds = savedInterval;
+  }
+} catch (e) {}
 
 // 자동 넘김 카운트다운 표시
 function startCountdown(seconds) {
@@ -1554,17 +1624,17 @@ function schedulePlayback() {
 
   if (journeyMode) {
     if (!journeyPhotos.length) return;
-    startCountdown(6);
-    journeyTimer = setTimeout(nextJourneyPhoto, 6000);
+    startCountdown(autoAdvanceSeconds);
+    journeyTimer = setTimeout(nextJourneyPhoto, autoAdvanceSeconds * 1000);
     return;
   }
 
   if (!isAutoCategory() || !items.length) return;
 
-  // 사진이 7장 이상이면 페이지 단위로 7초마다 이동
+  // 사진 페이지도 기록도 동일한 사용자 설정 시간으로 자동 전환
   if (currentImages.length > 6) {
 
-    startCountdown(7);
+    startCountdown(autoAdvanceSeconds);
     pageTimer = setTimeout(() => {
 
       if (photoPageIndex < totalPhotoPages - 1) {
@@ -1581,13 +1651,12 @@ function schedulePlayback() {
 
       }
 
-    }, 7000);
+    }, autoAdvanceSeconds * 1000);
 
   } else {
 
-    // 사진이 없는 기록은 본문을 읽을 수 있도록 15초 표시
-    const displayTime = currentImages.length === 0 ? 15000 : 45000;
-    startCountdown(displayTime / 1000);
+    const displayTime = autoAdvanceSeconds * 1000;
+    startCountdown(autoAdvanceSeconds);
 
     recordTimer = setTimeout(() => {
       next();
@@ -2096,6 +2165,22 @@ function updateClock() {
 updateClock();
 
 setInterval(updateClock, 1000);
+
+// 자동 넘김 시간 선택: 선택값을 저장하고 현재 재생에도 즉시 반영
+const autoIntervalSelect = $("autoInterval");
+if (autoIntervalSelect) {
+  autoIntervalSelect.value = String(autoAdvanceSeconds);
+  autoIntervalSelect.addEventListener("change", () => {
+    const selected = Number(autoIntervalSelect.value);
+    if ([10, 15, 20, 30, 45, 60, 90, 120].includes(selected)) {
+      autoAdvanceSeconds = selected;
+      try {
+        localStorage.setItem("kidsnoteAutoAdvanceSeconds", String(selected));
+      } catch (e) {}
+      schedulePlayback();
+    }
+  });
+}
 
 load();
 

@@ -140,6 +140,24 @@ h1 {
   gap: 9px;
 }
 
+/* 사진이 없는 기록은 본문을 넓게 표시 */
+.viewer.text-only #media {
+  display: none;
+}
+
+.viewer.text-only #body {
+  flex: 1;
+  min-height: 0;
+  margin-top: 8px;
+  padding: 22px 24px;
+  overflow-y: auto;
+  background: #faf8f2;
+  border: 1px solid #e9e1d4;
+  border-radius: 13px;
+  font-size: 17px;
+  line-height: 1.9;
+}
+
 /* 사진 갤러리 */
 #media {
   position: relative;
@@ -1138,14 +1156,6 @@ function renderGalleryPage() {
   media.replaceChildren();
 
   if (!currentImages.length) {
-
-    const empty = document.createElement("div");
-
-    empty.className = "no-photo";
-    empty.textContent = "사진 없음";
-
-    media.appendChild(empty);
-
     return;
   }
 
@@ -1375,12 +1385,12 @@ function schedulePlayback() {
 
   } else {
 
-    // 사진이 6장 이하이거나 사진이 없으면 45초 표시
+    // 사진이 없는 기록은 본문을 읽을 수 있도록 15초 표시
+    const displayTime = currentImages.length === 0 ? 15000 : 45000;
+
     recordTimer = setTimeout(() => {
-
       next();
-
-    }, 45000);
+    }, displayTime);
 
   }
 
@@ -1405,6 +1415,7 @@ async function render() {
     photoPageIndex = 0;
     totalPhotoPages = 0;
 
+    $("media").closest(".viewer").classList.remove("text-only");
     $("media").replaceChildren();
 
     const empty = document.createElement("div");
@@ -1429,6 +1440,8 @@ async function render() {
   const p = items[idx];
 
   const requestId = ++detailRequest;
+
+  $("media").closest(".viewer").classList.remove("text-only");
 
   currentImages = [];
   photoPageIndex = 0;
@@ -1465,6 +1478,9 @@ async function render() {
     photoPageIndex = 0;
 
     totalPhotoPages = Math.ceil(currentImages.length / 6);
+
+    const viewer = $("media").closest(".viewer");
+    viewer.classList.toggle("text-only", currentImages.length === 0);
 
     renderGalleryPage();
 

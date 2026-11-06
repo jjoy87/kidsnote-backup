@@ -1,62 +1,29 @@
 const NOTION_VERSION = "2025-09-03";
 const PAGE_SIZE = 100;
+const DATA_CACHE_TTL = 60;
 
 let cachedDataSourceId = null;
 let cachedRootId = null;
 
-// Notion integration은 평균 초당 약 3회 제한이 있으므로 요청 간격을 두고,
-// 429 응답은 Retry-After를 우선 존중해 재시도한다.
-let notionQueue = Promise.resolve();
-let nextNotionRequestAt = 0;
-
-function wait(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
-
-function pacedNotionFetch(url, options) {
-  const run = async () => {
-    let response;
-    for (let attempt = 0; attempt < 4; attempt++) {
-      const delay = Math.max(0, nextNotionRequestAt - Date.now());
-      if (delay) await wait(delay);
-      nextNotionRequestAt = Date.now() + 400;
-
-      response = await fetch(url, options);
-      if (response.status !== 429 || attempt === 3) return response;
-
-      const retryAfter = Number(response.headers.get("Retry-After"));
-      await wait(Number.isFinite(retryAfter) && retryAfter > 0
-        ? retryAfter * 1000
-        : 1000 * (2 ** attempt));
-    }
-    return response;
-  };
-
-  const task = notionQueue.then(run, run);
-  notionQueue = task.then(() => undefined, () => undefined);
-  return task;
-}
-
 async function notion(path, token, options = {}) {
-  const response = await pacedNotionFetch(
-    `https://api.notion.com/v1${path}`,
-    {
-      ...options,
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Notion-Version": NOTION_VERSION,
-        "Content-Type": "application/json",
-        ...(options.headers || {})
-      }
+  const response = await fetch(`https://api.notion.com/v1${path}`, {
+    ...options,
+    headers: {
+      Authorization: `Bearer ${token}`,
+      "Notion-Version": NOTION_VERSION,
+      "Content-Type": "application/json",
+      ...(options.headers || {})
     }
-  );
+  });
 
   const data = await response.json();
 
   if (!response.ok) {
-    throw new Error(
+    const error = new Error(
       data.message || `Notion API 오류: ${response.status}`
     );
+    error.status = response.status;
+    throw error;
   }
 
   return data;
@@ -92,12 +59,9 @@ function getDate(page) {
   return page.created_time || "";
 }
 
-// 카테고리 분류
 function getCategory(title) {
   const value = (title || "").trim();
 
-  // 알림장 제목에 '공지'라는 단어가 포함될 수 있으므로
-  // 알림장을 공지보다 먼저 판별
   if (value.includes("앨범")) return "앨범";
   if (value.includes("알림장")) return "알림장";
   if (value.includes("공지")) return "공지";
@@ -106,10 +70,7 @@ function getCategory(title) {
 }
 
 async function findDataSource(rootId, token) {
-  if (
-    cachedDataSourceId &&
-    cachedRootId === rootId
-  ) {
+  if (cachedDataSourceId && cachedRootId === rootId) {
     return cachedDataSourceId;
   }
 
@@ -123,9 +84,7 @@ async function findDataSource(rootId, token) {
   );
 
   if (!childDatabase) {
-    throw new Error(
-      "상위 페이지에서 데이터베이스를 찾지 못했습니다."
-    );
+    throw new Error("상위 페이지에서 데이터베이스를 찾지 못했습니다.");
   }
 
   const database = await notion(
@@ -171,19 +130,17 @@ async function fetchDashboardData(token, rootId, cursor) {
     }
   );
 
-  const items = (result.results || []).map(page => {
-    const title = getTitle(page);
-
-    return {
-      id: page.id,
-      title,
-      date: getDate(page),
-      category: getCategory(title)
-    };
-  });
-
   return {
-    items,
+    items: (result.results || []).map(page => {
+      const title = getTitle(page);
+
+      return {
+        id: page.id,
+        title,
+        date: getDate(page),
+        category: getCategory(title)
+      };
+    }),
     has_more: result.has_more,
     next_cursor: result.next_cursor
   };
@@ -201,8 +158,32 @@ export async function onRequestGet({ request, env }) {
       );
     }
 
-    const url = new URL(request.url);
-    const cursor = url.searchParams.get("cursor");
+    const requestUrl = new URL(request.url);
+    const cursor = requestUrl.searchParams.get("cursor");
+
+    // 가족이 동시에 접속하거나 새로고침할 때
+    // 동일한 Notion 목록을 반복 조회하지 않도록 엣지 캐시 사용
+    const cache = caches.default;
+
+    const cacheKeyUrl = new URL(request.url);
+    cacheKeyUrl.searchParams.sort();
+
+    const cacheKey = new Request(
+      cacheKeyUrl.toString(),
+      { method: "GET" }
+    );
+
+    const cached = await cache.match(cacheKey);
+
+    if (cached) {
+      const headers = new Headers(cached.headers);
+      headers.set("X-Dashboard-Data-Cache", "HIT");
+
+      return new Response(cached.body, {
+        status: cached.status,
+        headers
+      });
+    }
 
     const data = await fetchDashboardData(
       token,
@@ -210,18 +191,33 @@ export async function onRequestGet({ request, env }) {
       cursor
     );
 
-    return Response.json(data, {
+    const response = Response.json(data, {
       headers: {
-        "Cache-Control": "private, max-age=30"
+        "Cache-Control": `public, max-age=0, s-maxage=${DATA_CACHE_TTL}`,
+        "X-Dashboard-Data-Cache": "MISS"
       }
     });
 
+    await cache.put(cacheKey, response.clone());
+
+    return response;
+
   } catch (error) {
+    const status = Number(error.status) || 500;
+    const headers = {};
+
+    if (status === 429) {
+      headers["Retry-After"] = "2";
+    }
+
     return Response.json(
       {
         error: error.message || "데이터를 불러오지 못했습니다."
       },
-      { status: 500 }
+      {
+        status: status >= 400 && status <= 599 ? status : 500,
+        headers
+      }
     );
   }
 }

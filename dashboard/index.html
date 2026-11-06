@@ -1856,6 +1856,10 @@ async function render() {
 
   if (!items.length) {
 
+    // 기록이 0개인 카테고리로 이동해도 사이드바 제목과 시기 탭을
+    // 현재 카테고리 기준으로 즉시 갱신한다.
+    renderList();
+
     detailRequest++;
 
     currentImages = [];

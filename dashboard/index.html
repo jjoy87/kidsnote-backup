@@ -1299,6 +1299,71 @@ body.dark-mode.cinema-mode #cinemaJourneyContent .cinema-entry { border-color:#4
   #autoInterval, #autoPlayMode { font-size: 9px !important; }
 }
 
+
+
+/* Mobile header refinement: enlarge the title and use the row more evenly.
+   Only narrow phone layouts are affected; Fold unfolded/tablet/desktop stay unchanged. */
+@media (max-width: 520px) {
+  header { gap: 3px !important; padding-left: 7px !important; padding-right: 7px !important; }
+  header h1 {
+    flex: 0 0 84px !important; width: 84px !important; min-width: 84px !important; max-width: 84px !important;
+    font-size: 12px !important; line-height: 1.12 !important; letter-spacing: -0.35px !important;
+  }
+  .header-tools {
+    flex: 1 1 auto !important; width: 0 !important; min-width: 0 !important;
+    grid-template-columns: 16px 25px 64px 88px 72px !important;
+    grid-template-rows: 30px !important; gap: 2px !important;
+    justify-content: start !important; align-items: center !important;
+  }
+  .api-health-wrap { width: 16px !important; min-width: 16px !important; height: 30px !important; }
+  #apiHealth { width: 14px !important; min-width: 14px !important; height: 14px !important; }
+  #screenWakeLockToggle { width: 25px !important; min-width: 25px !important; max-width: 25px !important; height: 30px !important; min-height: 30px !important; }
+  #themeToggle { width: 64px !important; min-width: 64px !important; max-width: 64px !important; height: 30px !important; min-height: 30px !important; font-size: 9px !important; padding: 0 2px !important; }
+  .header-tools .auto-interval-control { gap: 2px !important; height: 30px !important; font-size: 9px !important; }
+  .header-tools .auto-interval-control .control-label { font-size: 9px !important; }
+  #autoInterval, #autoPlayMode { height: 30px !important; min-height: 30px !important; font-size: 10px !important; padding: 0 2px !important; }
+}
+@media (max-width: 370px) {
+  header h1 { flex-basis: 78px !important; width: 78px !important; min-width: 78px !important; max-width: 78px !important; font-size: 11px !important; }
+  .header-tools { grid-template-columns: 14px 23px 60px 82px 68px !important; gap: 1px !important; }
+  #screenWakeLockToggle { width: 23px !important; min-width: 23px !important; max-width: 23px !important; }
+  #themeToggle { width: 60px !important; min-width: 60px !important; max-width: 60px !important; font-size: 8px !important; }
+  .header-tools .auto-interval-control .control-label { font-size: 8px !important; }
+  #autoInterval, #autoPlayMode { font-size: 9px !important; }
+}
+
+
+/* Responsive header split: Fold cover (391-520px) keeps the roomier current layout;
+   narrower phones (S23 / Flip class) get a compact, separately balanced layout. */
+@media (max-width: 390px) {
+  header { gap: 3px !important; padding-left: 6px !important; padding-right: 6px !important; }
+  header h1 {
+    flex: 0 0 78px !important; width: 78px !important; min-width: 78px !important; max-width: 78px !important;
+    font-size: 11px !important; line-height: 1.12 !important; letter-spacing: -0.35px !important;
+  }
+  .header-tools {
+    flex: 1 1 0 !important; width: 0 !important; min-width: 0 !important;
+    grid-template-columns: 14px 23px 62px 82px 68px !important;
+    grid-template-rows: 30px !important; gap: 2px !important;
+    justify-content: start !important; align-items: center !important;
+  }
+  .api-health-wrap { width: 14px !important; min-width: 14px !important; height: 30px !important; }
+  #apiHealth { width: 14px !important; min-width: 14px !important; height: 14px !important; }
+  #screenWakeLockToggle { width: 23px !important; min-width: 23px !important; max-width: 23px !important; height: 30px !important; min-height: 30px !important; }
+  #themeToggle { width: 62px !important; min-width: 62px !important; max-width: 62px !important; height: 30px !important; min-height: 30px !important; font-size: 9px !important; padding: 0 2px !important; }
+  .header-tools .auto-interval-control { gap: 2px !important; height: 30px !important; font-size: 9px !important; }
+  .header-tools .auto-interval-control .control-label { font-size: 9px !important; }
+  #autoInterval, #autoPlayMode { height: 30px !important; min-height: 30px !important; font-size: 10px !important; padding: 0 2px !important; }
+}
+@media (max-width: 360px) {
+  header h1 { flex-basis: 72px !important; width: 72px !important; min-width: 72px !important; max-width: 72px !important; font-size: 10.5px !important; }
+  .header-tools { grid-template-columns: 13px 22px 58px 78px 66px !important; gap: 1px !important; }
+  #screenWakeLockToggle { width: 22px !important; min-width: 22px !important; max-width: 22px !important; }
+  #themeToggle { width: 58px !important; min-width: 58px !important; max-width: 58px !important; font-size: 8.5px !important; }
+  .header-tools .auto-interval-control .control-label { font-size: 8px !important; }
+  #autoInterval, #autoPlayMode { font-size: 9px !important; }
+}
+
 </style>
 </head>
 

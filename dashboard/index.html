@@ -921,6 +921,25 @@ body.dark-mode.cinema-mode #cinemaJourneyContent .cinema-entry { border-color:#4
   body.cinema-mode .record-scroll { flex-direction:row; }
 }
 
+
+/* 모든 재생/감상/즐겨찾기 버튼 크기 통일: 감상모드 아이콘 기준 */
+.controls button,
+.controls #cinemaEnter {
+  box-sizing: border-box;
+  width: 30px !important;
+  min-width: 30px !important;
+  max-width: 30px;
+  height: 28px !important;
+  min-height: 28px !important;
+  flex: 0 0 30px !important;
+  padding: 0 !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px !important;
+  line-height: 1 !important;
+  border-radius: 8px;
+}
 </style>
 </head>
 

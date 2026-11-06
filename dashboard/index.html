@@ -49,6 +49,7 @@ h1 {
 
 .header-tools {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: flex-end;
   gap: 10px;
@@ -875,7 +876,9 @@ body.dark-mode .no-photo {
 }
 
 /* 감상 모드: 기존 갤러리와 본문 DOM을 그대로 사용 */
-#cinemaEnter { white-space: nowrap; padding-inline:10px; }
+#cinemaEnter { white-space: nowrap; width:30px; min-width:30px; height:28px; padding:4px 0; font-size:16px; line-height:1; flex:0 0 30px; display:inline-flex; align-items:center; justify-content:center; }
+.controls { display:flex; align-items:center; flex-wrap:wrap; gap:5px; min-width:0; }
+.controls #countdown, .controls #status { flex:0 1 auto; }
 #cinemaExit { display:none; position:absolute; right:12px; top:12px; z-index:30; border:1px solid rgba(255,255,255,.55); border-radius:10px; padding:9px 13px; background:rgba(35,42,35,.78); color:white; font-size:13px; cursor:pointer; }
 #cinemaInfo { display:none; }
 body.cinema-mode header, body.cinema-mode #tabs, body.cinema-mode .viewer-top, body.cinema-mode .sidebar { display:none !important; }
@@ -966,7 +969,7 @@ body.dark-mode.cinema-mode #cinemaJourneyContent .cinema-entry { border-color:#4
         <button id="prev" type="button" aria-label="이전" title="이전">⏮</button>
         <button id="pause" type="button" aria-label="일시정지" title="일시정지">⏸</button>
         <button id="next" type="button" aria-label="다음" title="다음">⏭</button>
-        <button id="cinemaEnter" type="button" title="감상모드" aria-label="감상모드">⛶ 감상모드</button>
+        <button id="cinemaEnter" type="button" title="감상모드" aria-label="감상모드">⛶</button>
         <button id="favoriteToggle" type="button" aria-label="즐겨찾기 추가" title="즐겨찾기 추가">☆</button>
         <span id="countdown" aria-live="off">자동 넘김 대기</span>
         <span id="status">데이터 불러오는 중...</span>
@@ -2459,7 +2462,7 @@ cinemaMeta.id = 'cinemaMeta';
 cinemaInfo.append(cinemaTitle, cinemaMeta);
 const cinemaJourneyContent = document.createElement('div');
 cinemaJourneyContent.id = 'cinemaJourneyContent';
-cinemaRight.append(cinemaInfo, cinemaBody, cinemaJourneyContent);
+cinemaRight.append(cinemaInfo, cinemaJourneyContent);
 let cinemaActive = false;
 let cinemaContentToken = 0;
 let cinemaRefreshScheduled = false;
@@ -2515,6 +2518,7 @@ cinemaObserver.observe($('media'), {childList:true});
 async function enterCinema() {
   if (cinemaActive) return;
   cinemaActive = true;
+  cinemaRight.insertBefore(cinemaBody, cinemaJourneyContent);
   cinemaRecordScroll.appendChild(cinemaRight);
   document.body.classList.add('cinema-mode');
   refreshCinemaContent();

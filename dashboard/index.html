@@ -1401,6 +1401,78 @@ body.dark-mode.cinema-mode #cinemaJourneyContent .cinema-entry { border-color:#4
   html:not(.fold-cover) #themeToggle { width:58px !important; min-width:58px !important; max-width:58px !important; font-size:8.5px !important; }
 }
 
+
+
+/* Final mobile header layout: viewport-width based, not user-agent model detection. */
+@media (min-width: 391px) and (max-width: 520px) {
+  header {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 5px !important;
+    padding-left: 8px !important;
+    padding-right: 8px !important;
+  }
+  header h1 {
+    flex: 0 0 108px !important;
+    width: 108px !important;
+    min-width: 108px !important;
+    max-width: 108px !important;
+    font-size: 13px !important;
+    line-height: 1.12 !important;
+    letter-spacing: -0.4px !important;
+    margin: 0 !important;
+  }
+  .header-tools {
+    flex: 0 1 auto !important;
+    width: auto !important;
+    min-width: 0 !important;
+    display: grid !important;
+    grid-template-columns: 16px 25px 66px 80px 70px !important;
+    grid-template-rows: 32px !important;
+    gap: 3px !important;
+    align-items: center !important;
+    justify-content: end !important;
+  }
+  .api-health-wrap { width:16px !important; min-width:16px !important; height:32px !important; }
+  #apiHealth { width:14px !important; min-width:14px !important; height:14px !important; }
+  #screenWakeLockToggle { width:25px !important; min-width:25px !important; max-width:25px !important; height:32px !important; min-height:32px !important; }
+  #themeToggle { width:66px !important; min-width:66px !important; max-width:66px !important; height:32px !important; min-height:32px !important; padding:0 2px !important; font-size:9px !important; }
+  .header-tools .auto-interval-control { height:32px !important; min-width:0 !important; gap:2px !important; font-size:9px !important; white-space:nowrap !important; }
+  .header-tools .auto-interval-control .control-label { font-size:9px !important; }
+  #autoInterval, #autoPlayMode { height:32px !important; min-height:32px !important; min-width:0 !important; font-size:10px !important; padding:0 2px !important; }
+}
+@media (max-width: 390px) {
+  header {
+    display:flex !important; align-items:center !important; justify-content:space-between !important;
+    gap:3px !important; padding-left:6px !important; padding-right:6px !important;
+  }
+  header h1 {
+    flex:0 0 82px !important; width:82px !important; min-width:82px !important; max-width:82px !important;
+    font-size:12px !important; line-height:1.12 !important; letter-spacing:-0.4px !important; margin:0 !important;
+  }
+  .header-tools {
+    flex:1 1 0 !important; width:0 !important; min-width:0 !important;
+    display:grid !important; grid-template-columns:14px 22px 58px 70px 62px !important;
+    grid-template-rows:30px !important; gap:2px !important; align-items:center !important; justify-content:start !important;
+  }
+  .api-health-wrap { width:14px !important; min-width:14px !important; height:30px !important; }
+  #apiHealth { width:13px !important; min-width:13px !important; height:13px !important; }
+  #screenWakeLockToggle { width:22px !important; min-width:22px !important; max-width:22px !important; height:30px !important; min-height:30px !important; }
+  #themeToggle { width:58px !important; min-width:58px !important; max-width:58px !important; height:30px !important; min-height:30px !important; padding:0 1px !important; font-size:8.5px !important; }
+  .header-tools .auto-interval-control { height:30px !important; min-width:0 !important; gap:1px !important; font-size:8px !important; white-space:nowrap !important; }
+  .header-tools .auto-interval-control .control-label { font-size:8px !important; }
+  #autoInterval, #autoPlayMode { height:30px !important; min-height:30px !important; min-width:0 !important; font-size:9px !important; padding:0 1px !important; }
+}
+@media (max-width: 360px) {
+  header h1 { flex-basis:74px !important; width:74px !important; min-width:74px !important; max-width:74px !important; font-size:11px !important; }
+  .header-tools { grid-template-columns:13px 21px 54px 64px 56px !important; gap:1px !important; }
+  #screenWakeLockToggle { width:21px !important; min-width:21px !important; max-width:21px !important; }
+  #themeToggle { width:54px !important; min-width:54px !important; max-width:54px !important; font-size:8px !important; }
+  .header-tools .auto-interval-control .control-label { font-size:7.5px !important; }
+  #autoInterval, #autoPlayMode { font-size:8.5px !important; }
+}
+
 </style>
 </head>
 

@@ -810,6 +810,14 @@ body.dark-mode #favoriteToggle.is-favorite {
       font-size: 10px;
     }
 
+    #screenWakeLockToggle {
+      width: 27px;
+      min-width: 27px;
+      height: 27px;
+      flex: 0 0 27px;
+      font-size: 14px;
+    }
+
     #themeToggle {
       min-width: 42px;
       min-height: 27px;
@@ -935,6 +943,25 @@ body.dark-mode #favoriteToggle.is-favorite {
 }
 
 /* 다크 모드: 기존 파스텔 포인트는 유지하고 밝은 패널·카드만 어둡게 */
+#screenWakeLockToggle {
+  width: 30px;
+  min-width: 30px;
+  height: 30px;
+  padding: 0;
+  border: 1px solid #ded5c5;
+  border-radius: 8px;
+  background: #e9e3d7;
+  color: #665b4b;
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+}
+#screenWakeLockToggle[data-enabled="true"] {
+  background: #82977a;
+  border-color: #6e8566;
+  color: #fff;
+}
+#screenWakeLockToggle:disabled { opacity: .55; cursor: not-allowed; }
 #themeToggle {
   border: 1px solid #ded5c5;
   border-radius: 8px;
@@ -1004,6 +1031,11 @@ body.dark-mode .item.selected {
 body.dark-mode #autoInterval,
 body.dark-mode #autoPlayMode,
 body.dark-mode #themeToggle {
+  background: #414141;
+  border-color: #625d54;
+  color: #eee8de;
+}
+body.dark-mode #screenWakeLockToggle:not([data-enabled="true"]) {
   background: #414141;
   border-color: #625d54;
   color: #eee8de;
@@ -1108,6 +1140,7 @@ body.dark-mode.cinema-mode #cinemaJourneyContent .cinema-entry { border-color:#4
         aria-label="Notion API 상태 확인 중" aria-expanded="false" aria-controls="apiHealthPopover"></button>
       <span id="apiHealthPopover" role="status" hidden>API 및 사진 상태를 확인하고 있습니다.</span>
     </span>
+    <button id="screenWakeLockToggle" type="button" aria-label="화면 켜짐 유지 끄기" title="화면 켜짐 유지: 꺼짐" aria-pressed="false">▣</button>
     <button id="themeToggle" type="button" aria-label="다크 모드로 전환">🌙 다크</button>
     <label class="auto-interval-control" for="autoInterval">
       자동 넘김
@@ -2786,6 +2819,67 @@ if (themeToggle) {
       localStorage.setItem("kidsnoteDashboardTheme", darkModeEnabled ? "dark" : "light");
     } catch (e) {}
   });
+}
+
+// 화면 켜짐 유지: Android Chrome/Samsung Internet의 Screen Wake Lock API 사용
+const screenWakeLockToggle = $("screenWakeLockToggle");
+let screenWakeLock = null;
+let screenWakeLockEnabled = false;
+try {
+  screenWakeLockEnabled = localStorage.getItem("kidsnoteKeepScreenOn") === "true";
+} catch (e) {}
+
+function updateWakeLockButton() {
+  if (!screenWakeLockToggle) return;
+  screenWakeLockToggle.dataset.enabled = String(screenWakeLockEnabled);
+  screenWakeLockToggle.textContent = screenWakeLockEnabled ? "▣" : "▢";
+  screenWakeLockToggle.setAttribute("aria-pressed", String(screenWakeLockEnabled));
+  screenWakeLockToggle.setAttribute("aria-label", screenWakeLockEnabled ? "화면 켜짐 유지 켜짐" : "화면 켜짐 유지 꺼짐");
+  screenWakeLockToggle.title = screenWakeLockEnabled ? "화면 켜짐 유지: 켜짐" : "화면 켜짐 유지: 꺼짐";
+}
+
+async function requestScreenWakeLock() {
+  if (!screenWakeLockEnabled || !("wakeLock" in navigator) || document.visibilityState !== "visible") return;
+  try {
+    if (screenWakeLock && !screenWakeLock.released) return;
+    screenWakeLock = await navigator.wakeLock.request("screen");
+    screenWakeLock.addEventListener("release", () => { screenWakeLock = null; });
+  } catch (error) {
+    // 브라우저 미지원, 배터리 절약 또는 시스템 정책으로 거절될 수 있음
+    screenWakeLock = null;
+    if (screenWakeLockToggle) screenWakeLockToggle.title = "화면 켜짐 유지 요청 실패: 브라우저 또는 절전 설정을 확인하세요.";
+  }
+}
+
+async function releaseScreenWakeLock() {
+  if (screenWakeLock) {
+    try { await screenWakeLock.release(); } catch (e) {}
+    screenWakeLock = null;
+  }
+}
+
+if (screenWakeLockToggle) {
+  updateWakeLockButton();
+  screenWakeLockToggle.addEventListener("click", async () => {
+    if (!("wakeLock" in navigator)) {
+      alert("현재 브라우저는 화면 켜짐 유지 기능을 지원하지 않습니다. 삼성 인터넷 또는 Chrome 최신 버전에서 이용해 주세요.");
+      return;
+    }
+    screenWakeLockEnabled = !screenWakeLockEnabled;
+    try { localStorage.setItem("kidsnoteKeepScreenOn", String(screenWakeLockEnabled)); } catch (e) {}
+    updateWakeLockButton();
+    if (screenWakeLockEnabled) {
+      await requestScreenWakeLock();
+    } else {
+      await releaseScreenWakeLock();
+    }
+  });
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible" && screenWakeLockEnabled) {
+      requestScreenWakeLock();
+    }
+  });
+  if (screenWakeLockEnabled) requestScreenWakeLock();
 }
 
 // 자동 넘김 시간 선택: 선택값을 저장하고 현재 재생에도 즉시 반영

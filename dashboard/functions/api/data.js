@@ -4,8 +4,41 @@ const PAGE_SIZE = 100;
 let cachedDataSourceId = null;
 let cachedRootId = null;
 
+// Notion integration은 평균 초당 약 3회 제한이 있으므로 요청 간격을 두고,
+// 429 응답은 Retry-After를 우선 존중해 재시도한다.
+let notionQueue = Promise.resolve();
+let nextNotionRequestAt = 0;
+
+function wait(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+function pacedNotionFetch(url, options) {
+  const run = async () => {
+    let response;
+    for (let attempt = 0; attempt < 4; attempt++) {
+      const delay = Math.max(0, nextNotionRequestAt - Date.now());
+      if (delay) await wait(delay);
+      nextNotionRequestAt = Date.now() + 400;
+
+      response = await fetch(url, options);
+      if (response.status !== 429 || attempt === 3) return response;
+
+      const retryAfter = Number(response.headers.get("Retry-After"));
+      await wait(Number.isFinite(retryAfter) && retryAfter > 0
+        ? retryAfter * 1000
+        : 1000 * (2 ** attempt));
+    }
+    return response;
+  };
+
+  const task = notionQueue.then(run, run);
+  notionQueue = task.then(() => undefined, () => undefined);
+  return task;
+}
+
 async function notion(path, token, options = {}) {
-  const response = await fetch(
+  const response = await pacedNotionFetch(
     `https://api.notion.com/v1${path}`,
     {
       ...options,

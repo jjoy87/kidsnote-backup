@@ -1468,19 +1468,30 @@ function getJourneyRecords(phase) {
   });
 }
 
-// 해당 시기의 전체 사진을 한 번 수집한다. 이후 재생은 30장씩 새로 추첨한다.
+// 성장 추억 사진은 최대 30장을 먼저 확보하면 재생을 시작하고,
+// 나머지 기록은 백그라운드에서 계속 수집해 다음 회차에 사용한다.
 async function loadJourneyPhotos(phase, token) {
-  const records = getJourneyRecords(phase);
+  const records = shufflePhotos(getJourneyRecords(phase));
   const found = [];
   let cursor = 0;
+  let readyResolved = false;
+  let resolveReady;
+  const ready = new Promise(resolve => { resolveReady = resolve; });
+
+  function markReadyIfNeeded(done = false) {
+    if (!readyResolved && (found.length >= 30 || done)) {
+      readyResolved = true;
+      resolveReady(found);
+    }
+  }
 
   async function worker() {
-    while (cursor < records.length) {
+    while (token === journeyLoadToken) {
       const record = records[cursor++];
+      if (!record) break;
       try {
         const detail = await loadDetail(record.id);
         if (token !== journeyLoadToken) return;
-
         (detail.images || []).forEach((src, imageIndex) => {
           found.push({
             src,
@@ -1491,16 +1502,18 @@ async function loadJourneyPhotos(phase, token) {
             imageIndex
           });
         });
+        markReadyIfNeeded();
       } catch (error) {
+        if (token !== journeyLoadToken) return;
         console.warn("성장 추억 사진 조회 실패:", record.title, error);
       }
     }
   }
 
-  // 동시에 4개씩 상세 기록을 조회한다.
-  await Promise.all(Array.from({ length: 4 }, () => worker()));
-  if (token !== journeyLoadToken) return [];
-  return found;
+  // Notion 요청 제한을 고려해 시기별 상세 조회 동시 실행은 2개로 제한한다.
+  const workers = [worker(), worker()];
+  Promise.all(workers).then(() => markReadyIfNeeded(true));
+  return ready;
 }
 
 // Fisher-Yates 방식으로 공정하게 섞는다.
@@ -1567,16 +1580,33 @@ async function startJourney() {
   $("list").textContent = "사진을 준비하고 있습니다...";
   $("status").textContent = "어린이집 시절 사진 조회 중...";
 
-  const [childcare, kindergarten] = await Promise.all([
-    loadJourneyPhotos("어린이집", token),
-    loadJourneyPhotos("유치원", token)
-  ]);
+  // 어린이집 사진 30장(또는 해당 시기 전체 소진)을 먼저 확보해 즉시 재생한다.
+  // 유치원 사진은 첫 화면 재생을 막지 않도록 별도로 백그라운드 수집한다.
+  const childcareReady = loadJourneyPhotos("어린이집", token);
+  const childcare = await childcareReady;
   if (token !== journeyLoadToken) return;
-
   journeyPools["어린이집"] = childcare;
+
+  if (childcare.length) {
+    beginJourneyBatch("어린이집");
+    $("status").textContent = "어린이집 사진 " + childcare.length + "장 확보 · 유치원 사진 수집 중";
+    schedulePlayback();
+    loadJourneyPhotos("유치원", token).then(kindergarten => {
+      if (token !== journeyLoadToken) return;
+      journeyPools["유치원"] = kindergarten;
+      $("status").textContent =
+        "어린이집 사진 " + journeyPools["어린이집"].length + "장 · 유치원 사진 " +
+        kindergarten.length + "장 수집 · 회차별 최대 30장씩 번갈아 재생";
+    });
+    return;
+  }
+
+  // 어린이집 사진이 없으면 유치원 사진을 먼저 확보해 시작한다.
+  const kindergarten = await loadJourneyPhotos("유치원", token);
+  if (token !== journeyLoadToken) return;
   journeyPools["유치원"] = kindergarten;
 
-  if (!childcare.length && !kindergarten.length) {
+  if (!kindergarten.length) {
     $("title").textContent = "추억 사진이 없습니다";
     $("meta").textContent = "";
     $("body").textContent = "해당 기간의 알림장·앨범 사진을 찾지 못했습니다.";
@@ -1586,12 +1616,8 @@ async function startJourney() {
     return;
   }
 
-  // 첫 묶음은 어린이집, 다음 묶음은 유치원으로 번갈아 재생한다.
-  const firstPhase = childcare.length ? "어린이집" : "유치원";
-  beginJourneyBatch(firstPhase);
-  $("status").textContent =
-    "어린이집 사진 " + childcare.length + "장 보유 · 유치원 사진 " +
-    kindergarten.length + "장 보유 · 회차별 최대 30장씩 번갈아 재생";
+  beginJourneyBatch("유치원");
+  $("status").textContent = "유치원 사진 " + kindergarten.length + "장 확보 · 회차별 최대 30장씩 재생";
   schedulePlayback();
 }
 

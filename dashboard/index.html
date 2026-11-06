@@ -1364,10 +1364,56 @@ body.dark-mode.cinema-mode #cinemaJourneyContent .cinema-entry { border-color:#4
   #autoInterval, #autoPlayMode { font-size: 9px !important; }
 }
 
+
+
+/* Device-aware mobile header: distinguish Galaxy Z Fold cover from narrow phones.
+   Fold cover gets a slightly larger title; unfolded/tablet/desktop remain untouched. */
+@media (max-width: 520px) {
+  html.fold-cover header h1 {
+    flex: 0 0 92px !important;
+    width: 92px !important;
+    min-width: 92px !important;
+    max-width: 92px !important;
+    font-size: 12px !important;
+    line-height: 1.14 !important;
+    letter-spacing: -0.3px !important;
+  }
+  html.fold-cover header { gap: 2px !important; }
+  html.fold-cover .header-tools {
+    grid-template-columns: 14px 22px 60px 78px 66px !important;
+    gap: 1px !important;
+  }
+}
+
+@media (max-width: 390px) {
+  html:not(.fold-cover) header h1 {
+    flex: 0 0 78px !important;
+    width: 78px !important;
+    min-width: 78px !important;
+    max-width: 78px !important;
+    font-size: 11px !important;
+  }
+  html:not(.fold-cover) .header-tools {
+    grid-template-columns: 14px 22px 58px 76px 64px !important;
+    gap: 1px !important;
+  }
+  html:not(.fold-cover) #screenWakeLockToggle { width:22px !important; min-width:22px !important; max-width:22px !important; }
+  html:not(.fold-cover) #themeToggle { width:58px !important; min-width:58px !important; max-width:58px !important; font-size:8.5px !important; }
+}
+
 </style>
 </head>
 
 <body>
+<script>
+(function () {
+  try {
+    var ua = navigator.userAgent || '';
+    /* Samsung Galaxy Z Fold family model codes: SM-F9xx. Flip models use SM-F7xx. */
+    if (/SM-F9\d{2}/i.test(ua)) document.documentElement.classList.add('fold-cover');
+  } catch (_) {}
+})();
+</script>
 
 <header>
   <h1><span class="header-title-line">사랑하는 수하의</span><span class="header-title-line">성장기록</span></h1>

@@ -669,6 +669,63 @@ body.dark-mode #favoriteToggle.is-favorite {
     max-width: 68px;
   }
 
+  /* S23 등 좁은 화면에서도 제목과 설정을 한 줄로 유지 */
+  @media (max-width: 430px) {
+    header {
+      padding: 4px 8px;
+      gap: 4px;
+      flex-wrap: nowrap;
+    }
+
+    h1 {
+      font-size: 12px;
+      letter-spacing: -0.7px;
+      flex: 1 1 auto;
+      min-width: 0;
+    }
+
+    .header-tools {
+      flex: 0 0 auto;
+      flex-wrap: nowrap;
+      gap: 3px;
+    }
+
+    .auto-interval-control {
+      gap: 0;
+      font-size: 0;
+    }
+
+    #autoInterval,
+    #autoPlayMode {
+      width: 58px;
+      max-width: 58px;
+      min-width: 0;
+      padding: 3px 2px;
+      font-size: 10px;
+      min-height: 27px;
+    }
+
+    #themeToggle {
+      width: 27px;
+      min-width: 27px;
+      min-height: 27px;
+      padding: 0;
+      font-size: 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #themeToggle::before {
+      content: "🌙";
+      font-size: 14px;
+    }
+
+    body.dark-mode #themeToggle::before {
+      content: "☀️";
+    }
+  }
+
   #tabs {
     padding: 4px 12px 6px;
     gap: 5px;
@@ -951,6 +1008,13 @@ body.dark-mode.cinema-mode #cinemaJourneyContent .cinema-entry { border-color:#4
         <option value="120">120초</option>
       </select>
     </label>
+    <label class="auto-interval-control" for="autoPlayMode">
+      재생
+      <select id="autoPlayMode" aria-label="자동 재생 설정">
+        <option value="on">자동</option>
+        <option value="off">정지</option>
+      </select>
+    </label>
   </div>
 </header>
 
@@ -1131,7 +1195,9 @@ function isAutoCategory() {
 
 // 모든 카테고리와 사진 페이지에 공통 적용하는 자동 넘김 시간(초)
 let autoAdvanceSeconds = 45;
+let autoPlayEnabled = true;
 try {
+  autoPlayEnabled = localStorage.getItem("kidsnoteAutoPlayEnabled") !== "false";
   const savedInterval = Number(localStorage.getItem("kidsnoteAutoAdvanceSeconds"));
   if ([10, 15, 20, 30, 45, 60, 90, 120].includes(savedInterval)) {
     autoAdvanceSeconds = savedInterval;
@@ -1901,7 +1967,7 @@ function schedulePlayback() {
 
   clearTimers();
 
-  if (paused || lightboxOpen) return;
+  if (!autoPlayEnabled || paused || lightboxOpen) return;
 
   if (journeyMode) {
     if (!journeyPhotos.length) return;
@@ -2490,6 +2556,25 @@ if (autoIntervalSelect) {
       try {
         localStorage.setItem("kidsnoteAutoAdvanceSeconds", String(selected));
       } catch (e) {}
+      schedulePlayback();
+    }
+  });
+}
+
+// 자동 재생/정지 설정: 시간 설정과 별도로 저장되어 페이지를 다시 열어도 유지
+const autoPlayModeSelect = $("autoPlayMode");
+if (autoPlayModeSelect) {
+  autoPlayModeSelect.value = autoPlayEnabled ? "on" : "off";
+  autoPlayModeSelect.addEventListener("change", () => {
+    autoPlayEnabled = autoPlayModeSelect.value === "on";
+    try {
+      localStorage.setItem("kidsnoteAutoPlayEnabled", String(autoPlayEnabled));
+    } catch (e) {}
+    if (!autoPlayEnabled) {
+      clearTimers();
+      const label = $("countdown");
+      if (label) label.textContent = "자동 넘김 정지";
+    } else {
       schedulePlayback();
     }
   });

@@ -743,40 +743,62 @@ body.dark-mode #favoriteToggle.is-favorite {
     max-width: 68px;
   }
 
-  /* S23 등 좁은 화면에서도 제목과 설정을 한 줄로 유지 */
-  @media (max-width: 430px) {
+  /* 좁은 스마트폰: 제목만 두 줄, 오른쪽 설정은 한 줄로 중앙 정렬 */
+  @media (max-width: 520px) {
     header {
-      padding: 4px 8px;
+      height: 54px;
+      min-height: 54px;
+      padding: 4px 6px;
       gap: 4px;
       flex-wrap: nowrap;
+      align-items: center;
     }
 
     h1 {
-      font-size: 12px;
-      letter-spacing: -0.7px;
-      flex: 1 1 auto;
-      min-width: 0;
+      flex: 0 0 86px;
+      width: 86px;
+      min-width: 86px;
+      margin: 0;
+      white-space: normal;
+      font-size: 11px;
+      line-height: 1.08;
+      letter-spacing: -0.45px;
+    }
+
+    .header-title-line {
+      display: block;
+      white-space: nowrap;
     }
 
     .header-tools {
-      flex: 0 0 auto;
+      flex: 1 1 auto;
+      min-width: 0;
       flex-wrap: nowrap;
+      justify-content: flex-end;
+      align-items: center;
       gap: 3px;
     }
 
+    .api-health-wrap {
+      flex: 0 0 14px;
+      margin-right: 1px;
+    }
+
     .auto-interval-control {
-      gap: 0;
-      font-size: 0;
+      flex: 0 0 auto;
+      gap: 2px;
+      font-size: 9px;
+      line-height: 1;
     }
 
     #autoInterval,
     #autoPlayMode {
-      width: 58px;
-      max-width: 58px;
-      min-width: 0;
-      padding: 3px 2px;
-      font-size: 10px;
+      width: 48px;
+      max-width: 48px;
+      min-width: 48px;
       min-height: 27px;
+      padding: 3px 1px;
+      font-size: 10px;
     }
 
     #themeToggle {
@@ -1082,7 +1104,7 @@ body.dark-mode.cinema-mode #cinemaJourneyContent .cinema-entry { border-color:#4
 <body>
 
 <header>
-  <h1>사랑하는 수하의 성장기록</h1>
+  <h1><span class="header-title-line">사랑하는 수하의</span><span class="header-title-line">성장기록</span></h1>
   <div class="header-tools">
     <span class="api-health-wrap">
       <button id="apiHealth" type="button" data-state="checking"
@@ -1505,57 +1527,46 @@ async function loadDetail(pageId) {
   if (detailInFlight.has(key)) return detailInFlight.get(key);
 
   const request = (async () => {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 40000);
-    setApiHealth("checking", "상세 기록 응답 대기 중 · 최대 40초", "상세 기록 조회");
-
-    try {
-      const response = await fetch(
-        "/api/detail?id=" + encodeURIComponent(key),
-        { signal: controller.signal }
-      );
-
-      let data;
+    let lastError;
+    for (let attempt = 0; attempt < 2; attempt++) {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 18000);
+      setApiHealth("checking", `상세 기록 응답 대기 중 · 최대 18초 (${attempt + 1}/2)`, "상세 기록 조회");
       try {
-        data = await response.json();
-      } catch (_) {
-        throw new Error("상세 API 응답을 JSON으로 읽지 못했습니다.");
-      }
-
-      updateApiHealthFromResponse(
-        response,
-        "상세 기록 조회",
-        response.ok
-          ? `본문 ${String(data.text || "").length}자 · 사진 URL ${(data.images || []).length}개`
-          : (data.error || "요청 실패")
-      );
-
-      if (!response.ok) {
-        const error = new Error(data.error || "상세 기록 조회 실패");
-        error.status = response.status;
+        const response = await fetch(
+          "/api/detail?id=" + encodeURIComponent(key),
+          { signal: controller.signal }
+        );
+        let data;
+        try { data = await response.json(); }
+        catch (_) { throw new Error("상세 API 응답을 JSON으로 읽지 못했습니다."); }
+        updateApiHealthFromResponse(response, "상세 기록 조회", response.ok ? `본문 ${String(data.text || "").length}자 · 사진 URL ${(data.images || []).length}개` : (data.error || "요청 실패"));
+        if (!response.ok) {
+          const error = new Error(data.error || "상세 기록 조회 실패");
+          error.status = response.status;
+          throw error;
+        }
+        detailCache.set(key, { data, savedAt: Date.now() });
+        return data;
+      } catch (error) {
+        lastError = error;
+        if (attempt === 0 && (!error.status || [429, 500, 502, 503, 504].includes(error.status))) {
+          setApiHealth("checking", "상세 조회 일시 오류 · 재시도 중", "상세 기록 조회");
+          await new Promise(resolve => setTimeout(resolve, 700));
+          continue;
+        }
+        if (!error.status) markApiNetworkError("상세 기록 조회", error);
         throw error;
+      } finally {
+        clearTimeout(timeoutId);
       }
-
-      detailCache.set(key, { data, savedAt: Date.now() });
-      return data;
-    } catch (error) {
-      if (error.name === "AbortError") {
-        const timeoutError = new Error("상세 기록 응답 대기 시간 초과(40초)");
-        markApiNetworkError("상세 기록 조회", timeoutError);
-        throw timeoutError;
-      }
-      if (!error.status) markApiNetworkError("상세 기록 조회", error);
-      throw error;
-    } finally {
-      clearTimeout(timeoutId);
     }
+    throw lastError || new Error("상세 기록 조회 실패");
   })();
 
   detailInFlight.set(key, request);
   try { return await request; }
-  finally {
-    if (detailInFlight.get(key) === request) detailInFlight.delete(key);
-  }
+  finally { if (detailInFlight.get(key) === request) detailInFlight.delete(key); }
 }
 // 날짜 월일 추출
 function getMonthDay(dateValue) {
@@ -1763,7 +1774,7 @@ async function loadJourneyPhotos(phase, token) {
   let resolveReady;
   const ready = new Promise(resolve => { resolveReady = resolve; });
   const startedAt = Date.now();
-  const MAX_COLLECT_MS = 90000;
+  const MAX_COLLECT_MS = 45000;
 
   function markReadyIfNeeded(done = false) {
     if (!readyResolved && (found.length >= 30 || done || Date.now() - startedAt >= MAX_COLLECT_MS)) {
@@ -1785,7 +1796,7 @@ async function loadJourneyPhotos(phase, token) {
       } catch (error) {
         if (token !== journeyLoadToken) return;
         console.warn("성장 추억 사진 조회 실패:", record.title, error);
-        setApiHealth("busy", `일부 기록 건너뜀: ${record.title || "제목 없음"} · 다음 기록 계속 조회`, "성장 추억 여행");
+        setApiHealth("error", `기록 건너뜀: ${record.title || "제목 없음"} · ${error.message}`, "성장 추억 여행");
       }
     }
   }
@@ -1858,7 +1869,7 @@ async function startJourney() {
   $("listTitle").textContent = "🌱 성장 추억 여행";
   $("list").textContent = "사진을 준비하고 있습니다...";
   $("status").textContent = "어린이집 시절 사진 조회 중...";
-  setApiHealth("checking", "성장 추억 여행: 어린이집 사진 수집 중 · 최대 90초", "성장 추억 여행");
+  setApiHealth("checking", "성장 추억 여행: 어린이집 사진 수집 중 · 최대 45초", "성장 추억 여행");
 
   // 어린이집 사진 30장(또는 해당 시기 전체 소진)을 먼저 확보해 즉시 재생한다.
   // 유치원 사진은 첫 화면 재생을 막지 않도록 별도로 백그라운드 수집한다.

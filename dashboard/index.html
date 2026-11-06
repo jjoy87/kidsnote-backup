@@ -3042,27 +3042,79 @@ $("media").addEventListener("touchend", event => {
 }, { passive: true });
 
 // 확대 모달 터치 스와이프
+// 두 손가락 핀치(확대/축소)가 한 번이라도 감지된 제스처는
+// 손을 뗄 때 사진 넘김으로 처리하지 않는다.
 let lightboxTouchStartX = 0;
+let lightboxPinchGesture = false;
+let lightboxSingleTouchStart = false;
 
 $("lightbox").addEventListener("touchstart", event => {
 
   if (!lightboxOpen) return;
 
+  if (event.touches.length > 1) {
+    lightboxPinchGesture = true;
+    lightboxSingleTouchStart = false;
+    return;
+  }
+
+  // 이미 핀치 동작 중 두 번째 손가락이 들어온 경우에도
+  // 이후 touchend에서 사진이 넘어가지 않도록 상태를 유지한다.
+  if (lightboxPinchGesture) return;
+
+  lightboxSingleTouchStart = true;
   lightboxTouchStartX = event.changedTouches[0].screenX;
+
+}, { passive: true });
+
+$("lightbox").addEventListener("touchmove", event => {
+
+  if (!lightboxOpen) return;
+
+  if (event.touches.length > 1) {
+    lightboxPinchGesture = true;
+    lightboxSingleTouchStart = false;
+  }
 
 }, { passive: true });
 
 $("lightbox").addEventListener("touchend", event => {
 
-  if (!lightboxOpen || currentImages.length <= 1) return;
+  if (!lightboxOpen) return;
 
-  const diff =
-    event.changedTouches[0].screenX - lightboxTouchStartX;
+  // 핀치 제스처가 끝난 경우 현재 사진을 그대로 유지한다.
+  if (lightboxPinchGesture) {
+    if (event.touches.length === 0) {
+      lightboxPinchGesture = false;
+      lightboxSingleTouchStart = false;
+    }
+    return;
+  }
+
+  if (!lightboxSingleTouchStart || currentImages.length <= 1) {
+    if (event.touches.length === 0) lightboxSingleTouchStart = false;
+    return;
+  }
+
+  // 손가락이 모두 떨어진 마지막 이벤트에서만 스와이프를 판정한다.
+  if (event.touches.length > 0) return;
+
+  const changedTouch = event.changedTouches[0];
+  const diff = changedTouch
+    ? changedTouch.screenX - lightboxTouchStartX
+    : 0;
+
+  lightboxSingleTouchStart = false;
 
   if (Math.abs(diff) < 60) return;
 
   moveLightbox(diff < 0 ? 1 : -1);
 
+}, { passive: true });
+
+$("lightbox").addEventListener("touchcancel", () => {
+  lightboxPinchGesture = false;
+  lightboxSingleTouchStart = false;
 }, { passive: true });
 
 // 데이터 불러오기

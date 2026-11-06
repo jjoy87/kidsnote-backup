@@ -643,7 +643,10 @@ body.dark-mode #favoriteToggle.is-favorite {
   border-radius: 5px;
   user-select: none;
   -webkit-user-drag: none;
-  touch-action: pinch-zoom;
+  touch-action: none;
+  transform: translate3d(0, 0, 0) scale(1);
+  transform-origin: center center;
+  will-change: transform;
 }
 
 .lightbox-close {
@@ -2545,6 +2548,7 @@ function updateLightbox() {
   const image = $("lightboxImage");
 
   image.src = currentImages[lightboxIndex];
+  resetLightboxZoom();
 
   $("lightboxCount").textContent =
     (lightboxIndex + 1) + " / " + currentImages.length;
@@ -3041,80 +3045,151 @@ $("media").addEventListener("touchend", event => {
 
 }, { passive: true });
 
-// 확대 모달 터치 스와이프
-// 두 손가락 핀치(확대/축소)가 한 번이라도 감지된 제스처는
-// 손을 뗄 때 사진 넘김으로 처리하지 않는다.
-let lightboxTouchStartX = 0;
-let lightboxPinchGesture = false;
-let lightboxSingleTouchStart = false;
+// 확대 모달: 핀치 확대/축소 + 확대 상태에서 사진 이동 + 축소 상태에서 좌우 스와이프
+let lightboxScale = 1;
+let lightboxTranslateX = 0;
+let lightboxTranslateY = 0;
+let lightboxGestureMode = "";
+let lightboxStartX = 0;
+let lightboxStartY = 0;
+let lightboxStartTranslateX = 0;
+let lightboxStartTranslateY = 0;
+let lightboxStartScale = 1;
+let lightboxStartDistance = 0;
+let lightboxStartMidX = 0;
+let lightboxStartMidY = 0;
+let lightboxStartCenterX = 0;
+let lightboxStartCenterY = 0;
 
-$("lightbox").addEventListener("touchstart", event => {
+function resetLightboxZoom() {
+  lightboxScale = 1;
+  lightboxTranslateX = 0;
+  lightboxTranslateY = 0;
+  lightboxGestureMode = "";
+  applyLightboxTransform();
+}
 
+function applyLightboxTransform() {
+  const image = $("lightboxImage");
+  if (!image) return;
+  image.style.transform = `translate3d(${lightboxTranslateX}px, ${lightboxTranslateY}px, 0) scale(${lightboxScale})`;
+}
+
+function clampLightboxPosition() {
+  const image = $("lightboxImage");
+  const box = $("lightbox");
+  const maxX = Math.max(0, (image.offsetWidth * lightboxScale - box.clientWidth) / 2);
+  const maxY = Math.max(0, (image.offsetHeight * lightboxScale - box.clientHeight) / 2);
+  lightboxTranslateX = Math.max(-maxX, Math.min(maxX, lightboxTranslateX));
+  lightboxTranslateY = Math.max(-maxY, Math.min(maxY, lightboxTranslateY));
+}
+
+function touchDistance(a, b) {
+  return Math.hypot(b.clientX - a.clientX, b.clientY - a.clientY);
+}
+
+function touchMidpoint(a, b) {
+  return { x: (a.clientX + b.clientX) / 2, y: (a.clientY + b.clientY) / 2 };
+}
+
+const lightboxImage = $("lightboxImage");
+
+lightboxImage.addEventListener("touchstart", event => {
   if (!lightboxOpen) return;
+  event.preventDefault();
 
-  if (event.touches.length > 1) {
-    lightboxPinchGesture = true;
-    lightboxSingleTouchStart = false;
+  if (event.touches.length >= 2) {
+    const a = event.touches[0];
+    const b = event.touches[1];
+    const mid = touchMidpoint(a, b);
+    const rect = lightboxImage.getBoundingClientRect();
+    lightboxGestureMode = "pinch";
+    lightboxStartDistance = touchDistance(a, b);
+    lightboxStartScale = lightboxScale;
+    lightboxStartTranslateX = lightboxTranslateX;
+    lightboxStartTranslateY = lightboxTranslateY;
+    lightboxStartMidX = mid.x;
+    lightboxStartMidY = mid.y;
+    lightboxStartCenterX = (rect.left + rect.right) / 2;
+    lightboxStartCenterY = (rect.top + rect.bottom) / 2;
     return;
   }
 
-  // 이미 핀치 동작 중 두 번째 손가락이 들어온 경우에도
-  // 이후 touchend에서 사진이 넘어가지 않도록 상태를 유지한다.
-  if (lightboxPinchGesture) return;
-
-  lightboxSingleTouchStart = true;
-  lightboxTouchStartX = event.changedTouches[0].screenX;
-
-}, { passive: true });
-
-$("lightbox").addEventListener("touchmove", event => {
-
-  if (!lightboxOpen) return;
-
-  if (event.touches.length > 1) {
-    lightboxPinchGesture = true;
-    lightboxSingleTouchStart = false;
+  const touch = event.touches[0];
+  if (lightboxScale > 1.01) {
+    lightboxGestureMode = "pan";
+    lightboxStartX = touch.clientX;
+    lightboxStartY = touch.clientY;
+    lightboxStartTranslateX = lightboxTranslateX;
+    lightboxStartTranslateY = lightboxTranslateY;
+  } else {
+    lightboxGestureMode = "swipe";
+    lightboxStartX = touch.clientX;
+    lightboxStartY = touch.clientY;
   }
+}, { passive: false });
 
-}, { passive: true });
+lightboxImage.addEventListener("touchmove", event => {
+  if (!lightboxOpen || !lightboxGestureMode) return;
+  event.preventDefault();
 
-$("lightbox").addEventListener("touchend", event => {
-
-  if (!lightboxOpen) return;
-
-  // 핀치 제스처가 끝난 경우 현재 사진을 그대로 유지한다.
-  if (lightboxPinchGesture) {
-    if (event.touches.length === 0) {
-      lightboxPinchGesture = false;
-      lightboxSingleTouchStart = false;
-    }
+  if (event.touches.length >= 2 && lightboxGestureMode === "pinch") {
+    const a = event.touches[0];
+    const b = event.touches[1];
+    const mid = touchMidpoint(a, b);
+    const distance = touchDistance(a, b);
+    const nextScale = Math.max(1, Math.min(5, lightboxStartScale * distance / Math.max(1, lightboxStartDistance)));
+    const centerX = lightboxStartCenterX;
+    const centerY = lightboxStartCenterY;
+    const imagePointX = (lightboxStartMidX - centerX - lightboxStartTranslateX) / lightboxStartScale;
+    const imagePointY = (lightboxStartMidY - centerY - lightboxStartTranslateY) / lightboxStartScale;
+    lightboxScale = nextScale;
+    lightboxTranslateX = mid.x - centerX - imagePointX * nextScale;
+    lightboxTranslateY = mid.y - centerY - imagePointY * nextScale;
+    clampLightboxPosition();
+    applyLightboxTransform();
     return;
   }
 
-  if (!lightboxSingleTouchStart || currentImages.length <= 1) {
-    if (event.touches.length === 0) lightboxSingleTouchStart = false;
+  if (event.touches.length === 1 && lightboxGestureMode === "pan" && lightboxScale > 1.01) {
+    const touch = event.touches[0];
+    lightboxTranslateX = lightboxStartTranslateX + touch.clientX - lightboxStartX;
+    lightboxTranslateY = lightboxStartTranslateY + touch.clientY - lightboxStartY;
+    clampLightboxPosition();
+    applyLightboxTransform();
+  }
+}, { passive: false });
+
+lightboxImage.addEventListener("touchend", event => {
+  if (!lightboxOpen) return;
+  event.preventDefault();
+
+  // 핀치 후 손가락 하나가 남으면 확대 사진을 계속 이동할 수 있게 전환
+  if (event.touches.length === 1 && lightboxScale > 1.01) {
+    const touch = event.touches[0];
+    lightboxGestureMode = "pan";
+    lightboxStartX = touch.clientX;
+    lightboxStartY = touch.clientY;
+    lightboxStartTranslateX = lightboxTranslateX;
+    lightboxStartTranslateY = lightboxTranslateY;
     return;
   }
 
-  // 손가락이 모두 떨어진 마지막 이벤트에서만 스와이프를 판정한다.
   if (event.touches.length > 0) return;
 
-  const changedTouch = event.changedTouches[0];
-  const diff = changedTouch
-    ? changedTouch.screenX - lightboxTouchStartX
-    : 0;
+  if (lightboxGestureMode === "swipe" && lightboxScale <= 1.01) {
+    const changed = event.changedTouches[0];
+    const diffX = changed ? changed.clientX - lightboxStartX : 0;
+    const diffY = changed ? changed.clientY - lightboxStartY : 0;
+    if (Math.abs(diffX) >= 60 && Math.abs(diffX) > Math.abs(diffY) * 1.2) {
+      moveLightbox(diffX < 0 ? 1 : -1);
+    }
+  }
+  lightboxGestureMode = "";
+}, { passive: false });
 
-  lightboxSingleTouchStart = false;
-
-  if (Math.abs(diff) < 60) return;
-
-  moveLightbox(diff < 0 ? 1 : -1);
-
-}, { passive: true });
-
-$("lightbox").addEventListener("touchcancel", () => {
-  lightboxPinchGesture = false;
-  lightboxSingleTouchStart = false;
+lightboxImage.addEventListener("touchcancel", () => {
+  lightboxGestureMode = "";
 }, { passive: true });
 
 // 데이터 불러오기

@@ -873,6 +873,51 @@ body.dark-mode #media {
 body.dark-mode .no-photo {
   color: #b8afa2;
 }
+
+/* 감상 모드: 기존 갤러리와 본문 DOM을 그대로 사용 */
+#cinemaEnter { white-space: nowrap; padding-inline:10px; }
+#cinemaExit { display:none; position:absolute; right:12px; top:12px; z-index:30; border:1px solid rgba(255,255,255,.55); border-radius:10px; padding:9px 13px; background:rgba(35,42,35,.78); color:white; font-size:13px; cursor:pointer; }
+#cinemaInfo { display:none; }
+body.cinema-mode header, body.cinema-mode #tabs, body.cinema-mode .viewer-top, body.cinema-mode .sidebar { display:none !important; }
+body.cinema-mode .layout { position:fixed; inset:0; z-index:100; display:block; height:100%; padding:0; background:#f5f1e8; }
+body.cinema-mode .viewer { position:relative; width:100%; height:100%; border:0; border-radius:0; padding:14px; box-shadow:none; }
+body.cinema-mode .record-scroll { display:flex; gap:14px; overflow:hidden; height:100%; }
+body.cinema-mode #media { flex: 0 0 65%; height:100%; min-height:0; max-height:none; aspect-ratio:auto; }
+body.cinema-mode #cinemaRight { display:flex; flex:1 1 0; min-width:0; flex-direction:column; border-radius:13px; background:#faf8f2; border:1px solid #e9e1d4; overflow:hidden; }
+body.cinema-mode #cinemaInfo { display:block; flex:0 0 auto; padding:17px 18px 12px; border-bottom:1px solid #e9e1d4; }
+body.cinema-mode #cinemaTitle { font-size:18px; font-weight:700; line-height:1.4; padding-right:72px; overflow-wrap:anywhere; }
+body.cinema-mode #cinemaMeta { font-size:12px; margin-top:6px; opacity:.75; }
+body.cinema-mode #body { display:block !important; flex:1 1 auto; min-height:0; overflow-y:auto; margin:0; padding:18px; border:0; background:transparent; white-space:pre-wrap; overflow-wrap:anywhere; }
+body.cinema-mode #cinemaJourneyContent { overflow-y:auto; padding:0 18px 18px; }
+body.cinema-mode #cinemaJourneyContent .cinema-entry { padding:12px 0; border-bottom:1px solid #ded8cb; }
+body.cinema-mode #cinemaJourneyContent .cinema-entry strong { display:block; font-size:14px; margin-bottom:5px; }
+body.cinema-mode #cinemaJourneyContent .cinema-entry small { display:block; opacity:.7; margin-bottom:7px; }
+body.cinema-mode #cinemaExit { display:block; }
+body.cinema-mode .viewer.text-only #media { display:flex !important; }
+body.cinema-mode #gallery { height:100%; }
+body.dark-mode.cinema-mode .layout { background:#181c19; }
+body.dark-mode.cinema-mode #cinemaRight { background:#252c27; border-color:#485349; }
+body.dark-mode.cinema-mode #cinemaInfo { border-color:#485349; }
+body.dark-mode.cinema-mode #cinemaJourneyContent .cinema-entry { border-color:#485349; }
+/* 작은 휴대폰 화면: 사진 영역 위, 기록 내용 아래로 배치 */
+@media (max-width:650px) {
+  body.cinema-mode .viewer { padding:8px; }
+  body.cinema-mode .record-scroll { flex-direction:column; gap:8px; }
+  body.cinema-mode #media { flex:0 0 54%; width:100%; height:54%; min-height:0; }
+  body.cinema-mode #gallery { gap:4px; padding:5px; }
+  body.cinema-mode #cinemaRight { flex:1 1 0; width:100%; min-height:0; border-radius:9px; }
+  body.cinema-mode #cinemaInfo { padding:8px 10px 7px; }
+  body.cinema-mode #cinemaTitle { font-size:14px; padding-right:84px; }
+  body.cinema-mode #cinemaMeta { font-size:10px; margin-top:3px; }
+  body.cinema-mode #body { padding:10px; font-size:13px; line-height:1.5; }
+  body.cinema-mode #cinemaJourneyContent { padding:0 10px 10px; font-size:13px; }
+  body.cinema-mode #cinemaExit { top:7px; right:7px; padding:6px 9px; font-size:12px; }
+}
+/* Fold 펼친 화면 및 태블릿/PC는 좌우 65:35 구성 유지 */
+@media (min-width:651px) {
+  body.cinema-mode .record-scroll { flex-direction:row; }
+}
+
 </style>
 </head>
 
@@ -921,12 +966,14 @@ body.dark-mode .no-photo {
         <button id="prev" type="button" aria-label="이전" title="이전">⏮</button>
         <button id="pause" type="button" aria-label="일시정지" title="일시정지">⏸</button>
         <button id="next" type="button" aria-label="다음" title="다음">⏭</button>
+        <button id="cinemaEnter" type="button" title="감상모드" aria-label="감상모드">⛶ 감상모드</button>
         <button id="favoriteToggle" type="button" aria-label="즐겨찾기 추가" title="즐겨찾기 추가">☆</button>
         <span id="countdown" aria-live="off">자동 넘김 대기</span>
         <span id="status">데이터 불러오는 중...</span>
       </div>
     </div>
 
+    <button id="cinemaExit" type="button" aria-label="감상모드 해제">⤢ 감상모드 해제</button>
     <div class="record-scroll">
       <div id="media">
         <div class="no-photo">기록을 불러오는 중...</div>
@@ -2395,6 +2442,103 @@ if (autoIntervalSelect) {
     }
   });
 }
+
+
+// 감상 모드: 기존 사진 갤러리와 기록 본문을 재사용한다.
+const cinemaRecordScroll = document.querySelector('.record-scroll');
+const cinemaBody = $('body');
+const cinemaOriginalBodyParent = cinemaBody.parentElement;
+const cinemaRight = document.createElement('section');
+cinemaRight.id = 'cinemaRight';
+const cinemaInfo = document.createElement('div');
+cinemaInfo.id = 'cinemaInfo';
+const cinemaTitle = document.createElement('div');
+cinemaTitle.id = 'cinemaTitle';
+const cinemaMeta = document.createElement('div');
+cinemaMeta.id = 'cinemaMeta';
+cinemaInfo.append(cinemaTitle, cinemaMeta);
+const cinemaJourneyContent = document.createElement('div');
+cinemaJourneyContent.id = 'cinemaJourneyContent';
+cinemaRight.append(cinemaInfo, cinemaBody, cinemaJourneyContent);
+let cinemaActive = false;
+let cinemaContentToken = 0;
+let cinemaRefreshScheduled = false;
+
+async function refreshCinemaContent() {
+  if (!cinemaActive) return;
+  const token = ++cinemaContentToken;
+  cinemaTitle.textContent = $('title').textContent;
+  cinemaMeta.textContent = $('meta').textContent;
+  if (!journeyMode || !journeyPhotos.length) {
+    cinemaBody.style.display = '';
+    cinemaJourneyContent.replaceChildren();
+    cinemaJourneyContent.style.display = 'none';
+    return;
+  }
+  cinemaBody.style.display = 'none';
+  cinemaJourneyContent.style.display = 'block';
+  cinemaJourneyContent.replaceChildren();
+  const {start, end} = getJourneyPageBounds();
+  const unique = [...new Map(journeyPhotos.slice(start,end).map(p => [p.recordId,p])).values()];
+  for (const photo of unique) {
+    if (!cinemaActive || token !== cinemaContentToken) return;
+    const entry = document.createElement('article');
+    entry.className = 'cinema-entry';
+    const heading = document.createElement('strong');
+    heading.textContent = photo.title || '수하의 추억';
+    const date = document.createElement('small');
+    date.textContent = (photo.date || '') + ' · ' + (photo.phase || '');
+    const content = document.createElement('div');
+    content.textContent = '내용 불러오는 중...';
+    entry.append(heading,date,content);
+    cinemaJourneyContent.appendChild(entry);
+    try {
+      const detail = await loadDetail(photo.recordId);
+      if (!cinemaActive || token !== cinemaContentToken) return;
+      content.textContent = detail.text || '기록 내용이 없습니다.';
+    } catch(e) {
+      if (!cinemaActive || token !== cinemaContentToken) return;
+      content.textContent = '기록 내용을 불러오지 못했습니다.';
+    }
+  }
+}
+function queueCinemaRefresh() {
+  if (!cinemaActive || cinemaRefreshScheduled) return;
+  cinemaRefreshScheduled = true;
+  queueMicrotask(() => { cinemaRefreshScheduled = false; refreshCinemaContent(); });
+}
+const cinemaObserver = new MutationObserver(queueCinemaRefresh);
+cinemaObserver.observe($('title'), {childList:true, characterData:true, subtree:true});
+cinemaObserver.observe($('meta'), {childList:true, characterData:true, subtree:true});
+cinemaObserver.observe($('media'), {childList:true});
+
+async function enterCinema() {
+  if (cinemaActive) return;
+  cinemaActive = true;
+  cinemaRecordScroll.appendChild(cinemaRight);
+  document.body.classList.add('cinema-mode');
+  refreshCinemaContent();
+  // 키오스크 브라우저가 Fullscreen API를 막아도 CSS 감상 모드는 작동한다.
+  try { if (document.documentElement.requestFullscreen && !document.fullscreenElement) await document.documentElement.requestFullscreen(); } catch(e) {}
+}
+async function exitCinema() {
+  if (!cinemaActive) return;
+  cinemaActive = false;
+  ++cinemaContentToken;
+  document.body.classList.remove('cinema-mode');
+  cinemaOriginalBodyParent.appendChild(cinemaBody);
+  cinemaRight.remove();
+  cinemaBody.style.display = '';
+  if (document.fullscreenElement) {
+    try { await document.exitFullscreen(); } catch(e) {}
+  }
+}
+$('cinemaEnter').addEventListener('click', enterCinema);
+$('cinemaExit').addEventListener('click', exitCinema);
+document.addEventListener('fullscreenchange', () => {
+  // Android 뒤로가기 등 브라우저 자체 전체화면 종료와 UI 상태를 맞춘다.
+  if (cinemaActive && !document.fullscreenElement) exitCinema();
+});
 
 load();
 

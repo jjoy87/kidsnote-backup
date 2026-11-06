@@ -3096,8 +3096,8 @@ const lightboxImage = $("lightboxImage");
 
 lightboxImage.addEventListener("touchstart", event => {
   if (!lightboxOpen) return;
-  event.preventDefault();
 
+  // Keep the native long-press image menu available.
   if (event.touches.length >= 2) {
     const a = event.touches[0];
     const b = event.touches[1];
@@ -3162,8 +3162,8 @@ lightboxImage.addEventListener("touchmove", event => {
 
 lightboxImage.addEventListener("touchend", event => {
   if (!lightboxOpen) return;
-  event.preventDefault();
 
+  // Do not cancel touchend: preserve the browser's long-press image menu.
   // 핀치 후 손가락 하나가 남으면 확대 사진을 계속 이동할 수 있게 전환
   if (event.touches.length === 1 && lightboxScale > 1.01) {
     const touch = event.touches[0];

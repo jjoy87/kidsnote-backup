@@ -41,12 +41,6 @@ h1 {
   letter-spacing: -0.5px;
 }
 
-#clock {
-  color: #8c806e;
-  font-size: 14px;
-  white-space: nowrap;
-}
-
 .header-tools {
   display: flex;
   flex-wrap: wrap;
@@ -653,10 +647,6 @@ body.dark-mode #favoriteToggle.is-favorite {
     flex-shrink: 0;
   }
 
-  #clock {
-    font-size: 10px;
-  }
-
   .header-tools {
     gap: 5px;
   }
@@ -818,7 +808,6 @@ body.dark-mode #body,
 body.dark-mode .item {
   color: #e7e1d7;
 }
-body.dark-mode #clock,
 body.dark-mode .auto-interval-control,
 body.dark-mode #meta,
 body.dark-mode #status,
@@ -948,7 +937,6 @@ body.dark-mode.cinema-mode #cinemaJourneyContent .cinema-entry { border-color:#4
 <header>
   <h1>사랑하는 수하의 성장기록</h1>
   <div class="header-tools">
-    <div id="clock"></div>
     <button id="themeToggle" type="button" aria-label="다크 모드로 전환">🌙 다크</button>
     <label class="auto-interval-control" for="autoInterval">
       자동 넘김
@@ -1233,29 +1221,11 @@ async function loadAllPages() {
 }
 
 // 상세 기록 조회
-// 동일 ID 중복 요청은 합치고, 전체 상세 요청은 한 줄로 순차 처리한다.
-// 일시적인 네트워크/Notion 제한(429, 5xx)은 자동 재시도한다.
+// 상세 기록은 화면 재렌더링·감상모드에서도 재사용한다.
+// 같은 ID의 동시 요청은 하나로 합치고, 성공 결과는 짧게 캐시한다.
 const detailCache = new Map();
 const detailInFlight = new Map();
 const DETAIL_CACHE_TTL = 45 * 1000;
-let detailRequestQueue = Promise.resolve();
-let nextDetailRequestAt = 0;
-
-function waitDetail(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
-
-function queueDetailRequest(task) {
-  const run = async () => {
-    const delay = Math.max(0, nextDetailRequestAt - Date.now());
-    if (delay) await waitDetail(delay);
-    nextDetailRequestAt = Date.now() + 500;
-    return task();
-  };
-  const queued = detailRequestQueue.then(run, run);
-  detailRequestQueue = queued.then(() => undefined, () => undefined);
-  return queued;
-}
 
 async function loadDetail(pageId) {
   const key = String(pageId || "");
@@ -1265,36 +1235,22 @@ async function loadDetail(pageId) {
   if (cached && Date.now() - cached.savedAt < DETAIL_CACHE_TTL) {
     return cached.data;
   }
+
   if (detailInFlight.has(key)) return detailInFlight.get(key);
 
-  const request = queueDetailRequest(async () => {
-    let lastError;
-    for (let attempt = 0; attempt < 4; attempt++) {
-      try {
-        const response = await fetch(
-          "/api/detail?id=" + encodeURIComponent(key)
-        );
-        const data = await response.json().catch(() => ({}));
+  const request = (async () => {
+    const response = await fetch(
+      "/api/detail?id=" + encodeURIComponent(key)
+    );
+    const data = await response.json();
 
-        if (!response.ok) {
-          const error = new Error(data.error || `상세 기록 조회 실패 (${response.status})`);
-          error.status = response.status;
-          throw error;
-        }
-
-        detailCache.set(key, { data, savedAt: Date.now() });
-        return data;
-      } catch (error) {
-        lastError = error;
-        const retryable = !error.status || error.status === 429 || error.status >= 500;
-        if (!retryable || attempt === 3) break;
-        await waitDetail(error.status === 429
-          ? 1800 * (attempt + 1)
-          : 900 * (attempt + 1));
-      }
+    if (!response.ok) {
+      throw new Error(data.error || "상세 기록 조회 실패");
     }
-    throw lastError || new Error("상세 기록 조회 실패");
-  });
+
+    detailCache.set(key, { data, savedAt: Date.now() });
+    return data;
+  })();
 
   detailInFlight.set(key, request);
   try {
@@ -1303,7 +1259,6 @@ async function loadDetail(pageId) {
     if (detailInFlight.get(key) === request) detailInFlight.delete(key);
   }
 }
-
 
 // 날짜 월일 추출
 function getMonthDay(dateValue) {
@@ -2524,18 +2479,6 @@ if (themeToggle) {
   });
 }
 
-// 시계
-function updateClock() {
-
-  $("clock").textContent =
-    new Date().toLocaleString("ko-KR");
-
-}
-
-updateClock();
-
-setInterval(updateClock, 1000);
-
 // 자동 넘김 시간 선택: 선택값을 저장하고 현재 재생에도 즉시 반영
 const autoIntervalSelect = $("autoInterval");
 if (autoIntervalSelect) {
@@ -2607,7 +2550,7 @@ async function refreshCinemaContent() {
       content.textContent = detail.text || '기록 내용이 없습니다.';
     } catch(e) {
       if (!cinemaActive || token !== cinemaContentToken) return;
-      content.textContent = '기록 내용을 불러오지 못했습니다. (' + (e.message || '오류') + ')';
+      content.textContent = '기록 내용을 불러오지 못했습니다.';
     }
   }
 }

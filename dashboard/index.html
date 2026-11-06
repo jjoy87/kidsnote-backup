@@ -41,6 +41,11 @@ h1 {
   letter-spacing: -0.5px;
 }
 
+/* 제목을 모바일에서만 두 줄로 나누고, 넓은 화면에서는 단어 간격 유지 */
+.header-title-line + .header-title-line {
+  margin-left: 0.25em;
+}
+
 .header-tools {
   display: flex;
   flex-wrap: wrap;
@@ -744,20 +749,20 @@ body.dark-mode #favoriteToggle.is-favorite {
   }
 
   /* 좁은 스마트폰: 제목만 두 줄, 오른쪽 설정은 한 줄로 중앙 정렬 */
-  @media (max-width: 520px) {
+
     header {
       height: 54px;
       min-height: 54px;
       padding: 4px 6px;
-      gap: 4px;
+      gap: 5px;
       flex-wrap: nowrap;
       align-items: center;
     }
 
     h1 {
-      flex: 0 0 86px;
-      width: 86px;
-      min-width: 86px;
+      flex: 0 0 102px;
+      width: 102px;
+      min-width: 102px;
       margin: 0;
       white-space: normal;
       font-size: 11px;
@@ -770,13 +775,17 @@ body.dark-mode #favoriteToggle.is-favorite {
       white-space: nowrap;
     }
 
+    .header-title-line + .header-title-line {
+      margin-left: 0;
+    }
+
     .header-tools {
       flex: 1 1 auto;
       min-width: 0;
       flex-wrap: nowrap;
       justify-content: flex-end;
       align-items: center;
-      gap: 3px;
+      gap: 4px;
     }
 
     .api-health-wrap {
@@ -793,34 +802,22 @@ body.dark-mode #favoriteToggle.is-favorite {
 
     #autoInterval,
     #autoPlayMode {
-      width: 48px;
-      max-width: 48px;
-      min-width: 48px;
+      width: 46px;
+      max-width: 46px;
+      min-width: 46px;
       min-height: 27px;
       padding: 3px 1px;
       font-size: 10px;
     }
 
     #themeToggle {
-      width: 27px;
-      min-width: 27px;
+      min-width: 42px;
       min-height: 27px;
-      padding: 0;
-      font-size: 0;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
+      padding: 2px 4px;
+      font-size: 10px;
+      white-space: nowrap;
     }
-
-    #themeToggle::before {
-      content: "🌙";
-      font-size: 14px;
-    }
-
-    body.dark-mode #themeToggle::before {
-      content: "☀️";
-    }
-  }
+  
 
   #tabs {
     padding: 4px 12px 6px;

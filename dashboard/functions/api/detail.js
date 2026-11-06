@@ -49,9 +49,11 @@ async function notion(path, token) {
   const data = await response.json();
 
   if (!response.ok) {
-    throw new Error(
+    const error = new Error(
       data.message || `Notion API 오류: ${response.status}`
     );
+    error.status = response.status;
+    throw error;
   }
 
   return data;
@@ -156,9 +158,12 @@ export async function onRequestGet({ request, env }) {
     });
 
   } catch (error) {
+    const status = Number(error.status) || 500;
+    const headers = {};
+    if (status === 429) headers["Retry-After"] = "2";
     return Response.json(
       { error: error.message || "상세 기록 조회 실패" },
-      { status: 500 }
+      { status: status >= 400 && status <= 599 ? status : 500, headers }
     );
   }
 }

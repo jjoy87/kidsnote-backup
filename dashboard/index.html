@@ -1129,7 +1129,7 @@ body.dark-mode.cinema-mode #cinemaJourneyContent .cinema-entry { border-color:#4
   border-radius: 8px;
 }
 
-/* Mobile header final layout: compact title + evenly sized controls */
+/* Mobile header: title on two lines; all controls on one centered row */
 @media (max-width: 520px) {
   header {
     height: 54px !important;
@@ -1139,15 +1139,15 @@ body.dark-mode.cinema-mode #cinemaJourneyContent .cinema-entry { border-color:#4
     flex-wrap: nowrap !important;
     align-items: center !important;
     justify-content: flex-start !important;
-    gap: 6px !important;
+    gap: 4px !important;
     overflow: visible !important;
   }
 
   header h1 {
-    flex: 0 0 74px !important;
-    width: 74px !important;
-    min-width: 74px !important;
-    max-width: 74px !important;
+    flex: 0 0 70px !important;
+    width: 70px !important;
+    min-width: 70px !important;
+    max-width: 70px !important;
     margin: 0 !important;
     white-space: normal !important;
     font-size: 10px !important;
@@ -1155,34 +1155,32 @@ body.dark-mode.cinema-mode #cinemaJourneyContent .cinema-entry { border-color:#4
     letter-spacing: -0.45px !important;
     overflow: visible !important;
   }
-
   header h1 .header-title-line {
     display: block !important;
     white-space: nowrap !important;
   }
-  header h1 .header-title-line + .header-title-line {
-    margin-left: 0 !important;
-  }
+  header h1 .header-title-line + .header-title-line { margin-left: 0 !important; }
 
   .header-tools {
-    flex: 1 1 0 !important;
-    width: 0 !important;
+    flex: 1 1 auto !important;
+    width: auto !important;
     min-width: 0 !important;
     display: grid !important;
-    grid-template-columns: 14px 24px 68px minmax(64px, 1fr) minmax(62px, 1fr) !important;
-    grid-template-rows: 1fr !important;
+    grid-template-columns: 17px 27px 66px 94px 76px !important;
+    grid-template-rows: 30px !important;
     align-items: center !important;
-    justify-content: stretch !important;
-    gap: 3px !important;
+    justify-content: start !important;
+    gap: 2px !important;
     margin: 0 !important;
+    height: 30px !important;
   }
 
   .api-health-wrap {
     grid-column: 1 !important;
     grid-row: 1 !important;
-    width: 14px !important;
-    min-width: 14px !important;
-    height: 100% !important;
+    width: 17px !important;
+    min-width: 17px !important;
+    height: 30px !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
@@ -1200,9 +1198,9 @@ body.dark-mode.cinema-mode #cinemaJourneyContent .cinema-entry { border-color:#4
     grid-row: 1 !important;
     justify-self: stretch !important;
     align-self: center !important;
-    width: 24px !important;
-    min-width: 24px !important;
-    max-width: 24px !important;
+    width: 27px !important;
+    min-width: 27px !important;
+    max-width: 27px !important;
     height: 30px !important;
     min-height: 30px !important;
     padding: 0 !important;
@@ -1215,44 +1213,42 @@ body.dark-mode.cinema-mode #cinemaJourneyContent .cinema-entry { border-color:#4
     grid-row: 1 !important;
     justify-self: stretch !important;
     align-self: center !important;
-    width: 68px !important;
-    min-width: 68px !important;
-    max-width: 68px !important;
+    width: 66px !important;
+    min-width: 66px !important;
+    max-width: 66px !important;
     height: 30px !important;
     min-height: 30px !important;
-    padding: 0 3px !important;
-    font-size: 10px !important;
-    letter-spacing: -0.45px !important;
+    padding: 0 2px !important;
+    font-size: 9px !important;
+    letter-spacing: -0.4px !important;
     white-space: nowrap !important;
-    overflow: visible !important;
   }
 
   .header-tools .auto-interval-control {
-    display: grid !important;
-    grid-template-columns: minmax(0, 1fr) !important;
-    grid-template-rows: 13px 30px !important;
-    align-content: center !important;
-    justify-items: stretch !important;
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: nowrap !important;
     align-items: center !important;
+    justify-content: flex-start !important;
+    gap: 3px !important;
     width: 100% !important;
     min-width: 0 !important;
     max-width: none !important;
-    height: 46px !important;
-    gap: 1px !important;
+    height: 30px !important;
     margin: 0 !important;
     padding: 0 !important;
     font-size: 9px !important;
     line-height: 1 !important;
-    white-space: normal !important;
+    white-space: nowrap !important;
   }
-
   .header-tools .auto-interval-control .control-label {
     display: block !important;
-    width: 100% !important;
+    flex: 0 0 auto !important;
+    width: auto !important;
     min-width: 0 !important;
-    text-align: center !important;
-    white-space: normal !important;
-    overflow: visible !important;
+    margin: 0 !important;
+    text-align: left !important;
+    white-space: nowrap !important;
     font-size: 9px !important;
     line-height: 1 !important;
   }
@@ -1260,11 +1256,13 @@ body.dark-mode.cinema-mode #cinemaJourneyContent .cinema-entry { border-color:#4
   #autoInterval,
   #autoPlayMode {
     display: block !important;
-    width: 100% !important;
+    flex: 1 1 auto !important;
+    width: auto !important;
     min-width: 0 !important;
     max-width: none !important;
     height: 30px !important;
     min-height: 30px !important;
+    margin: 0 !important;
     padding: 0 2px !important;
     font-size: 10px !important;
     line-height: 1 !important;
@@ -1273,44 +1271,32 @@ body.dark-mode.cinema-mode #cinemaJourneyContent .cinema-entry { border-color:#4
   }
 }
 
-/* Very narrow phones: reduce title and icon widths, keep labels readable */
 @media (max-width: 370px) {
   header h1 {
-    flex-basis: 62px !important;
-    width: 62px !important;
-    min-width: 62px !important;
-    max-width: 62px !important;
+    flex-basis: 64px !important;
+    width: 64px !important;
+    min-width: 64px !important;
+    max-width: 64px !important;
     font-size: 9px !important;
-    letter-spacing: -0.55px !important;
   }
-
   .header-tools {
-    grid-template-columns: 13px 22px 62px minmax(61px, 1fr) minmax(59px, 1fr) !important;
-    gap: 2px !important;
+    grid-template-columns: 15px 24px 60px 88px 70px !important;
+    gap: 1px !important;
   }
-
   #screenWakeLockToggle {
-    width: 22px !important;
-    min-width: 22px !important;
-    max-width: 22px !important;
+    width: 24px !important;
+    min-width: 24px !important;
+    max-width: 24px !important;
   }
-
   #themeToggle {
-    width: 62px !important;
-    min-width: 62px !important;
-    max-width: 62px !important;
-    font-size: 9px !important;
-    padding: 0 1px !important;
-  }
-
-  .header-tools .auto-interval-control .control-label {
+    width: 60px !important;
+    min-width: 60px !important;
+    max-width: 60px !important;
     font-size: 8px !important;
   }
-
-  #autoInterval,
-  #autoPlayMode {
-    font-size: 9px !important;
-  }
+  .header-tools .auto-interval-control { gap: 2px !important; }
+  .header-tools .auto-interval-control .control-label { font-size: 8px !important; }
+  #autoInterval, #autoPlayMode { font-size: 9px !important; }
 }
 
 </style>

@@ -3165,6 +3165,25 @@ html.compact-device-header body header > .header-tools > #themeToggle {
   }
 }
 
+
+/* Visible label for the screen-on control on compact phones. */
+html.compact-device-header body header > .header-tools > #screenWakeLockToggle {
+  display: flex !important;
+  flex-flow: row nowrap !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 5px !important;
+  font-size: 10px !important;
+  white-space: nowrap !important;
+}
+html.compact-device-header body header > .header-tools > #screenWakeLockToggle::after {
+  content: "화면 유지";
+  display: inline-block;
+  font-size: 10px;
+  line-height: 1;
+  white-space: nowrap;
+}
+
 </style>
 </head>
 

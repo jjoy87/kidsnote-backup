@@ -3466,6 +3466,50 @@ html body header > .header-tools > label[for="autoPlayMode"] select {
   }
 }
 
+
+/* Final desktop alignment: both labels use content width and the same 8px label/select gap. */
+@media screen and (min-width: 601px) {
+  html body header > .header-tools > label[for="autoPlayMode"],
+  html body header > .header-tools > label[for="autoInterval"] {
+    box-sizing: border-box !important;
+    display: inline-flex !important;
+    flex: 0 0 auto !important;
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    column-gap: 8px !important;
+    row-gap: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    white-space: nowrap !important;
+    overflow: visible !important;
+  }
+
+  html body header > .header-tools > label[for="autoPlayMode"] .control-label,
+  html body header > .header-tools > label[for="autoInterval"] .control-label {
+    display: inline-block !important;
+    flex: 0 0 auto !important;
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    white-space: nowrap !important;
+  }
+
+  html body header > .header-tools > label[for="autoPlayMode"] select,
+  html body header > .header-tools > label[for="autoInterval"] select {
+    box-sizing: border-box !important;
+    flex: 0 0 58px !important;
+    width: 58px !important;
+    min-width: 58px !important;
+    max-width: 58px !important;
+    margin: 0 !important;
+  }
+}
+
 </style>
 </head>
 

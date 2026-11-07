@@ -1854,6 +1854,91 @@ body.dark-mode.cinema-mode #cinemaJourneyContent .cinema-entry { border-color:#4
   header > .header-tools #autoInterval, header > .header-tools #autoPlayMode { font-size: 8px !important; }
 }
 
+
+/* Correct row-2 geometry: both setting groups occupy equal halves of the
+   entire controls area. The first row remains status / wake / theme. */
+@media screen and (max-width: 600px) {
+  header > .header-tools {
+    position: relative !important;
+    display: grid !important;
+    grid-template-columns: 14px 28px minmax(0, 1fr) !important;
+    grid-template-rows: 27px 27px !important;
+    column-gap: 4px !important;
+    row-gap: 4px !important;
+    height: 58px !important;
+    align-content: center !important;
+    overflow: visible !important;
+  }
+
+  header > .header-tools > label[for="autoInterval"],
+  header > .header-tools > label[for="autoPlayMode"] {
+    position: absolute !important;
+    top: 31px !important;
+    box-sizing: border-box !important;
+    display: flex !important;
+    flex-flow: row nowrap !important;
+    align-items: center !important;
+    gap: 4px !important;
+    width: calc(50% - 2px) !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    height: 27px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+  }
+
+  header > .header-tools > label[for="autoInterval"] {
+    left: 0 !important;
+    right: auto !important;
+  }
+
+  header > .header-tools > label[for="autoPlayMode"] {
+    left: 50% !important;
+    right: 0 !important;
+  }
+
+  header > .header-tools > label[for="autoInterval"] .control-label,
+  header > .header-tools > label[for="autoPlayMode"] .control-label {
+    flex: 0 0 auto !important;
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    font-size: 9px !important;
+    white-space: nowrap !important;
+  }
+
+  header > .header-tools #autoInterval,
+  header > .header-tools #autoPlayMode {
+    flex: 1 1 0 !important;
+    width: 1px !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    height: 27px !important;
+    min-height: 27px !important;
+    margin: 0 !important;
+    padding: 0 4px !important;
+    font-size: 10px !important;
+    box-sizing: border-box !important;
+  }
+}
+
+@media screen and (max-width: 390px) {
+  header > .header-tools > label[for="autoInterval"],
+  header > .header-tools > label[for="autoPlayMode"] {
+    width: calc(50% - 2px) !important;
+    gap: 3px !important;
+  }
+  header > .header-tools > label[for="autoInterval"] .control-label,
+  header > .header-tools > label[for="autoPlayMode"] .control-label {
+    font-size: 8px !important;
+  }
+  header > .header-tools #autoInterval,
+  header > .header-tools #autoPlayMode {
+    font-size: 9px !important;
+  }
+}
+
 </style>
 </head>
 

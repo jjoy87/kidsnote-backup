@@ -2931,10 +2931,30 @@ header > h1 .header-title-line + .header-title-line {
     margin-left: 0.22em !important;
   }
 }
-@media screen and (max-width: 390px) {
-  html body header {
-    grid-template-columns: minmax(0, 1fr) 174px !important;
+
+/* S23 and similar phones: reserve enough title width and keep it in one line. */
+@media screen and (min-width: 341px) and (max-width: 600px) {
+  html body header > h1 {
+    flex: 0 1 205px !important;
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: 205px !important;
+    white-space: nowrap !important;
   }
+  html body header > h1 .header-title-text {
+    display: inline !important;
+    white-space: nowrap !important;
+  }
+  html body header > h1 .header-title-line {
+    display: inline !important;
+    white-space: nowrap !important;
+  }
+  html body header > h1 .header-title-line + .header-title-line {
+    margin-left: 0.22em !important;
+  }
+}
+/* Only very narrow phones may split the title. */
+@media screen and (max-width: 340px) {
   html body header > h1 .header-title-line {
     display: block !important;
   }

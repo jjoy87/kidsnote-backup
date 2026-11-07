@@ -3236,14 +3236,19 @@ html.compact-device-header body header > .header-tools > #screenWakeLockToggle::
 /* Wide-screen monitor icon: enlarge to visually match the Dark Mode control. */
 @media screen and (min-width: 601px) {
   html body header > .header-tools > #screenWakeLockToggle {
+    box-sizing: border-box !important;
     width: 48px !important;
     min-width: 48px !important;
     max-width: 48px !important;
     height: 48px !important;
     min-height: 48px !important;
+    max-height: 48px !important;
+    padding: 0 !important;
+    margin: 0 !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
+    overflow: hidden !important;
   }
   html body header > .header-tools > #screenWakeLockToggle::before {
     width: 27px !important;
@@ -3252,6 +3257,42 @@ html.compact-device-header body header > .header-tools > #screenWakeLockToggle::
   }
 }
 /* Keep the compact-device icon and its "화면 유지" label unchanged. */
+
+
+/* Wide-screen header: make Screen Wake and Dark/Light controls identical fixed boxes. */
+@media screen and (min-width: 601px) {
+  html body header > .header-tools > #screenWakeLockToggle,
+  html body header > .header-tools > #themeToggle {
+    box-sizing: border-box !important;
+    width: 96px !important;
+    min-width: 96px !important;
+    max-width: 96px !important;
+    height: 48px !important;
+    min-height: 48px !important;
+    max-height: 48px !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    border-width: 1px !important;
+    display: flex !important;
+    flex: 0 0 96px !important;
+    align-items: center !important;
+    justify-content: center !important;
+    overflow: hidden !important;
+    line-height: 1 !important;
+  }
+
+  html body header > .header-tools > #screenWakeLockToggle::before {
+    width: 27px !important;
+    height: 27px !important;
+    flex: 0 0 27px !important;
+  }
+
+  html body header > .header-tools > #themeToggle {
+    gap: 5px !important;
+    white-space: nowrap !important;
+    font-size: 12px !important;
+  }
+}
 
 </style>
 </head>

@@ -3426,6 +3426,46 @@ html body header > .header-tools > label[for="autoPlayMode"] select {
   }
 }
 
+
+/* Wide header: keep the label-to-select spacing identical for both control groups. */
+@media screen and (min-width: 601px) {
+  html body header > .header-tools > label[for="autoPlayMode"],
+  html body header > .header-tools > label[for="autoInterval"] {
+    box-sizing: border-box !important;
+    display: inline-flex !important;
+    flex: 0 0 126px !important;
+    width: 126px !important;
+    min-width: 126px !important;
+    max-width: 126px !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    gap: 8px !important;
+    padding: 0 !important;
+    margin: 0 !important;
+    white-space: nowrap !important;
+    overflow: visible !important;
+  }
+
+  html body header > .header-tools > label[for="autoPlayMode"] .control-label,
+  html body header > .header-tools > label[for="autoInterval"] .control-label {
+    flex: 0 0 auto !important;
+    width: auto !important;
+    min-width: max-content !important;
+    margin: 0 !important;
+    white-space: nowrap !important;
+  }
+
+  html body header > .header-tools #autoPlayMode,
+  html body header > .header-tools #autoInterval {
+    box-sizing: border-box !important;
+    flex: 0 0 58px !important;
+    width: 58px !important;
+    min-width: 58px !important;
+    max-width: 58px !important;
+    margin: 0 !important;
+  }
+}
+
 </style>
 </head>
 

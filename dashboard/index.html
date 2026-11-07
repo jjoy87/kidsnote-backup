@@ -2718,298 +2718,164 @@ body.dark-mode.cinema-mode #cinemaJourneyContent .cinema-entry { border-color:#4
 }
 
 
-/* Shared status-heart placement: keep the existing state, color and click
-   popover behavior, but place the indicator directly beside the title. */
-header > h1 {
+
+/* Unified responsive header: no model-name detection, one source of truth. */
+
+/* Wide screens: original single-line title and normal controls. */
+html body header {
+  box-sizing: border-box !important;
+}
+html body header > h1 {
   display: flex !important;
+  flex: 0 1 auto !important;
   align-items: center !important;
+  justify-content: flex-start !important;
   gap: 7px !important;
   min-width: 0 !important;
+  white-space: nowrap !important;
 }
-
-header > h1 .header-title-text {
-  display: block !important;
-  min-width: 0 !important;
+html body header > h1 .header-title-text {
+  display: inline-flex !important;
   flex: 0 1 auto !important;
+  flex-direction: row !important;
+  min-width: 0 !important;
   white-space: nowrap !important;
 }
-
-header > h1 .header-title-line {
-  display: block !important;
+html body header > h1 .header-title-line {
+  display: inline !important;
   white-space: nowrap !important;
 }
-
-header > h1 .api-health-wrap {
+html body header > h1 .header-title-line + .header-title-line {
+  margin-left: 0.25em !important;
+}
+html body header > h1 .api-health-wrap {
   position: relative !important;
   display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
   flex: 0 0 20px !important;
-  width: 20px !important;
-  min-width: 20px !important;
-  height: 22px !important;
-  margin: 0 !important;
-}
-
-header > h1 #apiHealth {
-  position: relative !important;
-  display: block !important;
   width: 20px !important;
   min-width: 20px !important;
   max-width: 20px !important;
   height: 22px !important;
-  min-height: 22px !important;
-  flex: 0 0 20px !important;
+  margin: 0 !important;
+  align-items: center !important;
+  justify-content: center !important;
+}
+html body header > h1 #apiHealth {
+  box-sizing: border-box !important;
+  display: block !important;
+  flex: 0 0 18px !important;
+  width: 18px !important;
+  min-width: 18px !important;
+  max-width: 18px !important;
+  height: 18px !important;
+  margin: 0 !important;
   padding: 0 !important;
   border: 0 !important;
   border-radius: 0 !important;
   background: transparent !important;
   box-shadow: none !important;
-  color: #4b9bd6 !important;
-  font-size: 21px !important;
-  line-height: 22px !important;
-  cursor: pointer !important;
+  color: transparent !important;
+  font-size: 0 !important;
+  line-height: 0 !important;
   appearance: none !important;
   -webkit-appearance: none !important;
 }
+html body header > h1 #apiHealth::before {
+  content: "" !important;
+  display: block !important;
+  width: 18px !important;
+  height: 18px !important;
+  background-color: #4b9bd6 !important;
+  -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 0 0-.1-7.8Z'/%3E%3C/svg%3E") center / contain no-repeat !important;
+  mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 0 0-.1-7.8Z'/%3E%3C/svg%3E") center / contain no-repeat !important;
+}
+html body header > h1 #apiHealth[data-state="ok"]::before { background-color:#36a853 !important; }
+html body header > h1 #apiHealth[data-state="limited"]::before { background-color:#e1b52c !important; }
+html body header > h1 #apiHealth[data-state="busy"]::before { background-color:#f08a24 !important; }
+html body header > h1 #apiHealth[data-state="error"]::before,
+html body header > h1 #apiHealth[data-state="imageError"]::before { background-color:#e04444 !important; }
+html body header > h1 #apiHealth[data-state="checking"]::before,
+html body header > h1 #apiHealth[data-state="imageLoading"]::before { background-color:#4b9bd6 !important; }
 
-header > h1 #apiHealth::before {
-  content: "♥";
-  display: block;
-  width: 100%;
-  height: 100%;
-  text-align: center;
-  line-height: 22px;
-  color: #4b9bd6;
-}
-
-header > h1 #apiHealth[data-state="ok"]::before { color: #36a853; }
-header > h1 #apiHealth[data-state="limited"]::before { color: #e1b52c; }
-header > h1 #apiHealth[data-state="busy"]::before { color: #f08a24; }
-header > h1 #apiHealth[data-state="error"]::before,
-header > h1 #apiHealth[data-state="imageError"]::before { color: #e04444; }
-header > h1 #apiHealth[data-state="checking"]::before,
-header > h1 #apiHealth[data-state="imageLoading"]::before { color: #4b9bd6; }
-
-header > h1 #apiHealth:focus-visible {
-  outline: 2px solid #82977a !important;
-  outline-offset: 2px !important;
-  border-radius: 3px !important;
-}
-
-/* The indicator is no longer part of the control grid. */
-header > .header-tools > .api-health-wrap { display: none !important; }
-
-@media (max-width: 600px) {
-  header > h1 {
-    flex: 0 1 164px !important;
-    width: auto !important;
-    min-width: 0 !important;
-    max-width: none !important;
-    justify-content: flex-start !important;
-    gap: 5px !important;
-  }
-  header > h1 .header-title-text {
-    display: block !important;
-    flex: 0 1 auto !important;
-    min-width: 0 !important;
-  }
-  header > h1 .api-health-wrap {
-    flex: 0 0 18px !important;
-    width: 18px !important;
-    min-width: 18px !important;
-  }
-  header > h1 #apiHealth {
-    width: 18px !important;
-    min-width: 18px !important;
-    max-width: 18px !important;
-    flex-basis: 18px !important;
-    font-size: 19px !important;
-  }
-}
-
-@media (max-width: 390px) {
-  header > h1 {
-    flex-basis: 140px !important;
-    gap: 4px !important;
-  }
-  header > h1 .api-health-wrap {
-    flex-basis: 16px !important;
-    width: 16px !important;
-    min-width: 16px !important;
-  }
-  header > h1 #apiHealth {
-    width: 16px !important;
-    min-width: 16px !important;
-    max-width: 16px !important;
-    flex-basis: 16px !important;
-    font-size: 17px !important;
-  }
-}
-
-
-/* Force monochrome text heart so Android/Samsung emoji rendering cannot
-   keep it red regardless of the live data-state attribute. */
-header > h1 #apiHealth {
-  color: #4b9bd6 !important;
-  -webkit-text-fill-color: #4b9bd6 !important;
-  background: transparent !important;
-  border: 0 !important;
-  box-shadow: none !important;
-  font-family: Arial, "Noto Sans", sans-serif !important;
-  font-variant-emoji: text !important;
-}
-
-header > h1 #apiHealth::before {
-  content: "♥︎" !important;
-  color: #4b9bd6 !important;
-  -webkit-text-fill-color: #4b9bd6 !important;
-  font-family: Arial, "Noto Sans", sans-serif !important;
-  font-variant-emoji: text !important;
-}
-
-header > h1 #apiHealth[data-state="ok"]::before {
-  color: #36a853 !important;
-  -webkit-text-fill-color: #36a853 !important;
-}
-header > h1 #apiHealth[data-state="limited"]::before {
-  color: #e1b52c !important;
-  -webkit-text-fill-color: #e1b52c !important;
-}
-header > h1 #apiHealth[data-state="busy"]::before {
-  color: #f08a24 !important;
-  -webkit-text-fill-color: #f08a24 !important;
-}
-header > h1 #apiHealth[data-state="error"]::before,
-header > h1 #apiHealth[data-state="imageError"]::before {
-  color: #e04444 !important;
-  -webkit-text-fill-color: #e04444 !important;
-}
-header > h1 #apiHealth[data-state="checking"]::before,
-header > h1 #apiHealth[data-state="imageLoading"]::before {
-  color: #4b9bd6 !important;
-  -webkit-text-fill-color: #4b9bd6 !important;
-}
-
-
-/* Layout correction: keep the title on one line on Fold-unfolded/tablet/PC.
-   Only compact phone widths use the intentional two-line title. */
-header > h1 .header-title-text {
-  white-space: nowrap !important;
-}
-header > h1 .header-title-line {
-  display: inline !important;
-  white-space: nowrap !important;
-}
-header > h1 .header-title-line + .header-title-line {
-  margin-left: 0.25em !important;
-}
-@media screen and (max-width: 600px) {
-  header > h1 .header-title-line {
-    display: block !important;
-  }
-  header > h1 .header-title-line + .header-title-line {
-    margin-left: 0 !important;
-  }
-}
-
-
-/* Final phone header breakpoint:
-   S23-class widths keep the title on one line; only very narrow phones wrap. */
-@media screen and (max-width: 600px) {
+/* Medium phone / Fold cover: one-line title, controls in two rows. */
+@media screen and (min-width: 391px) and (max-width: 600px) {
   html body header {
-    grid-template-columns: minmax(0, 1fr) 190px !important;
-  }
-  html body header > h1 .header-title-text {
-    white-space: nowrap !important;
-  }
-  html body header > h1 .header-title-line {
-    display: inline !important;
-    white-space: nowrap !important;
-  }
-  html body header > h1 .header-title-line + .header-title-line {
-    margin-left: 0.22em !important;
-  }
-}
-
-/* S23 and similar phones: reserve enough title width and keep it in one line. */
-@media screen and (min-width: 341px) and (max-width: 600px) {
-  html body header > h1 {
-    flex: 0 1 205px !important;
-    width: auto !important;
-    min-width: 0 !important;
-    max-width: 205px !important;
-    white-space: nowrap !important;
-  }
-  html body header > h1 .header-title-text {
-    display: inline !important;
-    white-space: nowrap !important;
-  }
-  html body header > h1 .header-title-line {
-    display: inline !important;
-    white-space: nowrap !important;
-  }
-  html body header > h1 .header-title-line + .header-title-line {
-    margin-left: 0.22em !important;
-  }
-}
-/* Only very narrow phones may split the title. */
-@media screen and (max-width: 340px) {
-  html body header > h1 .header-title-line {
-    display: block !important;
-  }
-  html body header > h1 .header-title-line + .header-title-line {
-    margin-left: 0 !important;
-  }
-}
-
-
-/* Galaxy Z Flip 3 / narrow-phone header layout.
-   Keep the title and live status heart together on the left; put the four
-   controls in a compact 2x2 arrangement on the right. */
-@media screen and (max-width: 430px) {
-  html body header {
-    box-sizing: border-box !important;
     display: flex !important;
     flex-flow: row nowrap !important;
     align-items: center !important;
     justify-content: space-between !important;
     gap: 5px !important;
-    width: 100% !important;
     height: 66px !important;
     min-height: 66px !important;
     padding: 5px 7px !important;
-    overflow: visible !important;
   }
-
   html body header > h1 {
-    box-sizing: border-box !important;
-    display: flex !important;
-    flex: 0 1 145px !important;
-    width: 145px !important;
+    flex: 1 1 auto !important;
+    width: auto !important;
     min-width: 0 !important;
-    max-width: 145px !important;
-    height: 100% !important;
-    align-items: center !important;
-    justify-content: flex-start !important;
+    max-width: none !important;
+    font-size: 12px !important;
+    letter-spacing: -0.45px !important;
+  }
+  html body header > h1 .header-title-text,
+  html body header > h1 .header-title-line {
+    display: inline !important;
+    white-space: nowrap !important;
+  }
+  html body header > h1 .header-title-line + .header-title-line {
+    margin-left: 0.2em !important;
+  }
+  html body header > .header-tools {
+    box-sizing: border-box !important;
+    display: grid !important;
+    flex: 0 0 190px !important;
+    width: 190px !important;
+    min-width: 190px !important;
+    max-width: 190px !important;
+    height: 58px !important;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
+    grid-template-rows: 27px 27px !important;
     gap: 4px !important;
+    align-content: center !important;
+    align-items: center !important;
+    justify-content: stretch !important;
     margin: 0 !important;
     padding: 0 !important;
+  }
+}
+
+/* Narrow phone: title uses two lines; heart has its own fixed slot.
+   The controls use a compact 2x2 grid. */
+@media screen and (max-width: 390px) {
+  html body header {
+    display: flex !important;
+    flex-flow: row nowrap !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    gap: 5px !important;
+    height: 68px !important;
+    min-height: 68px !important;
+    padding: 5px 7px !important;
+  }
+  html body header > h1 {
+    flex: 0 1 145px !important;
+    width: 145px !important;
+    min-width: 130px !important;
+    max-width: 145px !important;
+    height: 58px !important;
     font-size: 12px !important;
     line-height: 1.15 !important;
     letter-spacing: -0.45px !important;
     white-space: normal !important;
-    overflow: visible !important;
+    gap: 5px !important;
   }
-
   html body header > h1 .header-title-text {
-    display: block !important;
-    flex: 1 1 auto !important;
-    width: auto !important;
+    display: flex !important;
+    flex: 0 1 auto !important;
+    flex-direction: column !important;
     min-width: 0 !important;
     max-width: 116px !important;
     white-space: normal !important;
-    overflow: visible !important;
   }
   html body header > h1 .header-title-line {
     display: block !important;
@@ -3018,46 +2884,33 @@ header > h1 .header-title-line + .header-title-line {
   html body header > h1 .header-title-line + .header-title-line {
     margin-left: 0 !important;
   }
-
   html body header > h1 .api-health-wrap {
-    position: relative !important;
-    display: inline-flex !important;
-    flex: 0 0 18px !important;
-    width: 18px !important;
-    min-width: 18px !important;
-    height: 22px !important;
-    align-items: center !important;
-    justify-content: center !important;
-    margin: 0 !important;
+    flex: 0 0 20px !important;
+    width: 20px !important;
+    min-width: 20px !important;
   }
-  html body header > h1 #apiHealth {
-    width: 18px !important;
-    min-width: 18px !important;
-    max-width: 18px !important;
-    height: 22px !important;
-    flex: 0 0 18px !important;
-    font-size: 18px !important;
-  }
-
   html body header > .header-tools {
     box-sizing: border-box !important;
     display: grid !important;
     flex: 0 0 174px !important;
     width: 174px !important;
-    min-width: 174px !important;
+    min-width: 164px !important;
     max-width: 174px !important;
     height: 58px !important;
     grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
     grid-template-rows: 27px 27px !important;
     gap: 4px !important;
-    align-items: center !important;
-    justify-items: stretch !important;
     align-content: center !important;
+    align-items: center !important;
     justify-content: stretch !important;
     margin: 0 !important;
     padding: 0 !important;
-    overflow: visible !important;
   }
+}
+
+/* Actual DOM order: wake-lock, theme, interval label, playback label.
+   Explicit grid placement keeps the visual order consistent. */
+@media screen and (max-width: 600px) {
   html body header > .header-tools > #screenWakeLockToggle {
     grid-column: 1 !important;
     grid-row: 2 !important;
@@ -3077,184 +2930,10 @@ header > h1 .header-title-line + .header-title-line {
     height: 27px !important;
     min-height: 27px !important;
     margin: 0 !important;
-    padding: 2px 3px !important;
+    padding: 0 3px !important;
     font-size: 10px !important;
     white-space: nowrap !important;
   }
-  html body header > .header-tools > .auto-interval-control {
-    display: grid !important;
-    grid-template-columns: auto minmax(0, 1fr) !important;
-    align-items: center !important;
-    gap: 2px !important;
-    width: 100% !important;
-    min-width: 0 !important;
-    margin: 0 !important;
-    font-size: 9px !important;
-    white-space: nowrap !important;
-  }
-  html body header > .header-tools > .auto-interval-control[for="autoInterval"] {
-    grid-column: 1 !important;
-    grid-row: 1 !important;
-  }
-  html body header > .header-tools > .auto-interval-control[for="autoPlayMode"] {
-    grid-column: 2 !important;
-    grid-row: 1 !important;
-  }
-  html body header > .header-tools > .auto-interval-control .control-label {
-    overflow: hidden !important;
-    text-overflow: clip !important;
-  }
-  html body header > .header-tools > .auto-interval-control select {
-    box-sizing: border-box !important;
-    width: 100% !important;
-    min-width: 0 !important;
-    max-width: none !important;
-    height: 27px !important;
-    min-height: 27px !important;
-    padding: 2px 2px !important;
-    font-size: 10px !important;
-  }
-}
-
-
-/* === Flip3 header: explicit two-column layout and SVG status heart === */
-@media screen and (max-width: 430px) {
-  html body header {
-    box-sizing: border-box !important;
-    display: flex !important;
-    flex-direction: row !important;
-    flex-wrap: nowrap !important;
-    align-items: center !important;
-    justify-content: space-between !important;
-    gap: 5px !important;
-    width: 100% !important;
-    height: 66px !important;
-    min-height: 66px !important;
-    padding: 5px 7px !important;
-    overflow: visible !important;
-  }
-
-  html body header > h1 {
-    box-sizing: border-box !important;
-    display: flex !important;
-    flex: 0 0 150px !important;
-    width: 150px !important;
-    min-width: 150px !important;
-    max-width: 150px !important;
-    height: 58px !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    align-items: center !important;
-    justify-content: flex-start !important;
-    gap: 4px !important;
-    white-space: normal !important;
-    overflow: visible !important;
-    font-size: 12px !important;
-    line-height: 1.15 !important;
-  }
-
-  html body header > h1 .header-title-text {
-    box-sizing: border-box !important;
-    display: flex !important;
-    flex: 0 0 126px !important;
-    flex-direction: column !important;
-    width: 126px !important;
-    min-width: 126px !important;
-    max-width: 126px !important;
-    white-space: normal !important;
-  }
-  html body header > h1 .header-title-line {
-    display: block !important;
-    white-space: nowrap !important;
-  }
-  html body header > h1 .header-title-line + .header-title-line {
-    margin-left: 0 !important;
-  }
-
-  html body header > h1 .api-health-wrap {
-    box-sizing: border-box !important;
-    position: relative !important;
-    display: inline-flex !important;
-    flex: 0 0 18px !important;
-    width: 18px !important;
-    min-width: 18px !important;
-    max-width: 18px !important;
-    height: 22px !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    align-items: center !important;
-    justify-content: center !important;
-  }
-
-  /* Draw a true monochrome heart with an SVG mask, not a red emoji glyph. */
-  html body header > h1 #apiHealth {
-    box-sizing: border-box !important;
-    display: block !important;
-    position: relative !important;
-    flex: 0 0 18px !important;
-    width: 18px !important;
-    min-width: 18px !important;
-    max-width: 18px !important;
-    height: 18px !important;
-    min-height: 18px !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    border: 0 !important;
-    border-radius: 0 !important;
-    background: transparent !important;
-    box-shadow: none !important;
-    color: transparent !important;
-    font-size: 0 !important;
-    line-height: 0 !important;
-    appearance: none !important;
-  }
-  html body header > h1 #apiHealth::before {
-    content: "" !important;
-    display: block !important;
-    width: 18px !important;
-    height: 18px !important;
-    background-color: #4b9bd6 !important;
-    -webkit-mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 0 0-.1-7.8Z'/%3E%3C/svg%3E") center / contain no-repeat !important;
-    mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 0 0-.1-7.8Z'/%3E%3C/svg%3E") center / contain no-repeat !important;
-  }
-  html body header > h1 #apiHealth[data-state="ok"]::before {
-    background-color: #36a853 !important;
-  }
-  html body header > h1 #apiHealth[data-state="limited"]::before {
-    background-color: #e1b52c !important;
-  }
-  html body header > h1 #apiHealth[data-state="busy"]::before {
-    background-color: #f08a24 !important;
-  }
-  html body header > h1 #apiHealth[data-state="error"]::before,
-  html body header > h1 #apiHealth[data-state="imageError"]::before {
-    background-color: #e04444 !important;
-  }
-  html body header > h1 #apiHealth[data-state="checking"]::before,
-  html body header > h1 #apiHealth[data-state="imageLoading"]::before {
-    background-color: #4b9bd6 !important;
-  }
-
-  html body header > .header-tools {
-    box-sizing: border-box !important;
-    display: grid !important;
-    flex: 0 0 174px !important;
-    width: 174px !important;
-    min-width: 174px !important;
-    max-width: 174px !important;
-    height: 58px !important;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) !important;
-    grid-template-rows: 27px 27px !important;
-    gap: 4px !important;
-    align-items: center !important;
-    justify-items: stretch !important;
-    align-content: center !important;
-    justify-content: stretch !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    overflow: visible !important;
-  }
-
   html body header > .header-tools > label[for="autoInterval"] {
     grid-column: 1 !important;
     grid-row: 1 !important;
@@ -3263,36 +2942,28 @@ header > h1 .header-title-line + .header-title-line {
     grid-column: 2 !important;
     grid-row: 1 !important;
   }
-  html body header > .header-tools > #screenWakeLockToggle {
-    grid-column: 1 !important;
-    grid-row: 2 !important;
-  }
-  html body header > .header-tools > #themeToggle {
-    grid-column: 2 !important;
-    grid-row: 2 !important;
-  }
   html body header > .header-tools > label.auto-interval-control {
     box-sizing: border-box !important;
     display: flex !important;
     position: static !important;
+    flex-flow: row nowrap !important;
+    align-items: center !important;
+    justify-content: center !important;
+    gap: 3px !important;
     width: 100% !important;
     min-width: 0 !important;
     max-width: none !important;
     height: 27px !important;
     margin: 0 !important;
     padding: 0 !important;
-    flex-flow: row nowrap !important;
-    align-items: center !important;
-    justify-content: center !important;
-    gap: 3px !important;
-    font-size: 8px !important;
+    font-size: 9px !important;
     white-space: nowrap !important;
     overflow: hidden !important;
   }
   html body header > .header-tools > label.auto-interval-control .control-label {
     display: block !important;
     flex: 0 0 auto !important;
-    font-size: 8px !important;
+    font-size: 9px !important;
     white-space: nowrap !important;
   }
   html body header > .header-tools #autoInterval,
@@ -3306,20 +2977,7 @@ header > h1 .header-title-line + .header-title-line {
     min-height: 27px !important;
     margin: 0 !important;
     padding: 0 1px !important;
-    font-size: 8px !important;
-  }
-  html body header > .header-tools > #screenWakeLockToggle,
-  html body header > .header-tools > #themeToggle {
-    box-sizing: border-box !important;
-    width: 100% !important;
-    min-width: 0 !important;
-    max-width: none !important;
-    height: 27px !important;
-    min-height: 27px !important;
-    margin: 0 !important;
-    padding: 0 2px !important;
     font-size: 9px !important;
-    white-space: nowrap !important;
   }
 }
 

@@ -3330,6 +3330,55 @@ html.compact-device-header body header > .header-tools > #screenWakeLockToggle::
   }
 }
 
+
+/* Ensure the complete "자동 재생" label is visible at every viewport size. */
+html body header > .header-tools > label[for="autoPlayMode"] {
+  box-sizing: border-box !important;
+  width: max-content !important;
+  min-width: max-content !important;
+  max-width: none !important;
+  flex: 0 0 auto !important;
+  overflow: visible !important;
+  white-space: nowrap !important;
+}
+html body header > .header-tools > label[for="autoPlayMode"] .control-label {
+  display: inline-block !important;
+  box-sizing: border-box !important;
+  width: auto !important;
+  min-width: max-content !important;
+  max-width: none !important;
+  flex: 0 0 auto !important;
+  overflow: visible !important;
+  white-space: nowrap !important;
+}
+html body header > .header-tools > label[for="autoPlayMode"] select {
+  flex: 0 0 52px !important;
+  width: 52px !important;
+  min-width: 52px !important;
+  max-width: 52px !important;
+}
+@media screen and (max-width: 600px) {
+  html body header > .header-tools > label[for="autoPlayMode"] {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+    justify-content: center !important;
+    gap: 3px !important;
+  }
+  html body header > .header-tools > label[for="autoPlayMode"] .control-label {
+    width: auto !important;
+    min-width: max-content !important;
+    max-width: none !important;
+    font-size: 9px !important;
+  }
+  html body header > .header-tools > label[for="autoPlayMode"] select {
+    flex: 0 1 48px !important;
+    width: 48px !important;
+    min-width: 44px !important;
+    max-width: 48px !important;
+  }
+}
+
 </style>
 </head>
 
@@ -3369,7 +3418,7 @@ html.compact-device-header body header > .header-tools > #screenWakeLockToggle::
       </select>
     </label>
     <label class="auto-interval-control" for="autoPlayMode">
-      <span class="control-label">재생</span>
+      <span class="control-label">자동 재생</span>
       <select id="autoPlayMode" aria-label="자동 재생 설정">
         <option value="on">자동</option>
         <option value="off">정지</option>

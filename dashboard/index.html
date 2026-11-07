@@ -2913,6 +2913,36 @@ header > h1 .header-title-line + .header-title-line {
   }
 }
 
+
+/* Final phone header breakpoint:
+   S23-class widths keep the title on one line; only very narrow phones wrap. */
+@media screen and (max-width: 600px) {
+  html body header {
+    grid-template-columns: minmax(0, 1fr) 190px !important;
+  }
+  html body header > h1 .header-title-text {
+    white-space: nowrap !important;
+  }
+  html body header > h1 .header-title-line {
+    display: inline !important;
+    white-space: nowrap !important;
+  }
+  html body header > h1 .header-title-line + .header-title-line {
+    margin-left: 0.22em !important;
+  }
+}
+@media screen and (max-width: 390px) {
+  html body header {
+    grid-template-columns: minmax(0, 1fr) 174px !important;
+  }
+  html body header > h1 .header-title-line {
+    display: block !important;
+  }
+  html body header > h1 .header-title-line + .header-title-line {
+    margin-left: 0 !important;
+  }
+}
+
 </style>
 </head>
 

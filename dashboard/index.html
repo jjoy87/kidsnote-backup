@@ -2574,6 +2574,93 @@ body.dark-mode.cinema-mode #cinemaJourneyContent .cinema-entry { border-color:#4
   }
 }
 
+
+/* Reduce the overall control block while preserving exact symmetry:
+   same right edge, same total width per row, equal controls in each row. */
+@media screen and (max-width: 600px) {
+  html body header > .header-tools {
+    width: 190px !important;
+    min-width: 190px !important;
+    max-width: 190px !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    column-gap: 6px !important;
+    margin-left: auto !important;
+    margin-right: 0 !important;
+    justify-self: end !important;
+  }
+
+  html body header > .header-tools #screenWakeLockToggle,
+  html body header > .header-tools #themeToggle {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    height: 27px !important;
+    min-height: 27px !important;
+    padding-left: 2px !important;
+    padding-right: 2px !important;
+    font-size: 9px !important;
+  }
+
+  html body header > .header-tools > label[for="autoInterval"],
+  html body header > .header-tools > label[for="autoPlayMode"] {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    justify-self: stretch !important;
+  }
+
+  html body header > .header-tools > label.auto-interval-control {
+    gap: 3px !important;
+    justify-content: center !important;
+    font-size: 8px !important;
+  }
+
+  html body header > .header-tools > label.auto-interval-control .control-label {
+    font-size: 8px !important;
+    letter-spacing: -0.4px !important;
+  }
+
+  html body header > .header-tools #autoInterval,
+  html body header > .header-tools #autoPlayMode {
+    flex: 0 0 47px !important;
+    width: 47px !important;
+    min-width: 47px !important;
+    max-width: 47px !important;
+    height: 27px !important;
+    min-height: 27px !important;
+    padding: 0 1px !important;
+    font-size: 8px !important;
+  }
+}
+
+@media screen and (max-width: 390px) {
+  html body header > .header-tools {
+    width: 174px !important;
+    min-width: 174px !important;
+    max-width: 174px !important;
+    column-gap: 5px !important;
+  }
+
+  html body header > .header-tools #autoInterval,
+  html body header > .header-tools #autoPlayMode {
+    flex-basis: 43px !important;
+    width: 43px !important;
+    min-width: 43px !important;
+    max-width: 43px !important;
+    font-size: 7px !important;
+  }
+
+  html body header > .header-tools > label.auto-interval-control,
+  html body header > .header-tools > label.auto-interval-control .control-label {
+    font-size: 7px !important;
+  }
+
+  html body header > .header-tools #screenWakeLockToggle,
+  html body header > .header-tools #themeToggle {
+    font-size: 8px !important;
+  }
+}
+
 </style>
 </head>
 

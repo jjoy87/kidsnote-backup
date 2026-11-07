@@ -2189,85 +2189,121 @@ body.dark-mode.cinema-mode #cinemaJourneyContent .cinema-entry { border-color:#4
 }
 
 
-/* Compact phone controls: preserve two equal-width rows, but keep the
-   actual buttons and selects close to their content width. */
+/* FINAL compact sizing for narrow phones. Keep two rows, but size controls
+   to their content instead of stretching selects across the grid tracks. */
 @media screen and (max-width: 600px) {
-  header {
+  html body header {
+    display: grid !important;
     grid-template-columns: minmax(0, 42%) minmax(0, 58%) !important;
     column-gap: 5px !important;
+    align-items: center !important;
     height: 68px !important;
     min-height: 68px !important;
+    padding: 5px 8px !important;
+    overflow: visible !important;
   }
 
-  header > h1 {
+  html body header > h1 {
+    grid-column: 1 !important;
+    grid-row: 1 !important;
+    display: flex !important;
+    align-items: center !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    height: 100% !important;
+    margin: 0 !important;
     font-size: clamp(12px, 3.8vw, 15px) !important;
+    line-height: 1.12 !important;
     letter-spacing: -0.65px !important;
+    white-space: nowrap !important;
   }
 
-  header > .header-tools {
+  html body header > .header-tools {
+    grid-column: 2 !important;
+    grid-row: 1 !important;
     display: grid !important;
-    grid-template-columns: 14px 28px 72px 14px 28px 72px !important;
+    grid-template-columns: 14px 28px 58px 14px 28px 58px !important;
     grid-template-rows: 27px 27px !important;
     column-gap: 3px !important;
     row-gap: 4px !important;
+    justify-content: start !important;
+    align-content: center !important;
+    align-items: center !important;
     width: 100% !important;
+    min-width: 0 !important;
+    max-width: none !important;
     height: 58px !important;
+    margin: 0 !important;
+    padding: 0 !important;
     position: static !important;
     overflow: visible !important;
-    align-content: center !important;
   }
 
-  header > .header-tools > .api-health-wrap {
+  html body header > .header-tools > .api-health-wrap {
     grid-column: 1 !important;
     grid-row: 1 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
     width: 14px !important;
     min-width: 14px !important;
     height: 27px !important;
+    margin: 0 !important;
+    padding: 0 !important;
   }
 
-  header > .header-tools #apiHealth {
+  html body header > .header-tools #apiHealth {
     width: 13px !important;
     min-width: 13px !important;
+    max-width: 13px !important;
     height: 13px !important;
     min-height: 13px !important;
+    margin: 0 !important;
+    padding: 0 !important;
   }
 
-  header > .header-tools #screenWakeLockToggle {
+  html body header > .header-tools #screenWakeLockToggle {
     grid-column: 2 !important;
     grid-row: 1 !important;
+    justify-self: start !important;
     width: 28px !important;
     min-width: 28px !important;
     max-width: 28px !important;
     height: 27px !important;
     min-height: 27px !important;
+    margin: 0 !important;
     padding: 0 !important;
     font-size: 11px !important;
   }
 
-  header > .header-tools #themeToggle {
-    grid-column: 3 / 4 !important;
+  html body header > .header-tools #themeToggle {
+    grid-column: 3 / 7 !important;
     grid-row: 1 !important;
-    width: 72px !important;
-    min-width: 72px !important;
-    max-width: 72px !important;
+    justify-self: start !important;
+    width: 58px !important;
+    min-width: 58px !important;
+    max-width: 58px !important;
     height: 27px !important;
     min-height: 27px !important;
+    margin: 0 !important;
     padding: 0 2px !important;
     font-size: 9px !important;
+    letter-spacing: -0.4px !important;
     white-space: nowrap !important;
   }
 
-  header > .header-tools > label[for="autoInterval"] {
+  html body header > .header-tools > label[for="autoInterval"] {
     grid-column: 1 / 4 !important;
     grid-row: 2 !important;
   }
 
-  header > .header-tools > label[for="autoPlayMode"] {
+  html body header > .header-tools > label[for="autoPlayMode"] {
     grid-column: 4 / 7 !important;
     grid-row: 2 !important;
   }
 
-  header > .header-tools > label.auto-interval-control {
+  html body header > .header-tools > label.auto-interval-control {
     position: static !important;
     display: flex !important;
     visibility: visible !important;
@@ -2283,78 +2319,89 @@ body.dark-mode.cinema-mode #cinemaJourneyContent .cinema-entry { border-color:#4
     height: 27px !important;
     margin: 0 !important;
     padding: 0 !important;
-    overflow: hidden !important;
+    overflow: visible !important;
     font-size: 9px !important;
     line-height: 1 !important;
     white-space: nowrap !important;
   }
 
-  header > .header-tools > label.auto-interval-control .control-label {
+  html body header > .header-tools > label.auto-interval-control .control-label {
+    display: block !important;
     flex: 0 0 auto !important;
     width: auto !important;
     min-width: 0 !important;
+    max-width: none !important;
     margin: 0 !important;
     padding: 0 !important;
     font-size: 9px !important;
+    line-height: 1 !important;
     white-space: nowrap !important;
   }
 
-  header > .header-tools #autoInterval,
-  header > .header-tools #autoPlayMode {
-    box-sizing: border-box !important;
-    flex: 1 1 0 !important;
-    width: 1px !important;
-    min-width: 0 !important;
-    max-width: none !important;
+  html body header > .header-tools #autoInterval,
+  html body header > .header-tools #autoPlayMode {
+    display: block !important;
+    flex: 0 0 54px !important;
+    width: 54px !important;
+    min-width: 54px !important;
+    max-width: 54px !important;
     height: 27px !important;
     min-height: 27px !important;
     margin: 0 !important;
     padding: 0 2px !important;
     font-size: 9px !important;
+    line-height: 1 !important;
     text-align: center !important;
   }
 }
 
 @media screen and (max-width: 390px) {
-  header {
+  html body header {
     grid-template-columns: minmax(0, 40%) minmax(0, 60%) !important;
     column-gap: 4px !important;
     padding-left: 6px !important;
     padding-right: 6px !important;
   }
 
-  header > h1 {
+  html body header > h1 {
     font-size: clamp(11px, 3.6vw, 14px) !important;
   }
 
-  header > .header-tools {
-    grid-template-columns: 12px 24px 64px 12px 24px 64px !important;
+  html body header > .header-tools {
+    grid-template-columns: 12px 24px 54px 12px 24px 54px !important;
     column-gap: 2px !important;
   }
 
-  header > .header-tools > .api-health-wrap,
-  header > .header-tools #apiHealth {
+  html body header > .header-tools > .api-health-wrap,
+  html body header > .header-tools #apiHealth {
     width: 12px !important;
     min-width: 12px !important;
   }
 
-  header > .header-tools #screenWakeLockToggle {
+  html body header > .header-tools #screenWakeLockToggle {
     width: 24px !important;
     min-width: 24px !important;
     max-width: 24px !important;
   }
 
-  header > .header-tools #themeToggle {
-    width: 64px !important;
-    min-width: 64px !important;
-    max-width: 64px !important;
+  html body header > .header-tools #themeToggle {
+    width: 54px !important;
+    min-width: 54px !important;
+    max-width: 54px !important;
     font-size: 8px !important;
   }
 
-  header > .header-tools > label.auto-interval-control,
-  header > .header-tools > label.auto-interval-control .control-label,
-  header > .header-tools #autoInterval,
-  header > .header-tools #autoPlayMode {
+  html body header > .header-tools #autoInterval,
+  html body header > .header-tools #autoPlayMode {
+    flex-basis: 50px !important;
+    width: 50px !important;
+    min-width: 50px !important;
+    max-width: 50px !important;
+    font-size: 8px !important;
+  }
+
+  html body header > .header-tools > label.auto-interval-control,
+  html body header > .header-tools > label.auto-interval-control .control-label {
     font-size: 8px !important;
   }
 }

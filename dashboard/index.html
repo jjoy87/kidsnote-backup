@@ -3232,6 +3232,27 @@ html.compact-device-header body header > .header-tools > #screenWakeLockToggle::
   white-space: nowrap;
 }
 
+
+/* Wide-screen monitor icon: enlarge to visually match the Dark Mode control. */
+@media screen and (min-width: 601px) {
+  html body header > .header-tools > #screenWakeLockToggle {
+    width: 48px !important;
+    min-width: 48px !important;
+    max-width: 48px !important;
+    height: 48px !important;
+    min-height: 48px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+  html body header > .header-tools > #screenWakeLockToggle::before {
+    width: 27px !important;
+    height: 27px !important;
+    flex: 0 0 27px !important;
+  }
+}
+/* Keep the compact-device icon and its "화면 유지" label unchanged. */
+
 </style>
 </head>
 

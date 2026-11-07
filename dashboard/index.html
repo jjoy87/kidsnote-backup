@@ -2661,6 +2661,62 @@ body.dark-mode.cinema-mode #cinemaJourneyContent .cinema-entry { border-color:#4
   }
 }
 
+
+/* Swap the two control rows as requested.
+   Keep the API status light in place; move auto-play controls above,
+   and screen-wake/theme buttons below. */
+@media screen and (max-width: 600px) {
+  html body header > .header-tools > label[for="autoInterval"] {
+    grid-column: 1 !important;
+    grid-row: 1 !important;
+  }
+
+  html body header > .header-tools > label[for="autoPlayMode"] {
+    grid-column: 2 !important;
+    grid-row: 1 !important;
+  }
+
+  html body header > .header-tools #screenWakeLockToggle {
+    grid-column: 1 !important;
+    grid-row: 2 !important;
+    justify-self: stretch !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    height: 27px !important;
+    min-height: 27px !important;
+  }
+
+  html body header > .header-tools #themeToggle {
+    grid-column: 2 !important;
+    grid-row: 2 !important;
+    justify-self: stretch !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    height: 27px !important;
+    min-height: 27px !important;
+  }
+
+  html body header > .header-tools #autoInterval,
+  html body header > .header-tools #autoPlayMode {
+    flex: 0 0 47px !important;
+    width: 47px !important;
+    min-width: 47px !important;
+    max-width: 47px !important;
+  }
+}
+
+@media screen and (max-width: 390px) {
+  html body header > .header-tools #autoInterval,
+  html body header > .header-tools #autoPlayMode {
+    flex-basis: 43px !important;
+    width: 43px !important;
+    min-width: 43px !important;
+    max-width: 43px !important;
+  }
+}
+
 </style>
 </head>
 

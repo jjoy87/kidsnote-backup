@@ -1939,6 +1939,71 @@ body.dark-mode.cinema-mode #cinemaJourneyContent .cinema-entry { border-color:#4
   }
 }
 
+
+/* FIX: anchor the second-row setting labels to the tools container.
+   Without position:relative they were positioned against the page and clipped. */
+@media screen and (max-width: 600px) {
+  header > .header-tools {
+    position: relative !important;
+    overflow: visible !important;
+  }
+
+  header > .header-tools > label[for="autoInterval"],
+  header > .header-tools > label[for="autoPlayMode"] {
+    position: absolute !important;
+    top: 31px !important;
+    z-index: 5 !important;
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    box-sizing: border-box !important;
+    width: calc(50% - 2px) !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    height: 27px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    align-items: center !important;
+    flex-flow: row nowrap !important;
+  }
+
+  header > .header-tools > label[for="autoInterval"] {
+    left: 0 !important;
+    right: auto !important;
+  }
+
+  header > .header-tools > label[for="autoPlayMode"] {
+    left: 50% !important;
+    right: auto !important;
+  }
+}
+
+
+/* Give the one-line dashboard title more visual weight while preserving
+   the two-row controls and their equal-width setting row. */
+@media screen and (max-width: 600px) {
+  header {
+    grid-template-columns: minmax(0, 40%) minmax(0, 60%) !important;
+    column-gap: 6px !important;
+  }
+  header > h1 {
+    font-size: clamp(13px, 4.1vw, 16px) !important;
+    letter-spacing: -0.55px !important;
+    line-height: 1.12 !important;
+  }
+}
+@media screen and (max-width: 390px) {
+  header {
+    grid-template-columns: minmax(0, 41%) minmax(0, 59%) !important;
+    column-gap: 4px !important;
+  }
+  header > h1 {
+    font-size: clamp(12px, 4vw, 15px) !important;
+    letter-spacing: -0.65px !important;
+  }
+}
+
 </style>
 </head>
 

@@ -1673,6 +1673,187 @@ body.dark-mode.cinema-mode #cinemaJourneyContent .cinema-entry { border-color:#4
   header > .header-tools #autoPlayMode { font-size: 9px !important; }
 }
 
+
+/* FINAL narrow-phone header balance: fixed two-row control grid. */
+@media screen and (max-width: 600px) {
+  header {
+    box-sizing: border-box !important;
+    display: grid !important;
+    grid-template-columns: minmax(0, 38%) minmax(0, 62%) !important;
+    column-gap: 6px !important;
+    align-items: center !important;
+    justify-content: stretch !important;
+    width: 100% !important;
+    height: 66px !important;
+    min-height: 66px !important;
+    padding: 5px 8px !important;
+    overflow: hidden !important;
+  }
+
+  header > h1 {
+    box-sizing: border-box !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    height: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    font-size: clamp(10px, 3.5vw, 14px) !important;
+    line-height: 1.15 !important;
+    letter-spacing: -0.6px !important;
+    white-space: nowrap !important;
+    overflow: visible !important;
+  }
+  header > h1 .header-title-line {
+    display: inline !important;
+    white-space: nowrap !important;
+  }
+  header > h1 .header-title-line + .header-title-line { margin-left: 0 !important; }
+  header > h1 .header-title-line:first-child::after {
+    content: " " !important;
+    white-space: pre !important;
+  }
+
+  header > .header-tools {
+    box-sizing: border-box !important;
+    display: grid !important;
+    grid-template-columns: 14px 28px 92px minmax(0, 1fr) !important;
+    grid-template-rows: 27px 27px !important;
+    column-gap: 4px !important;
+    row-gap: 4px !important;
+    align-items: center !important;
+    justify-items: stretch !important;
+    align-content: center !important;
+    justify-content: stretch !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    height: 58px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+  }
+
+  header > .header-tools > .api-health-wrap {
+    grid-column: 1 !important;
+    grid-row: 1 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 14px !important;
+    min-width: 14px !important;
+    height: 27px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  header > .header-tools #apiHealth {
+    box-sizing: border-box !important;
+    width: 13px !important;
+    min-width: 13px !important;
+    max-width: 13px !important;
+    height: 13px !important;
+    min-height: 13px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  header > .header-tools #screenWakeLockToggle {
+    grid-column: 2 !important;
+    grid-row: 1 !important;
+    box-sizing: border-box !important;
+    width: 28px !important;
+    min-width: 28px !important;
+    max-width: 28px !important;
+    height: 27px !important;
+    min-height: 27px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    font-size: 12px !important;
+  }
+  header > .header-tools #themeToggle {
+    grid-column: 3 / 5 !important;
+    grid-row: 1 !important;
+    box-sizing: border-box !important;
+    width: 92px !important;
+    min-width: 92px !important;
+    max-width: 92px !important;
+    height: 27px !important;
+    min-height: 27px !important;
+    margin: 0 !important;
+    padding: 0 3px !important;
+    font-size: 10px !important;
+    white-space: nowrap !important;
+  }
+
+  header > .header-tools > label[for="autoInterval"] {
+    grid-column: 1 / 3 !important;
+    grid-row: 2 !important;
+  }
+  header > .header-tools > label[for="autoPlayMode"] {
+    grid-column: 3 / 5 !important;
+    grid-row: 2 !important;
+  }
+  header > .header-tools > label.auto-interval-control {
+    box-sizing: border-box !important;
+    display: flex !important;
+    flex-flow: row nowrap !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    gap: 3px !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    height: 27px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    font-size: 9px !important;
+    line-height: 1 !important;
+    white-space: nowrap !important;
+    overflow: hidden !important;
+  }
+  header > .header-tools > label.auto-interval-control .control-label {
+    display: block !important;
+    flex: 0 0 auto !important;
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    font-size: 9px !important;
+    line-height: 1 !important;
+    white-space: nowrap !important;
+  }
+  header > .header-tools #autoInterval,
+  header > .header-tools #autoPlayMode {
+    box-sizing: border-box !important;
+    display: block !important;
+    flex: 1 1 0 !important;
+    width: 1px !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    height: 27px !important;
+    min-height: 27px !important;
+    margin: 0 !important;
+    padding: 0 2px !important;
+    font-size: 9px !important;
+    line-height: 1 !important;
+    text-align: center !important;
+  }
+}
+
+/* On the very narrowest phones, slightly reduce the theme button width. */
+@media screen and (max-width: 390px) {
+  header { grid-template-columns: minmax(0, 40%) minmax(0, 60%) !important; column-gap: 4px !important; padding-left: 6px !important; padding-right: 6px !important; }
+  header > h1 { font-size: clamp(10px, 3.2vw, 12px) !important; letter-spacing: -0.7px !important; }
+  header > .header-tools { grid-template-columns: 13px 25px 82px minmax(0, 1fr) !important; column-gap: 3px !important; }
+  header > .header-tools #screenWakeLockToggle { width: 25px !important; min-width: 25px !important; max-width: 25px !important; }
+  header > .header-tools #themeToggle { width: 82px !important; min-width: 82px !important; max-width: 82px !important; font-size: 9px !important; }
+  header > .header-tools > label.auto-interval-control .control-label { font-size: 8px !important; }
+  header > .header-tools #autoInterval, header > .header-tools #autoPlayMode { font-size: 8px !important; }
+}
+
 </style>
 </head>
 

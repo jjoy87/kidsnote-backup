@@ -1477,7 +1477,7 @@ body.dark-mode.cinema-mode #cinemaJourneyContent .cinema-entry { border-color:#4
 }
 
 
-/* Narrow-phone header: single-line title at left, controls in two rows at right. */
+/* Balanced narrow-phone header: one-line title + compact two-row controls. */
 @media screen and (max-width: 520px) {
   header {
     box-sizing: border-box !important;
@@ -1485,39 +1485,36 @@ body.dark-mode.cinema-mode #cinemaJourneyContent .cinema-entry { border-color:#4
     flex-flow: row nowrap !important;
     align-items: center !important;
     justify-content: space-between !important;
-    gap: 6px !important;
+    gap: 7px !important;
     width: 100% !important;
-    height: 68px !important;
-    min-height: 68px !important;
-    padding: 5px 7px !important;
+    height: 66px !important;
+    min-height: 66px !important;
+    padding: 5px 8px !important;
     overflow: hidden !important;
   }
+
   header > h1 {
     box-sizing: border-box !important;
     display: flex !important;
     align-items: center !important;
-    flex: 0 0 154px !important;
-    width: 154px !important;
-    min-width: 154px !important;
-    max-width: 154px !important;
+    flex: 0 0 164px !important;
+    width: 164px !important;
+    min-width: 164px !important;
+    max-width: 164px !important;
     height: 100% !important;
     margin: 0 !important;
     padding: 0 !important;
-    font-size: 12px !important;
+    font-size: 14px !important;
     line-height: 1.15 !important;
     letter-spacing: -0.65px !important;
     white-space: nowrap !important;
-    overflow: visible !important;
   }
   header > h1 .header-title-line {
     display: inline !important;
     white-space: nowrap !important;
   }
   header > h1 .header-title-line + .header-title-line { margin-left: 0 !important; }
-  header > h1 .header-title-line:first-child::after {
-    content: " " !important;
-    white-space: pre !important;
-  }
+  header > h1 .header-title-line:first-child::after { content: " " !important; white-space: pre !important; }
 
   header > .header-tools {
     box-sizing: border-box !important;
@@ -1525,27 +1522,27 @@ body.dark-mode.cinema-mode #cinemaJourneyContent .cinema-entry { border-color:#4
     width: 0 !important;
     min-width: 0 !important;
     max-width: none !important;
-    height: 58px !important;
+    height: 56px !important;
     margin: 0 !important;
     padding: 0 !important;
-    display: grid !important;
-    grid-template-columns: 14px 28px minmax(0, 1fr) minmax(0, 1fr) !important;
-    grid-template-rows: 27px 27px !important;
-    column-gap: 3px !important;
-    row-gap: 4px !important;
-    align-items: center !important;
-    justify-content: stretch !important;
-    justify-items: stretch !important;
-  }
-  header > .header-tools > .api-health-wrap {
-    grid-column: 1 !important;
-    grid-row: 1 !important;
     display: flex !important;
+    flex-flow: row wrap !important;
+    align-content: center !important;
     align-items: center !important;
-    justify-content: center !important;
+    justify-content: flex-start !important;
+    gap: 4px 5px !important;
+    overflow: hidden !important;
+  }
+
+  header > .header-tools > .api-health-wrap {
+    order: 1 !important;
+    flex: 0 0 14px !important;
     width: 14px !important;
     min-width: 14px !important;
     height: 27px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
     margin: 0 !important;
     padding: 0 !important;
   }
@@ -1559,32 +1556,47 @@ body.dark-mode.cinema-mode #cinemaJourneyContent .cinema-entry { border-color:#4
     margin: 0 !important;
     padding: 0 !important;
   }
+
   header > .header-tools #screenWakeLockToggle {
-    grid-column: 2 !important;
-    grid-row: 1 !important;
-    box-sizing: border-box !important;
-    width: 28px !important;
-    min-width: 28px !important;
-    max-width: 28px !important;
+    order: 2 !important;
+    flex: 0 0 30px !important;
+    width: 30px !important;
+    min-width: 30px !important;
+    max-width: 30px !important;
     height: 27px !important;
     min-height: 27px !important;
     margin: 0 !important;
     padding: 0 !important;
     font-size: 12px !important;
   }
+
   header > .header-tools #themeToggle {
-    grid-column: 3 / 5 !important;
-    grid-row: 1 !important;
-    box-sizing: border-box !important;
-    width: 100% !important;
-    min-width: 0 !important;
-    max-width: none !important;
+    order: 3 !important;
+    flex: 0 0 84px !important;
+    width: 84px !important;
+    min-width: 84px !important;
+    max-width: 84px !important;
     height: 27px !important;
     min-height: 27px !important;
     margin: 0 !important;
-    padding: 0 3px !important;
+    padding: 0 4px !important;
     font-size: 10px !important;
     white-space: nowrap !important;
+  }
+
+  header > .header-tools > label[for="autoInterval"] {
+    order: 4 !important;
+    flex: 0 0 112px !important;
+    width: 112px !important;
+    min-width: 112px !important;
+    max-width: 112px !important;
+  }
+  header > .header-tools > label[for="autoPlayMode"] {
+    order: 5 !important;
+    flex: 0 0 91px !important;
+    width: 91px !important;
+    min-width: 91px !important;
+    max-width: 91px !important;
   }
   header > .header-tools > label.auto-interval-control {
     box-sizing: border-box !important;
@@ -1593,24 +1605,13 @@ body.dark-mode.cinema-mode #cinemaJourneyContent .cinema-entry { border-color:#4
     align-items: center !important;
     justify-content: flex-start !important;
     gap: 3px !important;
-    width: 100% !important;
-    min-width: 0 !important;
-    max-width: none !important;
     height: 27px !important;
     margin: 0 !important;
     padding: 0 !important;
-    font-size: 8px !important;
+    font-size: 9px !important;
     line-height: 1 !important;
     white-space: nowrap !important;
     overflow: hidden !important;
-  }
-  header > .header-tools > label[for="autoInterval"] {
-    grid-column: 1 / 3 !important;
-    grid-row: 2 !important;
-  }
-  header > .header-tools > label[for="autoPlayMode"] {
-    grid-column: 3 / 5 !important;
-    grid-row: 2 !important;
   }
   header > .header-tools > label.auto-interval-control .control-label {
     display: block !important;
@@ -1620,7 +1621,7 @@ body.dark-mode.cinema-mode #cinemaJourneyContent .cinema-entry { border-color:#4
     max-width: none !important;
     margin: 0 !important;
     padding: 0 !important;
-    font-size: 8px !important;
+    font-size: 9px !important;
     line-height: 1 !important;
     white-space: nowrap !important;
   }
@@ -1628,32 +1629,48 @@ body.dark-mode.cinema-mode #cinemaJourneyContent .cinema-entry { border-color:#4
   header > .header-tools #autoPlayMode {
     box-sizing: border-box !important;
     display: block !important;
-    flex: 1 1 0 !important;
-    width: 1px !important;
+    flex: 1 1 auto !important;
+    width: auto !important;
     min-width: 0 !important;
     max-width: none !important;
     height: 27px !important;
     min-height: 27px !important;
     margin: 0 !important;
-    padding: 0 2px !important;
-    font-size: 9px !important;
+    padding: 0 3px !important;
+    font-size: 10px !important;
+    line-height: 1 !important;
     text-align: center !important;
   }
 }
-@media screen and (max-width: 370px) {
-  header { gap: 5px !important; padding-left: 6px !important; padding-right: 6px !important; height: 66px !important; min-height: 66px !important; }
+
+/* Smaller phones: slightly narrower title and controls, same visual hierarchy. */
+@media screen and (max-width: 390px) {
+  header { gap: 5px !important; padding-left: 6px !important; padding-right: 6px !important; }
   header > h1 {
-    flex-basis: 140px !important; width: 140px !important; min-width: 140px !important; max-width: 140px !important;
-    font-size: 10.5px !important; letter-spacing: -0.7px !important;
+    flex-basis: 140px !important;
+    width: 140px !important;
+    min-width: 140px !important;
+    max-width: 140px !important;
+    font-size: 12px !important;
+    letter-spacing: -0.75px !important;
   }
-  header > .header-tools { grid-template-columns: 12px 26px minmax(0, 1fr) minmax(0, 1fr) !important; column-gap: 2px !important; }
-  header > .header-tools > .api-health-wrap { width: 12px !important; min-width: 12px !important; }
-  header > .header-tools #apiHealth { width: 12px !important; min-width: 12px !important; max-width: 12px !important; height: 12px !important; }
-  header > .header-tools #screenWakeLockToggle { width: 26px !important; min-width: 26px !important; max-width: 26px !important; }
-  header > .header-tools #themeToggle { font-size: 9px !important; }
-  header > .header-tools > label.auto-interval-control { gap: 2px !important; }
-  header > .header-tools > label.auto-interval-control .control-label { font-size: 7px !important; }
-  header > .header-tools #autoInterval, header > .header-tools #autoPlayMode { font-size: 8px !important; }
+  header > .header-tools { column-gap: 3px !important; row-gap: 3px !important; }
+  header > .header-tools #screenWakeLockToggle {
+    flex-basis: 27px !important; width: 27px !important; min-width: 27px !important; max-width: 27px !important;
+  }
+  header > .header-tools #themeToggle {
+    flex-basis: 76px !important; width: 76px !important; min-width: 76px !important; max-width: 76px !important;
+    font-size: 9px !important;
+  }
+  header > .header-tools > label[for="autoInterval"] {
+    flex-basis: 106px !important; width: 106px !important; min-width: 106px !important; max-width: 106px !important;
+  }
+  header > .header-tools > label[for="autoPlayMode"] {
+    flex-basis: 84px !important; width: 84px !important; min-width: 84px !important; max-width: 84px !important;
+  }
+  header > .header-tools > label.auto-interval-control .control-label { font-size: 8px !important; }
+  header > .header-tools #autoInterval,
+  header > .header-tools #autoPlayMode { font-size: 9px !important; }
 }
 
 </style>

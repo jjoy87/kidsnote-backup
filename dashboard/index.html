@@ -2847,6 +2847,50 @@ header > .header-tools > .api-health-wrap { display: none !important; }
   }
 }
 
+
+/* Force monochrome text heart so Android/Samsung emoji rendering cannot
+   keep it red regardless of the live data-state attribute. */
+header > h1 #apiHealth {
+  color: #4b9bd6 !important;
+  -webkit-text-fill-color: #4b9bd6 !important;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  font-family: Arial, "Noto Sans", sans-serif !important;
+  font-variant-emoji: text !important;
+}
+
+header > h1 #apiHealth::before {
+  content: "♥︎" !important;
+  color: #4b9bd6 !important;
+  -webkit-text-fill-color: #4b9bd6 !important;
+  font-family: Arial, "Noto Sans", sans-serif !important;
+  font-variant-emoji: text !important;
+}
+
+header > h1 #apiHealth[data-state="ok"]::before {
+  color: #36a853 !important;
+  -webkit-text-fill-color: #36a853 !important;
+}
+header > h1 #apiHealth[data-state="limited"]::before {
+  color: #e1b52c !important;
+  -webkit-text-fill-color: #e1b52c !important;
+}
+header > h1 #apiHealth[data-state="busy"]::before {
+  color: #f08a24 !important;
+  -webkit-text-fill-color: #f08a24 !important;
+}
+header > h1 #apiHealth[data-state="error"]::before,
+header > h1 #apiHealth[data-state="imageError"]::before {
+  color: #e04444 !important;
+  -webkit-text-fill-color: #e04444 !important;
+}
+header > h1 #apiHealth[data-state="checking"]::before,
+header > h1 #apiHealth[data-state="imageLoading"]::before {
+  color: #4b9bd6 !important;
+  -webkit-text-fill-color: #4b9bd6 !important;
+}
+
 </style>
 </head>
 

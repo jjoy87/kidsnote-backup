@@ -2004,6 +2004,190 @@ body.dark-mode.cinema-mode #cinemaJourneyContent .cinema-entry { border-color:#4
   }
 }
 
+
+/* Robust narrow-phone header: no absolute positioning; all controls stay in
+   normal grid flow. Four equal columns make the second row exactly 50/50. */
+@media screen and (max-width: 600px) {
+  header {
+    display: grid !important;
+    grid-template-columns: minmax(0, 41%) minmax(0, 59%) !important;
+    column-gap: 5px !important;
+    align-items: center !important;
+    height: 68px !important;
+    min-height: 68px !important;
+    padding: 5px 8px !important;
+    overflow: visible !important;
+  }
+
+  header > h1 {
+    grid-column: 1 !important;
+    grid-row: 1 !important;
+    display: flex !important;
+    align-items: center !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    height: 100% !important;
+    margin: 0 !important;
+    font-size: clamp(12px, 4vw, 16px) !important;
+    line-height: 1.12 !important;
+    letter-spacing: -0.6px !important;
+    white-space: nowrap !important;
+  }
+
+  header > .header-tools {
+    grid-column: 2 !important;
+    grid-row: 1 !important;
+    display: grid !important;
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    grid-template-rows: 27px 27px !important;
+    gap: 4px !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    height: 58px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    position: static !important;
+    overflow: visible !important;
+    align-content: center !important;
+    align-items: center !important;
+  }
+
+  header > .header-tools > .api-health-wrap {
+    grid-column: 1 !important;
+    grid-row: 1 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    height: 27px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  header > .header-tools #apiHealth {
+    width: 13px !important;
+    min-width: 13px !important;
+    max-width: 13px !important;
+    height: 13px !important;
+    min-height: 13px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  header > .header-tools #screenWakeLockToggle {
+    grid-column: 2 !important;
+    grid-row: 1 !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    height: 27px !important;
+    min-height: 27px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    font-size: 12px !important;
+  }
+
+  header > .header-tools #themeToggle {
+    grid-column: 3 / 5 !important;
+    grid-row: 1 !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    height: 27px !important;
+    min-height: 27px !important;
+    margin: 0 !important;
+    padding: 0 3px !important;
+    font-size: 10px !important;
+    white-space: nowrap !important;
+  }
+
+  header > .header-tools > label[for="autoInterval"] {
+    grid-column: 1 / 3 !important;
+    grid-row: 2 !important;
+  }
+
+  header > .header-tools > label[for="autoPlayMode"] {
+    grid-column: 3 / 5 !important;
+    grid-row: 2 !important;
+  }
+
+  header > .header-tools > label.auto-interval-control {
+    position: static !important;
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    box-sizing: border-box !important;
+    flex-flow: row nowrap !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    gap: 3px !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    height: 27px !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    font-size: 9px !important;
+    line-height: 1 !important;
+    white-space: nowrap !important;
+  }
+
+  header > .header-tools > label.auto-interval-control .control-label {
+    display: block !important;
+    flex: 0 0 auto !important;
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    font-size: 9px !important;
+    line-height: 1 !important;
+    white-space: nowrap !important;
+  }
+
+  header > .header-tools #autoInterval,
+  header > .header-tools #autoPlayMode {
+    box-sizing: border-box !important;
+    display: block !important;
+    flex: 1 1 0 !important;
+    width: 1px !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    height: 27px !important;
+    min-height: 27px !important;
+    margin: 0 !important;
+    padding: 0 3px !important;
+    font-size: 9px !important;
+    line-height: 1 !important;
+    text-align: center !important;
+  }
+}
+
+@media screen and (max-width: 390px) {
+  header {
+    grid-template-columns: minmax(0, 40%) minmax(0, 60%) !important;
+    column-gap: 4px !important;
+    padding-left: 6px !important;
+    padding-right: 6px !important;
+  }
+  header > h1 {
+    font-size: clamp(11px, 3.8vw, 14px) !important;
+    letter-spacing: -0.7px !important;
+  }
+  header > .header-tools > label.auto-interval-control,
+  header > .header-tools > label.auto-interval-control .control-label {
+    font-size: 8px !important;
+  }
+  header > .header-tools #autoInterval,
+  header > .header-tools #autoPlayMode {
+    font-size: 8px !important;
+  }
+}
+
 </style>
 </head>
 

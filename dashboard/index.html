@@ -2891,6 +2891,28 @@ header > h1 #apiHealth[data-state="imageLoading"]::before {
   -webkit-text-fill-color: #4b9bd6 !important;
 }
 
+
+/* Layout correction: keep the title on one line on Fold-unfolded/tablet/PC.
+   Only compact phone widths use the intentional two-line title. */
+header > h1 .header-title-text {
+  white-space: nowrap !important;
+}
+header > h1 .header-title-line {
+  display: inline !important;
+  white-space: nowrap !important;
+}
+header > h1 .header-title-line + .header-title-line {
+  margin-left: 0.25em !important;
+}
+@media screen and (max-width: 600px) {
+  header > h1 .header-title-line {
+    display: block !important;
+  }
+  header > h1 .header-title-line + .header-title-line {
+    margin-left: 0 !important;
+  }
+}
+
 </style>
 </head>
 

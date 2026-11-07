@@ -2967,7 +2967,7 @@ header > h1 .header-title-line + .header-title-line {
 /* Galaxy Z Flip 3 / narrow-phone header layout.
    Keep the title and live status heart together on the left; put the four
    controls in a compact 2x2 arrangement on the right. */
-@media screen and (max-width: 375px) {
+@media screen and (max-width: 430px) {
   html body header {
     box-sizing: border-box !important;
     display: flex !important;
@@ -2985,10 +2985,10 @@ header > h1 .header-title-line + .header-title-line {
   html body header > h1 {
     box-sizing: border-box !important;
     display: flex !important;
-    flex: 0 1 150px !important;
-    width: 150px !important;
+    flex: 0 1 145px !important;
+    width: 145px !important;
     min-width: 0 !important;
-    max-width: 150px !important;
+    max-width: 145px !important;
     height: 100% !important;
     align-items: center !important;
     justify-content: flex-start !important;
@@ -3004,9 +3004,12 @@ header > h1 .header-title-line + .header-title-line {
 
   html body header > h1 .header-title-text {
     display: block !important;
-    flex: 0 1 auto !important;
+    flex: 1 1 auto !important;
+    width: auto !important;
     min-width: 0 !important;
+    max-width: 116px !important;
     white-space: normal !important;
+    overflow: visible !important;
   }
   html body header > h1 .header-title-line {
     display: block !important;
@@ -3017,6 +3020,7 @@ header > h1 .header-title-line + .header-title-line {
   }
 
   html body header > h1 .api-health-wrap {
+    position: relative !important;
     display: inline-flex !important;
     flex: 0 0 18px !important;
     width: 18px !important;

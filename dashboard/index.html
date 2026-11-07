@@ -3379,6 +3379,53 @@ html body header > .header-tools > label[for="autoPlayMode"] select {
   }
 }
 
+
+/* Wide layouts: reserve enough room for the full "자동 재생" label and its select. */
+@media screen and (min-width: 601px) {
+  html body header > .header-tools > label[for="autoPlayMode"] {
+    box-sizing: border-box !important;
+    display: flex !important;
+    flex: 0 0 126px !important;
+    width: 126px !important;
+    min-width: 126px !important;
+    max-width: 126px !important;
+    gap: 5px !important;
+    overflow: visible !important;
+    white-space: nowrap !important;
+  }
+  html body header > .header-tools > label[for="autoPlayMode"] .control-label {
+    display: inline-block !important;
+    flex: 0 0 auto !important;
+    width: auto !important;
+    min-width: max-content !important;
+    max-width: none !important;
+    overflow: visible !important;
+    white-space: nowrap !important;
+  }
+  html body header > .header-tools > label[for="autoPlayMode"] select {
+    box-sizing: border-box !important;
+    flex: 0 0 58px !important;
+    width: 58px !important;
+    min-width: 58px !important;
+    max-width: 58px !important;
+  }
+}
+
+
+/* Match the two dropdown boxes exactly on wide screens. */
+@media screen and (min-width: 601px) {
+  html body header > .header-tools #autoInterval,
+  html body header > .header-tools #autoPlayMode {
+    box-sizing: border-box !important;
+    flex: 0 0 58px !important;
+    width: 58px !important;
+    min-width: 58px !important;
+    max-width: 58px !important;
+    height: 30px !important;
+    min-height: 30px !important;
+  }
+}
+
 </style>
 </head>
 

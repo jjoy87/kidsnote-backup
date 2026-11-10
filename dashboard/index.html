@@ -3510,6 +3510,76 @@ html body header > .header-tools > label[for="autoPlayMode"] select {
   }
 }
 
+
+/* 검색 카테고리 */
+#searchPanel {
+  display: grid;
+  gap: 8px;
+  margin: -3px 0 12px;
+  padding: 10px;
+  border: 1px solid #e8e1d5;
+  border-radius: 11px;
+  background: #f7f4ec;
+  flex: 0 0 auto;
+}
+#searchPanel[hidden] { display: none !important; }
+.search-filter-row {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr) auto minmax(0, 1fr);
+  align-items: center;
+  gap: 6px;
+  color: #766b5b;
+  font-size: 12px;
+  font-weight: 600;
+}
+.search-filter-row select {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  height: 34px;
+  padding: 0 7px;
+  border: 1px solid #ded5c5;
+  border-radius: 8px;
+  background: #fffdf8;
+  color: #574d41;
+  font-size: 12px;
+}
+.search-category-row {
+  grid-template-columns: auto minmax(0, 1fr) minmax(64px, .75fr);
+}
+#searchSubmit {
+  height: 34px;
+  border: 1px solid #82977a;
+  border-radius: 8px;
+  background: #82977a;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+#searchSummary {
+  color: #8c806e;
+  font-size: 11px;
+  line-height: 1.4;
+}
+body.dark-mode #searchPanel {
+  background: #383838;
+  border-color: #514c44;
+}
+body.dark-mode .search-filter-row { color: #c5bdae; }
+body.dark-mode .search-filter-row select {
+  background: #414141;
+  border-color: #625d54;
+  color: #eee8de;
+}
+body.dark-mode #searchSummary { color: #b8afa2; }
+@media (max-width: 800px) {
+  #searchPanel { padding: 7px; gap: 6px; }
+  .search-filter-row { gap: 4px; font-size: 10px; }
+  .search-filter-row select, #searchSubmit { height: 30px; font-size: 10px; padding-left: 4px; padding-right: 4px; }
+  #searchSummary { font-size: 9px; }
+}
+
 </style>
 </head>
 
@@ -3567,6 +3637,7 @@ html body header > .header-tools > label[for="autoPlayMode"] select {
   <button data-cat="알림장">알림장</button>
   <button data-cat="앨범">앨범</button>
   <button data-cat="공지">공지</button>
+  <button data-cat="검색">🔎 검색</button>
 </nav>
 
 <div class="layout">
@@ -3605,6 +3676,36 @@ html body header > .header-tools > label[for="autoPlayMode"] select {
       <button type="button" data-notice-group="어린이집">🧸 어린이집</button>
       <button type="button" data-notice-group="유치원">🎒 유치원</button>
     </div>
+
+    <section id="searchPanel" aria-label="기록 검색" hidden>
+      <div class="search-filter-row">
+        <label for="searchYear">년도</label>
+        <select id="searchYear" aria-label="검색 년도">
+          <option value="">전체</option>
+        </select>
+        <label for="searchMonth">월</label>
+        <select id="searchMonth" aria-label="검색 월">
+          <option value="">전체</option>
+          <option value="01">1월</option><option value="02">2월</option>
+          <option value="03">3월</option><option value="04">4월</option>
+          <option value="05">5월</option><option value="06">6월</option>
+          <option value="07">7월</option><option value="08">8월</option>
+          <option value="09">9월</option><option value="10">10월</option>
+          <option value="11">11월</option><option value="12">12월</option>
+        </select>
+      </div>
+      <div class="search-filter-row search-category-row">
+        <label for="searchCategory">분류</label>
+        <select id="searchCategory" aria-label="검색 분류">
+          <option value="전체">전체</option>
+          <option value="알림장">알림장</option>
+          <option value="공지">공지</option>
+          <option value="앨범">앨범</option>
+        </select>
+        <button type="button" id="searchSubmit">검색</button>
+      </div>
+      <div id="searchSummary" role="status">년도와 월, 분류를 선택해 기록을 찾아보세요.</div>
+    </section>
 
     <div id="list"></div>
 
@@ -4075,6 +4176,8 @@ function renderList() {
   list.replaceChildren();
 
   const noticeGroups = $("noticeGroups");
+  const searchPanel = $("searchPanel");
+  if (searchPanel) searchPanel.hidden = cat !== "검색";
   const periodCategories = ["알림장", "앨범", "공지"];
   noticeGroups.classList.toggle("visible", periodCategories.includes(cat));
 
@@ -4164,7 +4267,9 @@ function renderList() {
         ? "📅 오늘의 추억"
         : cat === "즐겨찾기"
           ? "⭐ 즐겨찾기 기록"
-          : cat === "전체"
+          : cat === "검색"
+            ? "🔎 검색 결과"
+            : cat === "전체"
             ? "전체 기록"
             : cat + " 기록";
 
@@ -4820,6 +4925,14 @@ function select(c) {
   journeyMode = false;
   journeyLoadToken++;
 
+  if (c === "검색") {
+    document.querySelectorAll("#tabs button").forEach(button => {
+      button.classList.toggle("active", button.dataset.cat === c);
+    });
+    runRecordSearch();
+    return;
+  }
+
   if (c === "성장 추억 여행") {
     startJourney();
     document.querySelectorAll("#tabs button").forEach(button => {
@@ -4843,6 +4956,10 @@ function select(c) {
   } else if (c === "즐겨찾기") {
 
     items = all.filter(x => favoriteIds.has(String(x.id)));
+
+  } else if (c === "검색") {
+
+    items = [];
 
   } else if (["알림장", "앨범", "공지"].includes(c)) {
 
@@ -5246,6 +5363,7 @@ async function load() {
     $("status").textContent =
       "전체 " + all.length + "개 기록 조회 완료";
 
+    initializeSearchYears();
     select("추억 랜덤");
 
   } catch (error) {
@@ -5260,7 +5378,71 @@ async function load() {
 
 }
 
+// 년/월/분류 검색: 현재 로드된 전체 기록(all)을 대상으로 필터링한다.
+function initializeSearchYears() {
+  const yearSelect = $("searchYear");
+  if (!yearSelect) return;
+
+  const years = [...new Set(all
+    .map(record => String(record.date || "").substring(0, 4))
+    .filter(year => /^\d{4}$/.test(year)))]
+    .sort((a, b) => b.localeCompare(a));
+
+  yearSelect.replaceChildren();
+  const allOption = document.createElement("option");
+  allOption.value = "";
+  allOption.textContent = "전체";
+  yearSelect.appendChild(allOption);
+
+  years.forEach(year => {
+    const option = document.createElement("option");
+    option.value = year;
+    option.textContent = year + "년";
+    yearSelect.appendChild(option);
+  });
+
+  // 기본값은 기록이 가장 최근에 있는 년도
+  yearSelect.value = years[0] || "";
+}
+
+function runRecordSearch() {
+  if (cat !== "검색") return;
+
+  const year = $("searchYear").value;
+  const month = $("searchMonth").value;
+  const category = $("searchCategory").value;
+
+  items = all.filter(record => {
+    const date = String(record.date || "").substring(0, 10);
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) return false;
+    if (year && date.substring(0, 4) !== year) return false;
+    if (month && date.substring(5, 7) !== month) return false;
+    if (category !== "전체" && record.category !== category) return false;
+    return true;
+  });
+
+  idx = 0;
+  paused = true;
+  clearTimers();
+  $("pause").textContent = "▶";
+  $("pause").setAttribute("aria-label", "재생");
+  $("pause").title = "재생";
+
+  const period = [year ? year + "년" : "전체 년도", month ? Number(month) + "월" : "전체 월"];
+  const categoryLabel = category === "전체" ? "전체 분류" : category;
+  $("searchSummary").textContent =
+    period.join(" · ") + " · " + categoryLabel + " · " + items.length + "개 검색됨";
+
+  render();
+  $("status").textContent = "검색 결과 " + items.length + "개";
+}
+
 // 이벤트
+$("searchSubmit").addEventListener("click", runRecordSearch);
+$("searchYear").addEventListener("change", runRecordSearch);
+$("searchMonth").addEventListener("change", runRecordSearch);
+$("searchCategory").addEventListener("change", runRecordSearch);
+
 document.querySelectorAll("#tabs button").forEach(button => {
 
   button.onclick = () => select(button.dataset.cat);

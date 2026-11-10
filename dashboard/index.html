@@ -3521,6 +3521,7 @@ html body header > .header-tools > label[for="autoPlayMode"] select {
   border-radius: 11px;
   background: #f7f4ec;
   flex: 0 0 auto;
+  container-type: inline-size;
 }
 #searchPanel[hidden] { display: none !important; }
 .search-filter-row {
@@ -3578,6 +3579,30 @@ body.dark-mode #searchSummary { color: #b8afa2; }
   .search-filter-row { gap: 4px; font-size: 10px; }
   .search-filter-row select, #searchSubmit { height: 30px; font-size: 10px; padding-left: 4px; padding-right: 4px; }
   #searchSummary { font-size: 9px; }
+}
+
+/* 오른쪽 좁은 목록 영역에서는 검색 조건을 세로로 배치해 콤보박스 잘림 방지 */
+@container (max-width: 260px) {
+  #searchPanel { padding: 6px; gap: 5px; }
+  .search-filter-row {
+    grid-template-columns: 25px minmax(0, 1fr);
+    gap: 4px;
+  }
+  .search-filter-row > label {
+    white-space: nowrap;
+    font-size: 10px;
+  }
+  .search-category-row {
+    grid-template-columns: 25px minmax(0, 1fr);
+  }
+  #searchSubmit {
+    grid-column: 1 / -1;
+    width: 100%;
+  }
+  .search-filter-row select {
+    width: 100%;
+    min-width: 0;
+  }
 }
 
 </style>

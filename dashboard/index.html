@@ -3583,15 +3583,15 @@ body.dark-mode #searchSummary { color: #b8afa2; }
 
 /* 오른쪽 좁은 목록 영역에서는 검색 조건을 세로로 배치해 콤보박스 잘림 방지 */
 @container (max-width: 260px) {
-  /* 좁은 사이드 목록에서는 검색 필터를 2줄로 압축해 목록 노출 공간 확보 */
+  /* 좁은 사이드 목록에서도 분류 선택 폭을 확보하고 검색 버튼은 작게 */
   #searchPanel {
     padding: 6px;
     gap: 4px;
     margin-bottom: 8px;
   }
   .search-filter-row {
-    grid-template-columns: 22px minmax(0, 1fr) 18px minmax(0, 1fr);
-    gap: 4px;
+    grid-template-columns: 20px minmax(0, 1fr) 17px minmax(0, 1fr);
+    gap: 3px;
     font-size: 9px;
   }
   .search-filter-row > label {
@@ -3604,20 +3604,48 @@ body.dark-mode #searchSummary { color: #b8afa2; }
     width: 100%;
     min-width: 0;
     height: 29px;
-    padding: 0 5px;
+    padding: 0 4px;
     font-size: 10px;
   }
   .search-category-row {
-    grid-template-columns: 25px minmax(0, 1fr) 58px;
+    grid-template-columns: 22px minmax(0, 1fr) 42px;
+    gap: 4px;
   }
   #searchSubmit {
     grid-column: auto;
     white-space: nowrap;
+    padding: 0 2px;
+    font-size: 9px;
   }
   #searchSummary {
     font-size: 9px;
     line-height: 1.25;
   }
+}
+
+/* Fold 커버/초소형 사이드 패널: 버튼을 더 줄여 분류 콤보박스 공간 확보 */
+@container (max-width: 180px) {
+  #searchPanel { padding: 5px; gap: 3px; }
+  .search-filter-row {
+    grid-template-columns: 17px minmax(0, 1fr) 13px minmax(0, 1fr);
+    gap: 2px;
+  }
+  .search-filter-row > label { font-size: 8px; }
+  .search-filter-row select {
+    height: 27px;
+    padding: 0 2px;
+    font-size: 9px;
+  }
+  .search-category-row {
+    grid-template-columns: 19px minmax(0, 1fr) 36px;
+    gap: 3px;
+  }
+  #searchSubmit {
+    height: 27px;
+    padding: 0 1px;
+    font-size: 8px;
+  }
+  #searchSummary { font-size: 8px; }
 }
 
 </style>

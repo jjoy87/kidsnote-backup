@@ -3583,25 +3583,40 @@ body.dark-mode #searchSummary { color: #b8afa2; }
 
 /* 오른쪽 좁은 목록 영역에서는 검색 조건을 세로로 배치해 콤보박스 잘림 방지 */
 @container (max-width: 260px) {
-  #searchPanel { padding: 6px; gap: 5px; }
-  .search-filter-row {
-    grid-template-columns: 25px minmax(0, 1fr);
+  /* 좁은 사이드 목록에서는 검색 필터를 2줄로 압축해 목록 노출 공간 확보 */
+  #searchPanel {
+    padding: 6px;
     gap: 4px;
+    margin-bottom: 8px;
+  }
+  .search-filter-row {
+    grid-template-columns: 22px minmax(0, 1fr) 18px minmax(0, 1fr);
+    gap: 4px;
+    font-size: 9px;
   }
   .search-filter-row > label {
     white-space: nowrap;
+    font-size: 9px;
+  }
+  .search-filter-row select,
+  #searchSubmit {
+    box-sizing: border-box;
+    width: 100%;
+    min-width: 0;
+    height: 29px;
+    padding: 0 5px;
     font-size: 10px;
   }
   .search-category-row {
-    grid-template-columns: 25px minmax(0, 1fr);
+    grid-template-columns: 25px minmax(0, 1fr) 58px;
   }
   #searchSubmit {
-    grid-column: 1 / -1;
-    width: 100%;
+    grid-column: auto;
+    white-space: nowrap;
   }
-  .search-filter-row select {
-    width: 100%;
-    min-width: 0;
+  #searchSummary {
+    font-size: 9px;
+    line-height: 1.25;
   }
 }
 
